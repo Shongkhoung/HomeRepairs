@@ -1,3 +1,29 @@
 <resources>
     <string name="app_name">HomeRepairs</string>
+    <string name="get_start">Get Started</string>
+    <string name="SignIn">Sign In</string>
+    <string name="professional">Professional Home Repairs Made Easy</string>
+    <string name="SignUp">Sign Up</string>
+    <string name="Email_phoneNumber">Email/Phone Number</string>
+    <string name="password">Password</string>
+    <string name="back">back</string>
+    <string name="address">Address</string>
+    <string name="enter_address">Enter address</string>
+    <string name="unit_apt_number">Unit/Apt Number</string>
+    <string name="full_name">Full Name</string>
+    <string name="forgot_pw">Forgot Password?</string>
+    <string name="email_address">Email Address</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="type_property">Select Property Type</string>
+    <string name="house">House</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="apartment">Apartment</string>
+    <string name="condo">Condo</string>
+    <string name="Continue">Continue</string>
+    <string name="Skip">Skip for now</string>
+    <string name="commercial">Commercial</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="Sign_in_google">Sign In with google</string>
+    <string name="create_account">Create Account</string>
+    <string name="property">Add Your Property</string>
 </resources>

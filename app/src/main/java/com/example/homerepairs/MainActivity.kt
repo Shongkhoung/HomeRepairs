@@ -1,47 +1,46 @@
 package com.example.homerepairs
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.homerepairs.ui.theme.HomeRepairsTheme
+import androidx.appcompat.app.AppCompatActivity
+import com.example.homerepairs.databinding.ActivityMainBinding
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.libraries.places.api.Places
+import com.google.firebase.auth.FirebaseAuth
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var auth: FirebaseAuth
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            HomeRepairsTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        auth = FirebaseAuth.getInstance()
+
+        // 🚀 Check if the user is already logged in
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            // User already signed in → go to PropertyActivity
+            val intent = Intent(this, AddPropertyActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
         }
-    }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    HomeRepairsTheme {
-        Greeting("Android")
+
+        // 🟢 If NOT signed in → allow navigation
+        binding.getStartButton.setOnClickListener {
+            startActivity(Intent(this, SignUpActivity::class.java))
+        }
+
+        binding.SignIn.setOnClickListener {
+            startActivity(Intent(this, SignInActivity::class.java))
+        }
     }
 }
