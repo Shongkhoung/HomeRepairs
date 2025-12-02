@@ -26,4 +26,5 @@
     <string name="Sign_in_google">Sign In with google</string>
     <string name="create_account">Create Account</string>
     <string name="property">Add Your Property</string>
+    <string name="home">Home</string>
 </resources>
