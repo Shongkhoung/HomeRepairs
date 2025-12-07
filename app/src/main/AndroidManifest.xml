@@ -23,7 +23,7 @@
             android:name=".SplashScreen"
             android:theme="@style/Theme.HomeRepairs"
             android:exported="true"
-            android:label="HomeRepairs">
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -36,5 +36,7 @@
         <activity android:name=".AddPropertyActivity"/>
         <activity android:name=".HomeActivity"/>
         <activity android:name=".SavedLocationActivity"/>
+        <activity android:name=".ForgotActivity"/>
+        <activity android:name=".VerifyOtpActivity"/>
     </application>
 </manifest>

@@ -1,8 +1,8 @@
 package com.example.homerepairs
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
+import androidx.core.net.toUri
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -31,28 +31,27 @@ class HomeActivity : AppCompatActivity() {
             showSignOutConfirmation()
         }
 
-        // Get saved info from SharedPreferences
+        // Get saved property from SharedPreferences
         val prefs = getSharedPreferences("PROPERTY_PREFS", MODE_PRIVATE)
-        val propertyType = prefs.getString("property_type", "No property type")
-        val address = prefs.getString("address", "No address")
-        val unit = prefs.getString("unit", "No unit")
-        val locationLink = prefs.getString("location_link", "No location selected")
+        val propertyType = prefs.getString("property_type", "No property selected")
+        val locationLink = prefs.getString("location_link", "")
 
-        // Display info
+        // Display property type
         binding.tvPropertyType.text = propertyType
-        binding.tvAddress.text = address
-        binding.tvUnit.text = unit
-        binding.tvLocationLink.text = locationLink
 
-        // Make location link clickable
-        binding.tvLocationLink.setOnClickListener {
-            if (!locationLink.isNullOrEmpty() && locationLink != "No location selected") {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(locationLink))
-                startActivity(intent)
-            } else {
-                Toast.makeText(this, "No location selected", Toast.LENGTH_SHORT).show()
-            }
-        }
+        // Display location link if available
+
+
+                if (!locationLink.isNullOrEmpty()) {
+                    binding.tvLocationLink.text = getString(R.string.view_location)
+                    binding.tvLocationLink.setOnClickListener {
+                        val intent = Intent(Intent.ACTION_VIEW, locationLink.toUri())
+                        startActivity(intent)
+                    }
+                } else {
+                    binding.tvLocationLink.text = getString(R.string.no_location_selected)
+                }
+
     }
 
     private fun showSignOutConfirmation() {

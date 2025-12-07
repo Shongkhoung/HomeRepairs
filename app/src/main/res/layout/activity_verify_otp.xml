@@ -1,0 +1,117 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_marginTop="60dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <!-- Back button and header -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/back"
+                android:padding="8dp"
+                android:src="@drawable/ic_backbutton" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/verify_reset"
+                android:textSize="34sp"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/enter_otp_code_and_set_your_new_password"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:layout_marginTop="16sp"
+            android:layout_marginBottom="16sp"
+
+            />
+
+        <!-- OTP input -->
+        <EditText
+            android:id="@+id/etOtp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_otp"
+            android:inputType="number"
+            android:padding="12dp"
+            android:autofillHints="password"
+            android:background="@drawable/rounded_edittext"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- New password field with eye icon -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/etNewPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/new_password"
+                android:autofillHints="password"
+                android:inputType="textPassword"
+                android:padding="12dp"
+                android:background="@drawable/rounded_edittext"
+                android:layout_marginBottom="16dp"/>
+
+            <ImageView
+                android:id="@+id/eyeIcon"
+                android:layout_width="36dp"
+                android:contentDescription="@string/eye"
+                android:layout_height="36dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:padding="4dp"
+                android:src="@drawable/ic_eye"/>
+        </RelativeLayout>
+
+        <!-- Confirm password -->
+        <EditText
+            android:id="@+id/etConfirmPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/confirm_password"
+            android:inputType="textPassword"
+            android:autofillHints="confirm_password"
+            android:padding="12dp"
+            android:background="@drawable/rounded_edittext"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Verify/Submit button -->
+        <Button
+            android:id="@+id/btnVerify"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="@string/verify_reset"
+            android:textColor="@android:color/white"
+            android:background="@drawable/rounded_corner"
+            android:textAllCaps="false"
+            android:layout_marginBottom="16dp"/>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+    </LinearLayout>
+</ScrollView>
