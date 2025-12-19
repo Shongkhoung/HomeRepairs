@@ -137,14 +137,16 @@
                     android:textStyle="bold"
                     android:layout_marginEnd="8dp"/>
 
-                <com.google.android.material.button.MaterialButton
+                <TextView
                     android:id="@+id/BtNskip"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="48dp"
                     android:text="@string/Skip"
-                    android:textColor="@color/white"
-                    android:background="@drawable/rounded_corner"/>
+                    android:textColor="@color/black"
+                    android:gravity="center"
+                    android:layout_marginBottom="10sp"
+                    android:background="@drawable/rounded_edittext"/>
             </LinearLayout>
 
         </LinearLayout>

@@ -2,15 +2,16 @@ package com.example.homerepairs
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
+import android.util.Patterns
+import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.homerepairs.databinding.ActivitySigninBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import android.util.Patterns
-import android.view.MotionEvent
 
 class SignInActivity : AppCompatActivity() {
 
@@ -31,19 +32,16 @@ class SignInActivity : AppCompatActivity() {
 
     /** Set up UI listeners */
     private fun setupUI() {
-        // Skip button
+        // Skip button — navigate to Home and finish sign-in screen
         binding.btnSkip.setOnClickListener {
             startActivity(Intent(this, HomeActivity::class.java))
             finish()
         }
 
-        // Forgot password
+        // Forgot password — navigate to ForgotActivity (don't finish so user can come back)
         binding.forgotPW.setOnClickListener {
             startActivity(Intent(this, ForgotActivity::class.java))
-           finish()
         }
-
-
 
         // Remember checkbox
         binding.rememberCheck.setOnCheckedChangeListener { _, isChecked ->
@@ -56,47 +54,53 @@ class SignInActivity : AppCompatActivity() {
             finish()
         }
 
-
+        // Password eye toggle: detect taps on the drawable end (eye icon)
         binding.password.setOnTouchListener { v, event ->
             if (event.action == MotionEvent.ACTION_UP) {
                 val drawables = binding.password.compoundDrawablesRelative
-                val drawableEnd = drawables.getOrNull(2) // index 2 == end
+                // index 2 = drawableEnd when using compoundDrawablesRelative
+                val drawableEnd = drawables.getOrNull(2)
                 if (drawableEnd != null) {
+                    // compute touch bounds (x is relative to view)
                     val touchX = event.x.toInt()
-                    val width = binding.password.width
+                    val viewWidth = binding.password.width
                     val paddingEnd = binding.password.paddingEnd
-                    val drawableWidth = drawableEnd.bounds.width()
-                    if (touchX >= (width - paddingEnd - drawableWidth)) {
-                        togglePasswordVisibility()
 
-                        // Call performClick on the view, not override
+                    // drawable width: prefer bounds, fallback to intrinsicWidth
+                    val drawableWidth = drawableEnd.bounds.width().takeIf { it > 0 }
+                        ?: drawableEnd.intrinsicWidth
+
+                    val drawableLeftEdge = viewWidth - paddingEnd - drawableWidth
+
+                    if (touchX >= drawableLeftEdge) {
+                        togglePasswordVisibility()
+                        // consume the event so keyboard doesn't also react
                         v.performClick()
                         return@setOnTouchListener true
                     }
                 }
             }
+            // don't consume other touch events
             false
         }
-
-
-
-
 
         // Sign in button
         binding.signinBtn.setOnClickListener { signInUser() }
     }
 
-    /** Toggle password visibility using transformationMethod (no keyboard side-effects) */
+    /** Toggle password visibility using proper TransformationMethod */
     private fun togglePasswordVisibility() {
         isPasswordVisible = !isPasswordVisible
 
         if (isPasswordVisible) {
-            binding.password.transformationMethod = null
+            // show text
+            binding.password.transformationMethod = HideReturnsTransformationMethod.getInstance()
         } else {
+            // hide text
             binding.password.transformationMethod = PasswordTransformationMethod.getInstance()
         }
 
-        // Keep the cursor at the end after changing transformation
+        // Preserve cursor at end
         binding.password.setSelection(binding.password.text?.length ?: 0)
     }
 
@@ -136,7 +140,7 @@ class SignInActivity : AppCompatActivity() {
                 } else {
                     Toast.makeText(
                         this,
-                        "Authentication failed: ${task.exception?.message}",
+                        "Authentication failed: ${task.exception?.localizedMessage ?: "Unknown error"}",
                         Toast.LENGTH_LONG
                     ).show()
                 }
@@ -152,7 +156,7 @@ class SignInActivity : AppCompatActivity() {
     private fun navigateToHome(user: FirebaseUser?) {
         user?.let {
             Toast.makeText(this, "Welcome ${it.email}", Toast.LENGTH_SHORT).show()
-            startActivity(Intent(this, HomeActivity::class.java))
+            startActivity(Intent(this, PrivacyAndSecurityActivity::class.java))
             finish()
         }
     }

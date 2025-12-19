@@ -21,7 +21,17 @@ class AddPropertyActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         if (auth.currentUser == null) {
-            navigateToSignIn()  // fixed call
+            navigateToSignIn()
+            return
+        }
+
+        // Check if user already selected property
+        val prefs = getSharedPreferences("PROPERTY_PREFS", MODE_PRIVATE)
+        val savedProperty = prefs.getString("property_type", null)
+        if (savedProperty != null) {
+            // User already selected a property, go to HomeActivity
+            startActivity(Intent(this, HomeActivity::class.java))
+            finish()
             return
         }
 
@@ -45,7 +55,6 @@ class AddPropertyActivity : AppCompatActivity() {
             }
 
             // Save to SharedPreferences
-            val prefs = getSharedPreferences("PROPERTY_PREFS", MODE_PRIVATE)
             prefs.edit()
                 .putString("property_type", selectedPropertyType)
                 .apply()

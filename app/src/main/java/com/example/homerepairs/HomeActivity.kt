@@ -25,10 +25,16 @@ class HomeActivity : AppCompatActivity() {
         binding.btnBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
+        binding.helpCenter.setOnClickListener{
+            startActivity(Intent(this, HelpCenterActivity::class.java))
+        }
 
         // Sign out button
         binding.signOut.setOnClickListener {
             showSignOutConfirmation()
+        }
+        binding.termsAndCondidtions.setOnClickListener{
+            startActivity(Intent(this, TermsConditionsActivity::class.java))
         }
 
         // Get saved property from SharedPreferences
@@ -37,20 +43,6 @@ class HomeActivity : AppCompatActivity() {
         val locationLink = prefs.getString("location_link", "")
 
         // Display property type
-        binding.tvPropertyType.text = propertyType
-
-        // Display location link if available
-
-
-                if (!locationLink.isNullOrEmpty()) {
-                    binding.tvLocationLink.text = getString(R.string.view_location)
-                    binding.tvLocationLink.setOnClickListener {
-                        val intent = Intent(Intent.ACTION_VIEW, locationLink.toUri())
-                        startActivity(intent)
-                    }
-                } else {
-                    binding.tvLocationLink.text = getString(R.string.no_location_selected)
-                }
 
     }
 

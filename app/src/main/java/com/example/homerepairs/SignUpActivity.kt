@@ -23,7 +23,6 @@ class SignUpActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
 
         // Back button
-        binding.btnBack.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
         // Skip button
         binding.btnSkip.setOnClickListener {

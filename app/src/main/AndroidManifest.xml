@@ -1,14 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.homerepairs">
 
+    <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -16,53 +13,40 @@
         android:icon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.HomeRepairs"
-<<<<<<< HEAD
-        tools:targetApi="31">
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.HomeRepairs.AppCompat">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-=======
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules">
->>>>>>> Shongkhoung
 
         <!-- Google Maps API Key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDg-u7_cdNW2ZbCMmaLBTmK_YQ2FZ1mHiI"/>
 
+        <!-- Splash / Launcher Activity -->
         <activity
             android:name=".SplashScreen"
             android:theme="@style/Theme.HomeRepairs"
-            android:exported="true"
-            >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-<<<<<<< HEAD
-        <activity
-            android:name=".PlumbingActivity"
-            android:exported="false"
-            android:label="Plumbing"
-            android:theme="@style/Theme.HomeRepairs.AppCompat">
-        </activity>
-    </application>
-=======
->>>>>>> Shongkhoung
 
-        <activity android:name=".MainActivity"/>
+        <!-- Main & Other Activities -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"/>
         <activity android:name=".SignInActivity"/>
+        <!-- Lock SignUpActivity to portrait to prevent rotation issues -->
         <activity android:name=".SignUpActivity"/>
         <activity android:name=".AddPropertyActivity"/>
         <activity android:name=".HomeActivity"/>
         <activity android:name=".SavedLocationActivity"/>
         <activity android:name=".ForgotActivity"/>
         <activity android:name=".VerifyOtpActivity"/>
+        <activity android:name=".PrivacyAndSecurityActivity"/>
+        <activity android:name=".HelpCenterActivity"/>
+        <activity android:name=".TermsConditionsActivity"/>
     </application>
 </manifest>

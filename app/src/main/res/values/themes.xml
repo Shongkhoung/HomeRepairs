@@ -1,15 +1,12 @@
 <resources>
-<<<<<<< HEAD
+    <!-- Base app theme -->
+    <style name="Theme.HomeRepairs" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Status bar color -->
+        <item name="android:statusBarColor">#0F1720</item>
 
-    <style name="Theme.HomeRepairs" parent="android:Theme.Material.Light.NoActionBar" />
-    
-    <style name="Theme.HomeRepairs.AppCompat" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Primary colors -->
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryDark">@color/purple_700</item>
         <item name="colorAccent">@color/teal_200</item>
-=======
-    <style name="Theme.HomeRepairs" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:statusBarColor">#0F1720</item>
->>>>>>> Shongkhoung
     </style>
 </resources>

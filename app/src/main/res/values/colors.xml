@@ -2,16 +2,17 @@
 <resources>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
-<<<<<<< HEAD
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    
+
+    <!-- Purple colors -->
+    <color name="purple_500">#6200EE</color>
+    <color name="purple_700">#3700B3</color>
+
     <!-- Plumbing Screen Colors -->
     <color name="verified_green">#4CAF50</color>
     <color name="peach_background">#FFD4B5</color>
     <color name="light_gray_background">#F5F5F5</color>
     <color name="gray_text">#8E8E93</color>
-    
+
     <!-- Home Service App Colors -->
     <color name="primary_blue">#2196F3</color>
     <color name="accent_teal">#00BFA5</color>
@@ -26,12 +27,11 @@
     <color name="peach_beige">#FFE5D4</color>
     <color name="teal_gradient_start">#00BFA5</color>
     <color name="teal_gradient_end">#00897B</color>
-    
+
     <!-- Launcher Icon Colors -->
     <color name="logo_purple">#6200EE</color>
     <color name="logo_beige">#FFE5D4</color>
-</resources>
-=======
+
     <color name="black">#212121</color>
     <color name="button_background">#499EEB</color>
     <color name="primary">#0D47A1</color>
@@ -44,5 +44,18 @@
     <color name="secondary_text">#757575</color>
     <color name="gray_disabled">#E0E0E0</color>
     <color name="bg_fill">#F0F2F5</color>
+
+    <!-- New Colors -->
+    <color name="error_red">#D32F2F</color>
+    <color name="warning_orange">#FF9800</color>
+    <color name="info_blue">#1976D2</color>
+    <color name="light_green">#A5D6A7</color>
+    <color name="dark_gray">#616161</color>
+    <color name="transparent_black_50">#80000000</color>
+    <color name="transparent_white_50">#80FFFFFF</color>
+    <color name="button_pressed">#1976D2</color>
+    <color name="gradient_start">#00C6FF</color>
+    <color name="gradient_end">#0072FF</color>
+    <color name="card_background">#FAFAFA</color>
+    <color name="shadow_light">#33000000</color>
 </resources>
->>>>>>> Shongkhoung
