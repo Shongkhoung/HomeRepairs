@@ -17,7 +17,9 @@
     <!-- Home Service App Colors -->
     <color name="primary_blue">#2196F3</color>
     <color name="accent_teal">#00BFA5</color>
+    <color name="action_green">#4CAF50</color>
     <color name="background_white">#FFFFFF</color>
+    <color name="background_gray">#F5F5F5</color>
     <color name="text_primary">#1A1A1A</color>
     <color name="text_secondary">#757575</color>
     <color name="provider_count_gray">#9E9E9E</color>
@@ -29,7 +31,58 @@
     <color name="teal_gradient_start">#00BFA5</color>
     <color name="teal_gradient_end">#00897B</color>
     
+    <!-- Professional App Colors -->
+    <color name="primary_teal_professional">#00BFA5</color>
+    <color name="primary_teal_dark_professional">#00897B</color>
+    <color name="text_primary_professional">#1A1A1A</color>
+    <color name="text_secondary_professional">#757575</color>
+    <color name="success">#4CAF50</color>
+    <color name="error">#F44336</color>
+    <color name="warning">#FF9800</color>
+    <color name="info">#2196F3</color>
+    <color name="button_blue">#2196F3</color>
+    <color name="link_blue">#2196F3</color>
+    <color name="available_green">#4CAF50</color>
+    <color name="rating_gold">#FFB300</color>
+    <color name="rating_star_empty">#E0E0E0</color>
+    <color name="text_white">#FFFFFF</color>
+    <color name="text_hint">#BDBDBD</color>
+    <color name="divider_gray">#E0E0E0</color>
+    <color name="border_default">#E0E0E0</color>
+    <color name="button_secondary">#E0E0E0</color>
+    <color name="overlay_background">#80000000</color>
+    
     <!-- Launcher Icon Colors -->
     <color name="logo_purple">#6200EE</color>
     <color name="logo_beige">#FFE5D4</color>
+    
+    <!-- Blue-Lavender Color Palette -->
+    <color name="deep_royal_blue">#211C84</color>
+    <color name="bright_periwinkle_blue">#4D55CC</color>
+    <color name="medium_lavender">#7A73D1</color>
+    <color name="light_lavender">#B5A8D5</color>
+    <color name="light_cream_background">#FAFAF8</color>
+    
+    <!-- Enhanced UI Colors -->
+    <color name="card_shadow_light">#0D000000</color>
+    <color name="card_shadow_medium">#1A000000</color>
+    <color name="card_shadow_dark">#33000000</color>
+    <color name="surface_elevated">#FFFFFF</color>
+    <color name="surface_default">#FAFAFA</color>
+    <color name="divider_light">#F0F0F0</color>
+    <color name="text_tertiary">#9E9E9E</color>
+    <color name="primary_light">#E3E0FF</color>
+    <color name="primary_dark">#1A1570</color>
+    <color name="calendar_hover_blue">#BBDEFB</color>
+    <color name="calendar_selected_blue">#1976D2</color>
+    <color name="accent_light">#B2F5EA</color>
+    <color name="success_light">#C8E6C9</color>
+    <color name="error_light">#FFCDD2</color>
+    <color name="ripple_light">#1A000000</color>
+    <color name="ripple_dark">#33FFFFFF</color>
+    <color name="favorite_pink">#FF4081</color>
+    <color name="gray_900">#111827</color>
+    <color name="gray_700">#374151</color>
+    <color name="gray_600">#4B5563</color>
+    <color name="gray_100">#F3F4F6</color>
 </resources>

@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_white">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:paddingBottom="120dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:background="@color/white"
+                android:elevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <ImageButton
+                        android:id="@+id/btnBack"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/ic_back_arrow"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Back"
+                        android:tint="@color/text_primary" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="New booking"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary"
+                        android:gravity="center" />
+                </LinearLayout>
+
+                <!-- Progress Indicators -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_gravity="center_horizontal">
+
+                    <View
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:background="@drawable/circle_green"
+                        android:alpha="0.3"
+                        android:layout_marginEnd="8dp" />
+
+                    <View
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:background="@drawable/circle_green"
+                        android:alpha="0.3"
+                        android:layout_marginEnd="8dp" />
+
+                    <View
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:background="@drawable/circle_green"
+                        android:layout_marginEnd="8dp" />
+
+                    <View
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:background="@drawable/circle_green"
+                        android:alpha="0.3" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Main Content -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Location details -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Location details"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginBottom="8dp" />
+
+                <EditText
+                    android:id="@+id/etLocationDetails"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:hint="Enter location details"
+                    android:background="@drawable/search_bar_background"
+                    android:padding="12dp"
+                    android:textSize="14sp"
+                    android:textColorHint="@color/text_hint"
+                    android:layout_marginBottom="24dp" />
+
+                <!-- Access instructions -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Access instructions"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginBottom="8dp" />
+
+                <EditText
+                    android:id="@+id/etGateCode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:hint="Gate code"
+                    android:background="@drawable/search_bar_background"
+                    android:padding="12dp"
+                    android:textSize="14sp"
+                    android:textColorHint="@color/text_hint"
+                    android:layout_marginBottom="8dp" />
+
+                <EditText
+                    android:id="@+id/etParkingInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:hint="Parking information"
+                    android:background="@drawable/search_bar_background"
+                    android:padding="12dp"
+                    android:textSize="14sp"
+                    android:textColorHint="@color/text_hint"
+                    android:layout_marginBottom="8dp" />
+
+                <EditText
+                    android:id="@+id/etPetInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:hint="Pet information"
+                    android:background="@drawable/search_bar_background"
+                    android:padding="12dp"
+                    android:textSize="14sp"
+                    android:textColorHint="@color/text_hint"
+                    android:layout_marginBottom="8dp" />
+
+                <EditText
+                    android:id="@+id/etAdditionalInstructions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="100dp"
+                    android:hint="Additional instructions"
+                    android:background="@drawable/search_bar_background"
+                    android:padding="12dp"
+                    android:textSize="14sp"
+                    android:textColorHint="@color/text_hint"
+                    android:gravity="top|start"
+                    android:inputType="textMultiLine"
+                    android:layout_marginBottom="24dp" />
+
+                <!-- Contact preference -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Contact preference"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginBottom="8dp" />
+
+                <RadioGroup
+                    android:id="@+id/rgContactPreference"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="24dp">
+
+                    <RadioButton
+                        android:id="@+id/rbCallWhenArriving"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Call when arriving"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_primary"
+                        android:paddingVertical="8dp"
+                        android:checked="true" />
+
+                    <RadioButton
+                        android:id="@+id/rbRingDoorbell"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Ring doorbell"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_primary"
+                        android:paddingVertical="8dp" />
+
+                    <RadioButton
+                        android:id="@+id/rbTextMessage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Text message"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_primary"
+                        android:paddingVertical="8dp" />
+                </RadioGroup>
+
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Continue Button and Bottom Navigation -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="bottom"
+        android:elevation="8dp"
+        android:background="@color/white">
+
+        <Button
+            android:id="@+id/btnContinue"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Continue"
+            android:textColor="@color/text_white"
+            android:backgroundTint="@color/primary_blue"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:minHeight="48dp"
+            android:layout_margin="16dp" />
+
+        <!-- Bottom Navigation -->
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNavigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            app:elevation="8dp"
+            app:menu="@menu/bottom_navigation"
+            app:itemIconTint="@drawable/bottom_nav_selector"
+            app:itemTextColor="@drawable/bottom_nav_selector" />
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+

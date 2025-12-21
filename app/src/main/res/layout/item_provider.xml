@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardProvider"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@color/white"
+    android:foreground="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="14dp">
+
+        <!-- Favorite Icon (Top Right) -->
+        <ImageView
+            android:id="@+id/ivFavorite"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/rating_star"
+            android:tint="#FFB300"
+            android:contentDescription="Favorite"
+            android:padding="4dp" />
+
+        <!-- Profile Image with Verification Badge -->
+        <FrameLayout
+            android:id="@+id/flProfileContainer"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="10dp">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/ivProviderPhoto"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:contentDescription="Provider Photo"
+                android:src="@drawable/ic_profile" />
+
+            <!-- Verification Badge -->
+            <ImageView
+                android:id="@+id/ivVerifiedBadge"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="bottom|end"
+                android:src="@drawable/verify"
+                android:background="@drawable/circle_white"
+                android:padding="4dp"
+                android:contentDescription="Verified"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <!-- Name and Service (Next to Profile Image) -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/flProfileContainer"
+            android:layout_toStartOf="@id/ivFavorite"
+            android:layout_alignTop="@id/flProfileContainer"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="6dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvProviderName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Pulu Martinez"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+            <TextView
+                android:id="@+id/tvServiceType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Master Handyman"
+                android:textSize="12sp"
+                android:textColor="@color/text_secondary"
+                android:layout_marginTop="1dp"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+
+        <!-- Rating and Job Count (Below Name) -->
+        <LinearLayout
+            android:id="@+id/llRatingContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/flProfileContainer"
+            android:layout_alignStart="@id/flProfileContainer"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="6dp">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/rating_star"
+                android:tint="#FFB300"
+                android:layout_marginEnd="4dp"
+                android:contentDescription="Rating star" />
+
+            <TextView
+                android:id="@+id/tvRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5 (142)"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary" />
+
+            <View
+                android:layout_width="4dp"
+                android:layout_height="4dp"
+                android:layout_marginHorizontal="8dp"
+                android:background="@drawable/circle_indicator"
+                android:backgroundTint="@color/text_secondary" />
+
+            <TextView
+                android:id="@+id/tvJobsCompleted"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="328 jobs"
+                android:textSize="13sp"
+                android:textColor="@color/text_secondary" />
+        </LinearLayout>
+
+        <!-- Response Time and Availability Boxes -->
+        <LinearLayout
+            android:id="@+id/llResponseAvailability"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/llRatingContainer"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- Response Time Box -->
+            <LinearLayout
+                android:id="@+id/llResponseTime"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:background="@drawable/box_light_grey"
+                android:padding="8dp"
+                android:layout_marginEnd="5dp"
+                android:minHeight="70dp"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_clock"
+                    android:tint="@color/text_secondary"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="3dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Response"
+                    android:textSize="10sp"
+                    android:textColor="@color/text_secondary"
+                    android:layout_gravity="center_horizontal" />
+
+                <TextView
+                    android:id="@+id/tvResponseTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="~10 min"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="2dp" />
+            </LinearLayout>
+
+            <!-- Availability Box -->
+            <LinearLayout
+                android:id="@+id/llAvailability"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:background="@drawable/box_light_green"
+                android:padding="8dp"
+                android:layout_marginStart="5dp"
+                android:minHeight="70dp"
+                android:gravity="center">
+
+                <View
+                    android:layout_width="7dp"
+                    android:layout_height="7dp"
+                    android:background="@drawable/circle_indicator"
+                    android:backgroundTint="@color/available_green"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="3dp" />
+
+                <TextView
+                    android:id="@+id/tvAvailability"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Available"
+                    android:textSize="10sp"
+                    android:textColor="@color/available_green"
+                    android:layout_gravity="center_horizontal" />
+
+                <TextView
+                    android:id="@+id/tvAvailabilityTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Right now"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/available_green"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="2dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Hourly Rate and Book Now Button (Bottom) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/llResponseAvailability"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hourly rate"
+                    android:textSize="10sp"
+                    android:textColor="@color/text_secondary" />
+
+                <TextView
+                    android:id="@+id/tvPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$55"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginTop="1dp" />
+            </LinearLayout>
+
+            <!-- Book Now Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBookNow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BOOK NOW"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:minHeight="40dp"
+                android:minWidth="85dp"
+                android:paddingHorizontal="14dp"
+                app:cornerRadius="10dp"
+                app:backgroundTint="@color/text_primary"
+                android:textColor="@color/text_white"
+                android:textAllCaps="true" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</com.google.android.material.card.MaterialCardView>

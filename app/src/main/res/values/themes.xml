@@ -4,8 +4,10 @@
     <style name="Theme.HomeRepairs" parent="android:Theme.Material.Light.NoActionBar" />
     
     <style name="Theme.HomeRepairs.AppCompat" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryDark">@color/purple_700</item>
-        <item name="colorAccent">@color/teal_200</item>
+        <item name="colorPrimary">@color/bright_periwinkle_blue</item>
+        <item name="colorPrimaryDark">@color/white</item>
+        <item name="colorAccent">@color/medium_lavender</item>
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 </resources>

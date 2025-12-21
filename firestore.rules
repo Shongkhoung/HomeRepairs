@@ -1,0 +1,147 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Providers collection - read only for all users
+    // Users CANNOT create, update, or delete provider profiles
+    // Only admins can modify providers (configure admin access later)
+    match /providers/{providerId} {
+      // Allow all users to read provider profiles
+      allow read: if true;
+      
+      // Explicitly deny all write operations (create, update, delete)
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+    
+    // ========================================
+    // DEVELOPMENT MODE RULES (For Testing)
+    // Use these rules if you haven't implemented Firebase Auth yet
+    // ========================================
+    // Uncomment the section below and comment out the "PRODUCTION MODE RULES" section
+    
+    // Bookings collection - allow all access for development/testing
+    match /bookings/{bookingId} {
+      allow read, write: if true;
+    }
+    
+    match /conversations/{conversationId} {
+      allow read, write: if true;
+    }
+    
+    match /messages/{messageId} {
+      allow read, write: if true;
+    }
+    
+    // Users collection - allow all access for development/testing
+    // TODO: Deploy production rules to Firebase Console for proper security
+    match /users/{userId} {
+      allow read, write: if true;
+    }
+    
+    // ========================================
+    // PRODUCTION RULES FOR USERS (Deploy these after testing)
+    // Replace the above users rule with this when ready:
+    // ========================================
+    /*
+    // Users collection - allow users to read/write their own profile
+    match /users/{userId} {
+      // Allow read if user is authenticated and reading their own profile
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      
+      // Allow create if user is authenticated and creating their own profile
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      
+      // Allow update if user is authenticated and updating their own profile
+      allow update: if isAuthenticated() && request.auth.uid == userId;
+      
+      // Allow delete if user is authenticated and deleting their own profile
+      allow delete: if isAuthenticated() && request.auth.uid == userId;
+    }
+    */
+    
+    // ========================================
+    // PRODUCTION MODE RULES (Requires Firebase Auth)
+    // Uncomment this section when you implement Firebase Authentication
+    // ========================================
+    /*
+    // Bookings collection - users can read/write their own bookings
+    match /bookings/{bookingId} {
+      // Allow read if user is authenticated and booking belongs to them
+      allow read: if isAuthenticated() && 
+        resource.data.userId == request.auth.uid;
+      
+      // Allow create if user is authenticated and setting themselves as userId
+      allow create: if isAuthenticated() && 
+        request.resource.data.userId == request.auth.uid;
+      
+      // Allow update if user is authenticated and booking belongs to them
+      allow update: if isAuthenticated() && 
+        resource.data.userId == request.auth.uid;
+      
+      // Allow delete if user is authenticated and booking belongs to them
+      allow delete: if isAuthenticated() && 
+        resource.data.userId == request.auth.uid;
+    }
+    */
+    
+    // ========================================
+    // PRODUCTION MODE RULES (Requires Firebase Auth)
+    // Uncomment this section when you implement Firebase Authentication
+    // ========================================
+    /*
+    // Conversations collection
+    match /conversations/{conversationId} {
+      // Allow read if user is a participant (userId or providerId)
+      allow read: if isAuthenticated() && 
+        (resource.data.userId == request.auth.uid || 
+         resource.data.providerId == request.auth.uid);
+      
+      // Allow create if user is setting themselves as userId
+      allow create: if isAuthenticated() && 
+        request.resource.data.userId == request.auth.uid;
+      
+      // Allow update if user is a participant
+      allow update: if isAuthenticated() && 
+        (resource.data.userId == request.auth.uid || 
+         resource.data.providerId == request.auth.uid);
+      
+      // Allow delete if user is a participant
+      allow delete: if isAuthenticated() && 
+        (resource.data.userId == request.auth.uid || 
+         resource.data.providerId == request.auth.uid);
+    }
+    
+    // Messages collection
+    match /messages/{messageId} {
+      // Allow read if user is sender or receiver
+      allow read: if isAuthenticated() && 
+        (resource.data.senderId == request.auth.uid || 
+         resource.data.receiverId == request.auth.uid);
+      
+      // Allow create if user is the sender
+      allow create: if isAuthenticated() && 
+        request.resource.data.senderId == request.auth.uid;
+      
+      // Allow update only for marking as read (receiver can update)
+      allow update: if isAuthenticated() && 
+        resource.data.receiverId == request.auth.uid &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isRead']);
+      
+      // Allow delete if user is the sender
+      allow delete: if isAuthenticated() && 
+        resource.data.senderId == request.auth.uid;
+    }
+    */
+  }
+}

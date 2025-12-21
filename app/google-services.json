@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "516691618362",
+    "project_id": "homerepiars-168",
+    "storage_bucket": "homerepiars-168.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:516691618362:android:46766b5e9d7d1faaba6303",
+        "android_client_info": {
+          "package_name": "com.example.homerepairs"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "516691618362-kmgnfqt16l77u8velmetn1jj36skhvob.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.homerepairs",
+            "certificate_hash": "51ba2e0977480a0b7ac0061edfba2d87ea1cdb67"
+          }
+        },
+        {
+          "client_id": "516691618362-349lkerufe5tavgtj66gc8s9lcgu09rb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1L8Zzu6PkYQPlJ1dqnqU3MZmC6VbK3_Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "516691618362-349lkerufe5tavgtj66gc8s9lcgu09rb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

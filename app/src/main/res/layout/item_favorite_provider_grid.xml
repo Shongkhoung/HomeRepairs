@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardProvider"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="6dp"
+    android:layout_marginEnd="6dp"
+    android:layout_marginTop="6dp"
+    android:layout_marginBottom="6dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="@color/white">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:paddingBottom="12dp">
+
+        <!-- Selection Checkbox (Top Left, shown in selection mode) -->
+        <ImageView
+            android:id="@+id/ivSelectionCheck"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/ic_check_circle"
+            android:background="@drawable/circle_white"
+            android:padding="4dp"
+            android:contentDescription="Select"
+            android:visibility="gone"
+            android:layout_margin="8dp" />
+
+        <!-- Verification Badge (Top Right of Card) -->
+        <ImageView
+            android:id="@+id/ivVerifiedBadge"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/ic_shield"
+            android:background="@drawable/circle_white"
+            android:padding="3dp"
+            android:contentDescription="Verified"
+            android:visibility="gone"
+            android:layout_margin="4dp" />
+
+        <!-- Profile Icon Container with Gradient Background -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/flProfileIcon"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:layout_marginBottom="12dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@android:color/transparent"
+            android:clipToPadding="true"
+            android:clipChildren="true">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/profile_icon_background_rounded">
+
+                <ImageView
+                    android:id="@+id/ivProviderIcon"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_profile"
+                    android:contentDescription="Provider Icon"
+                    android:scaleType="centerCrop"
+                    android:adjustViewBounds="false" />
+
+                <!-- Large Initial Letter -->
+                <TextView
+                    android:id="@+id/tvInitialLetter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="P"
+                    android:textSize="48sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"
+                    android:alpha="0.2"
+                    android:visibility="gone" />
+
+                <!-- Favorite Heart Icon (Top Right of Icon Area) -->
+                <ImageView
+                    android:id="@+id/ivFavorite"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="top|end"
+                    android:src="@drawable/heart_filled"
+                    android:tint="#FF4081"
+                    android:contentDescription="Favorite"
+                    android:layout_margin="8dp"
+                    android:background="@drawable/circle_white"
+                    android:padding="4dp" />
+            </FrameLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Provider Name -->
+        <TextView
+            android:id="@+id/tvProviderName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/flProfileIcon"
+            android:text="Pulu"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"
+            android:layout_marginTop="8dp"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <!-- Profession -->
+        <TextView
+            android:id="@+id/tvProfession"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvProviderName"
+            android:text="Handyman"
+            android:textSize="11sp"
+            android:textColor="@color/text_secondary"
+            android:layout_marginTop="3dp"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <!-- Rating -->
+        <LinearLayout
+            android:id="@+id/llRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvProfession"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="6dp"
+            android:background="#FFFEF3"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="2dp">
+
+            <ImageView
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:src="@drawable/ic_star"
+                android:tint="#F59E0B"
+                android:contentDescription="Star" />
+
+            <TextView
+                android:id="@+id/tvRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4.8"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="#92400E"
+                android:layout_marginStart="3dp" />
+
+            <TextView
+                android:id="@+id/tvReviewCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="(234)"
+                android:textSize="10sp"
+                android:textColor="@color/text_secondary"
+                android:layout_marginStart="4dp" />
+        </LinearLayout>
+
+        <!-- Availability with Dot -->
+        <LinearLayout
+            android:id="@+id/llAvailability"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/llRating"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="6dp">
+
+            <View
+                android:id="@+id/vAvailabilityDot"
+                android:layout_width="6dp"
+                android:layout_height="6dp"
+                android:background="@drawable/circle_green"
+                android:layout_marginEnd="6dp" />
+
+            <TextView
+                android:id="@+id/tvAvailability"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Available Now"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:textColor="#10B981" />
+        </LinearLayout>
+
+        <!-- Price -->
+        <TextView
+            android:id="@+id/tvPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/llAvailability"
+            android:text="$55/hr"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"
+            android:layout_marginTop="10dp" />
+
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvPrice"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnMessage"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:text="MESSAGE"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:textColor="@color/gray_700"
+                android:backgroundTint="@color/gray_100"
+                android:paddingVertical="8dp"
+                android:paddingHorizontal="4dp"
+                android:minHeight="36dp"
+                android:maxLines="1"
+                android:lines="1"
+                android:ellipsize="none"
+                android:singleLine="true"
+                app:cornerRadius="8dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:insetLeft="0dp"
+                android:insetRight="0dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBook"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="BOOK"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_white"
+                android:backgroundTint="@color/primary_blue"
+                android:paddingVertical="8dp"
+                android:paddingHorizontal="6dp"
+                android:minHeight="36dp"
+                android:maxLines="1"
+                android:ellipsize="none"
+                android:singleLine="true"
+                app:cornerRadius="8dp"
+                app:elevation="2dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:insetLeft="0dp"
+                android:insetRight="0dp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</com.google.android.material.card.MaterialCardView>
