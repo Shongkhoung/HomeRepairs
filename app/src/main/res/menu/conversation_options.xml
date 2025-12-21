@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    
+    <item
+        android:id="@+id/action_mark_read"
+        android:title="Mark as Read"
+        android:icon="@drawable/ic_check"
+        app:showAsAction="never" />
+    
+    <item
+        android:id="@+id/action_mark_unread"
+        android:title="Mark as Unread"
+        android:icon="@drawable/ic_check"
+        app:showAsAction="never" />
+    
+    <item
+        android:id="@+id/action_pin"
+        android:title="Pin"
+        android:icon="@drawable/ic_pin"
+        app:showAsAction="never" />
+    
+    <item
+        android:id="@+id/action_unpin"
+        android:title="Unpin"
+        android:icon="@drawable/ic_pin"
+        app:showAsAction="never" />
+    
+    <item
+        android:id="@+id/action_star"
+        android:title="Star"
+        android:icon="@drawable/ic_star"
+        app:showAsAction="never" />
+    
+    <item
+        android:id="@+id/action_unstar"
+        android:title="Unstar"
+        android:icon="@drawable/ic_star"
+        app:showAsAction="never" />
+    
+    <item
+        android:id="@+id/action_archive"
+        android:title="Archive"
+        android:icon="@drawable/ic_document"
+        app:showAsAction="never" />
+    
+    <item
+        android:id="@+id/action_delete"
+        android:title="Delete"
+        android:icon="@drawable/ic_delete"
+        app:showAsAction="never" />
+</menu>
+

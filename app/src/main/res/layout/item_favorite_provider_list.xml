@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardProvider"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="20dp"
+    android:layout_marginEnd="20dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="@color/white">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Favorite Heart Icon -->
+        <ImageView
+            android:id="@+id/ivFavorite"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/heart_filled"
+            android:tint="#FF4081"
+            android:contentDescription="Favorite" />
+
+        <!-- Profile Icon with Gradient Background -->
+        <FrameLayout
+            android:id="@+id/flProfileIcon"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/profile_picture_gradient"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/ivProviderIcon"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/ic_profile"
+                android:contentDescription="Provider Icon"
+                android:scaleType="fitCenter" />
+
+            <!-- Verification Badge -->
+            <ImageView
+                android:id="@+id/ivVerifiedBadge"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="bottom|end"
+                android:src="@drawable/ic_shield"
+                android:background="@drawable/circle_white"
+                android:padding="3dp"
+                android:contentDescription="Verified"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <!-- Provider Info -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/flProfileIcon"
+            android:layout_toStartOf="@id/ivFavorite"
+            android:layout_alignTop="@id/flProfileIcon"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvProviderName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pulu"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary" />
+
+            <TextView
+                android:id="@+id/tvProfession"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Handyman"
+                android:textSize="13sp"
+                android:textColor="@color/text_secondary"
+                android:layout_marginTop="4dp" />
+
+            <!-- Rating -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="6dp">
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:src="@drawable/ic_star"
+                    android:tint="@color/rating_gold"
+                    android:contentDescription="Star" />
+
+                <TextView
+                    android:id="@+id/tvRating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="4.8"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginStart="4dp" />
+
+                <TextView
+                    android:id="@+id/tvReviewCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="(234)"
+                    android:textSize="13sp"
+                    android:textColor="@color/text_secondary"
+                    android:layout_marginStart="4dp" />
+            </LinearLayout>
+
+            <!-- Availability Badge -->
+            <TextView
+                android:id="@+id/tvAvailability"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Available Now"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_white"
+                android:background="@drawable/availability_badge_background"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+
+        <!-- Price and Action Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/flProfileIcon"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvPrice"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="$55/hr"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Message"
+                android:textSize="12sp"
+                android:textColor="@color/text_primary"
+                android:backgroundTint="@color/background_gray"
+                app:icon="@drawable/ic_message"
+                app:iconPadding="6dp"
+                app:iconTint="@color/text_primary"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="10dp"
+                android:layout_marginEnd="8dp"
+                android:minHeight="40dp"
+                app:cornerRadius="8dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBook"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Book"
+                android:textSize="12sp"
+                android:textColor="@color/text_white"
+                android:backgroundTint="@color/primary_blue"
+                app:icon="@drawable/ic_calendar"
+                app:iconPadding="6dp"
+                app:iconTint="@color/text_white"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="10dp"
+                android:minHeight="40dp"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</com.google.android.material.card.MaterialCardView>
+

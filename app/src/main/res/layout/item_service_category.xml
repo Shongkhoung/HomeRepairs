@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardCategory"
+    android:layout_width="match_parent"
+    android:layout_height="110dp"
+    android:layout_margin="6dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    app:cardMaxElevation="6dp"
+    app:cardBackgroundColor="#4D55CC"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="8dp"
+        android:clickable="false"
+        android:focusable="false">
+
+        <!-- Category Icon -->
+        <ImageView
+            android:id="@+id/ivCategoryIcon"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:minWidth="38dp"
+            android:minHeight="38dp"
+            android:contentDescription="Category Icon"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:layout_marginBottom="5dp"
+            android:clickable="false"
+            android:focusable="false"
+            android:importantForAccessibility="yes"
+            android:visibility="visible" />
+
+        <!-- Category Name -->
+        <TextView
+            android:id="@+id/tvCategoryName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Plumbing"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_white"
+            android:gravity="center"
+            android:letterSpacing="0.01"
+            android:layout_marginBottom="2dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:paddingHorizontal="4dp"
+            android:clickable="false"
+            android:focusable="false" />
+
+        <!-- Provider Count -->
+        <TextView
+            android:id="@+id/tvProviderCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="12 providers"
+            android:textSize="11sp"
+            android:textColor="#E6FFFFFF"
+            android:gravity="center"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:paddingHorizontal="4dp"
+            android:clickable="false"
+            android:focusable="false" />
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
+

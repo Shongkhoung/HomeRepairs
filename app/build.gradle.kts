@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.gms.google-services")
+    alias(libs.plugins.google.firebase.crashlytics)
 }
 
 android {
@@ -50,6 +52,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation("androidx.compose.material:material-icons-extended")
+    implementation("androidx.compose.ui:ui-text-google-fonts")
     
     // Java XML-based dependencies
     implementation("androidx.appcompat:appcompat:1.6.1")
@@ -69,6 +72,35 @@ dependencies {
     // Location services
     implementation("com.google.android.gms:play-services-location:21.0.1")
     
+    // ViewModel and LiveData
+    implementation("androidx.lifecycle:lifecycle-viewmodel:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-livedata:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-runtime:2.7.0")
+    
+    // CircleImageView
+    implementation("de.hdodenhof:circleimageview:3.1.0")
+    
+    // Glide for image loading
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    
+    // Lottie for animated icons
+    implementation("com.airbnb.android:lottie:6.1.0")
+    
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-storage")
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-messaging")
+    implementation(libs.firebase.crashlytics)
+
+    // Google Sign-In
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
+    
+    // Facebook Sign-In
+    implementation("com.facebook.android:facebook-android-sdk:16.3.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -76,4 +108,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+
+
 }

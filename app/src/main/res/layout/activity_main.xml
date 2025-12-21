@@ -1,0 +1,656 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:circleimageview="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:paddingBottom="80dp"
+        android:background="@color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Top Header Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:paddingTop="24dp"
+                android:paddingBottom="16dp">
+                
+                <!-- App Title with Green Dot and Action Icons -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+                    
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Home Repair"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/deep_royal_blue"
+                        android:letterSpacing="0.01" />
+                    
+                    <View
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/circle_green"
+                        android:backgroundTint="@color/verified_green" />
+                    </LinearLayout>
+                    
+                    <!-- Notification Button with Badge -->
+                    <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="12dp">
+                        
+                        <ImageButton
+                            android:id="@+id/btnNotification"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/ic_notification"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="Notifications"
+                            android:tint="@color/text_primary"
+                            android:padding="8dp" />
+                        
+                        <!-- Notification Badge -->
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:layout_gravity="top|end"
+                            android:background="@drawable/circle_green"
+                            android:backgroundTint="@color/primary_blue"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginEnd="6dp" />
+                    </FrameLayout>
+                    
+                    <!-- Profile Icon -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardProfileIcon"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        app:cardCornerRadius="20dp"
+                        app:cardBackgroundColor="@color/deep_royal_blue"
+                        app:cardElevation="0dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackgroundBorderless">
+                        
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/ivProfileIcon"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/ic_profile"
+                            android:visibility="gone"
+                            app:civ_border_width="0dp" />
+                        
+                        <TextView
+                            android:id="@+id/tvProfileLetter"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="A"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_white"
+                            android:gravity="center"
+                            android:background="@color/deep_royal_blue" />
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+                
+                <!-- Location and Weather Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="16dp">
+                    
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_location"
+                        android:tint="@color/text_secondary"
+                        android:layout_marginEnd="6dp"
+                        android:contentDescription="Location" />
+                    
+                    <TextView
+                        android:id="@+id/tvLocation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Phnom Penh"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary" />
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" • "
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginHorizontal="4dp" />
+                    
+                    <com.airbnb.lottie.LottieAnimationView
+                        android:id="@+id/ivWeatherIcon"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:contentDescription="@string/weather_icon"
+                        android:layout_marginEnd="4dp"
+                        app:lottie_autoPlay="true"
+                        app:lottie_loop="true"
+                        app:lottie_speed="1.0" />
+                    
+                    <TextView
+                        android:id="@+id/tvWeather"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="23°C Cloudy"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary" />
+                </LinearLayout>
+
+                <!-- Greeting Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/tvGreeting"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Good Evening, Alex"
+                        android:textColor="@color/text_primary"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.01" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Search Bar -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/search_bar_gray"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="12dp"
+                    android:gravity="center_vertical"
+                    android:minHeight="48dp">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_search"
+                        android:tint="@color/text_secondary"
+                        android:layout_marginEnd="10dp" />
+
+                    <EditText
+                        android:id="@+id/etSearch"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="Search services or providers..."
+                        android:textSize="14sp"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_secondary"
+                        android:background="@android:color/transparent"
+                        android:inputType="text"
+                        android:maxLines="1" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Quick Action Buttons - Horizontal Scrollable -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="28dp"
+                android:scrollbars="none"
+                android:fadeScrollbars="true"
+                android:overScrollMode="never">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                android:gravity="center_vertical">
+
+                <!-- Emergency Button (Dark Blue) -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/btnEmergency"
+                        android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                        android:layout_marginEnd="12dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardBackgroundColor="@color/deep_royal_blue"
+                    app:cardElevation="2dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <LinearLayout
+                            android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                            android:paddingHorizontal="16dp"
+                            android:paddingVertical="12dp">
+
+                        <com.airbnb.lottie.LottieAnimationView
+                            android:id="@+id/ivEmergencyIcon"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginEnd="10dp"
+                            android:contentDescription="Emergency service icon"
+                            app:lottie_autoPlay="true"
+                            app:lottie_loop="true"
+                            app:lottie_speed="1.0" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Emergency"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                                android:textColor="@color/text_white" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Bookings Button (White) -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/btnScheduleLater"
+                        android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                        android:layout_marginEnd="12dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/divider_gray"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <LinearLayout
+                            android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                            android:paddingHorizontal="16dp"
+                            android:paddingVertical="12dp">
+
+                        <ImageView
+                            android:id="@+id/ivBookingLaterIcon"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginEnd="10dp"
+                            android:contentDescription="Booking later icon"
+                            android:src="@drawable/booking_later"
+                            android:tint="@color/text_primary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Bookings"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                                android:textColor="@color/text_primary" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Favorites Button (White) -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/btnDocument"
+                        android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="16dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/divider_gray"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <LinearLayout
+                            android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                            android:paddingHorizontal="16dp"
+                            android:paddingVertical="12dp">
+
+                        <ImageView
+                            android:id="@+id/ivFavoriteIcon"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginEnd="10dp"
+                            android:contentDescription="Favorite icon"
+                            android:src="@drawable/heart"
+                            android:tint="@color/text_primary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Favorites"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                                android:textColor="@color/text_primary" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+            </HorizontalScrollView>
+
+            <!-- Service Categories Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="20dp"
+                android:paddingBottom="24dp">
+
+                <!-- Section Header with View All Link -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="18dp">
+                    
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Services"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/deep_royal_blue"
+                        android:letterSpacing="0.01" />
+                    
+                    <TextView
+                        android:id="@+id/tvViewAllServices"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="View all >"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:padding="4dp" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvCategories"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false" />
+            </LinearLayout>
+
+            <!-- Featured Providers Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="20dp"
+                android:paddingBottom="20dp"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Featured Pro"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary"
+                        android:letterSpacing="0.01" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Highly recommended"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvFeaturedProviders"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingTop="4dp"
+                    android:clipToPadding="false"
+                    android:clipChildren="false" />
+            </LinearLayout>
+
+            <!-- Recent Activity Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="20dp"
+                android:paddingBottom="20dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Recent Activity"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary"
+                        android:letterSpacing="0.01" />
+
+                    <TextView
+                        android:id="@+id/tvViewAllActivity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="View All"
+                        android:textSize="14sp"
+                        android:textColor="@color/logo_purple"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground"
+                        android:padding="8dp" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvRecentActivity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    android:clipToPadding="false"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="8dp" />
+            </LinearLayout>
+
+            <!-- Progress Bar -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone" />
+
+            <!-- Trust & Safety Banner -->
+            <include
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                layout="@layout/trust_safety_banner" />
+
+            <!-- Trusted Service Card -->
+            <include
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                layout="@layout/trusted_service_card" />
+
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@drawable/bottom_nav_background"
+        app:elevation="0dp"
+        app:menu="@menu/bottom_navigation"
+        app:itemIconTint="@drawable/bottom_nav_selector"
+        app:itemTextColor="@drawable/bottom_nav_selector"
+        app:itemRippleColor="@color/ripple_light" />
+
+    <!-- Internet Connection Loading Overlay with Blur Background -->
+    <FrameLayout
+        android:id="@+id/llInternetLoading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/overlay_background"
+        android:visibility="gone"
+        android:elevation="16dp"
+        android:clickable="true"
+        android:focusable="true">
+
+        <!-- Blur overlay background -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/overlay_background"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <!-- Centered Loading Content (No Background) -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="24dp"
+            android:clickable="false"
+            android:focusable="false">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/ivNoConnection"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_marginBottom="8dp"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                app:lottie_rawRes="@raw/no_connection" />
+
+            <TextView
+                android:id="@+id/tvInternetMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No Internet Connection"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/error"
+                android:gravity="center"
+                android:layout_marginTop="4dp" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <!-- Screen Transition Loading Overlay -->
+    <FrameLayout
+        android:id="@+id/llScreenLoading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/overlay_background"
+        android:visibility="gone"
+        android:elevation="20dp"
+        android:clickable="true"
+        android:focusable="true">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="24dp">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/ivScreenLoading"
+                android:layout_width="320dp"
+                android:layout_height="320dp"
+                android:layout_marginBottom="16dp"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                app:lottie_speed="1.0"
+                app:lottie_renderMode="hardware"
+                app:lottie_rawRes="@raw/loading" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Loading..."
+                android:textSize="16sp"
+                android:textColor="@color/text_white"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </FrameLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+

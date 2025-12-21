@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardProvider"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginBottom="16dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="4dp"
+    app:cardMaxElevation="6dp"
+    app:cardBackgroundColor="@color/white"
+    app:strokeWidth="0dp"
+    android:foreground="@drawable/ripple_card"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="false"
+    android:descendantFocusability="blocksDescendants">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="20dp"
+        android:gravity="center_vertical"
+        android:clickable="false"
+        android:focusable="false">
+
+        <!-- Provider Image - Circular -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="88dp"
+            android:layout_height="88dp"
+            app:cardCornerRadius="44dp"
+            app:cardElevation="3dp"
+            app:cardMaxElevation="4dp"
+            app:cardBackgroundColor="@android:color/transparent"
+            android:layout_marginEnd="20dp">
+
+            <ImageView
+                android:id="@+id/ivProviderPhoto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/provider_photo"
+                android:src="@drawable/appliance_repair"
+                android:scaleType="centerCrop"
+                android:background="@color/peach_background" />
+        </androidx.cardview.widget.CardView>
+
+        <!-- Provider Info -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!-- Name and Verified Badge -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="6dp">
+
+                <TextView
+                    android:id="@+id/tvProviderName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Expert Plumber"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:letterSpacing="0.01"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:layout_marginEnd="8dp" />
+
+                <LinearLayout
+                    android:id="@+id/llVerified"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:id="@+id/ivVerifiedIcon"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:src="@drawable/verify"
+                        android:tint="@color/verified_green"
+                        android:contentDescription="Verified Icon" />
+
+                    <TextView
+                        android:id="@+id/tvVerified"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Verified"
+                        android:textSize="9sp"
+                        android:textColor="@color/verified_green"
+                        android:textStyle="bold"
+                        android:maxLines="1"
+                        android:gravity="center" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Rating and Reviews -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="6dp">
+
+                <TextView
+                    android:id="@+id/tvRating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="4.8"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginEnd="3dp" />
+
+                <TextView
+                    android:id="@+id/tvStar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="★"
+                    android:textSize="13sp"
+                    android:textColor="#FFB800"
+                    android:layout_marginEnd="4dp" />
+
+                <TextView
+                    android:id="@+id/tvReviewCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="(123 reviews)"
+                    android:textSize="12sp"
+                    android:textColor="@color/gray_text"
+                    android:maxLines="1" />
+            </LinearLayout>
+
+            <!-- Service Type and Availability -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:id="@+id/tvServiceType"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Plumbing"
+                    android:textSize="13sp"
+                    android:textColor="@color/gray_text"
+                    android:layout_marginEnd="10dp" />
+
+                <View
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:background="@drawable/availability_dot"
+                    android:layout_marginEnd="5dp"
+                    android:id="@+id/vAvailabilityDot" />
+
+                <TextView
+                    android:id="@+id/tvAvailability"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Available Now"
+                    android:textSize="12sp"
+                    android:textColor="#10B981"
+                    android:textStyle="bold"
+                    android:maxLines="1" />
+            </LinearLayout>
+
+            <!-- Price -->
+            <TextView
+                android:id="@+id/tvPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="$60/hr"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#3B82F6" />
+        </LinearLayout>
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
+

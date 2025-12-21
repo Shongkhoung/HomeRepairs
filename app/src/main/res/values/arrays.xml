@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="swipe_refresh_colors">
+        <item>@color/primary_blue</item>
+        <item>@color/accent_teal</item>
+        <item>@color/action_green</item>
+    </array>
+</resources>

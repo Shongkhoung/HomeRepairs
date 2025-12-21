@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardActivity"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginBottom="16dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="@color/white"
+    android:foreground="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center_vertical">
+
+        <!-- Profile Image / Icon -->
+        <FrameLayout
+            android:id="@+id/flIconContainer"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@drawable/circle_profile_placeholder"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/ivActivityIcon"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_gravity="center"
+                android:contentDescription="Profile Image"
+                android:scaleType="centerCrop" />
+        </FrameLayout>
+
+        <!-- Center Column - Title, Provider, Time -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="12dp">
+
+            <!-- Activity Title -->
+            <TextView
+                android:id="@+id/tvActivityTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Leaky Faucet Fixed"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_marginBottom="4dp" />
+
+            <!-- Provider Name -->
+            <TextView
+                android:id="@+id/tvProviderName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Ethan Carter"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_marginBottom="4dp" />
+
+            <!-- Time Ago -->
+            <TextView
+                android:id="@+id/tvActivityDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2 hours ago"
+                android:textSize="12sp"
+                android:textColor="@color/text_tertiary"
+                android:maxLines="1" />
+        </LinearLayout>
+
+        <!-- Status Chip on Right -->
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Completed"
+            android:textSize="12sp"
+            android:textColor="@color/text_white"
+            app:chipBackgroundColor="@color/success"
+            app:chipCornerRadius="16dp"
+            app:chipMinHeight="32dp"
+            app:chipStartPadding="12dp"
+            app:chipEndPadding="12dp"
+            android:minWidth="0dp" />
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
