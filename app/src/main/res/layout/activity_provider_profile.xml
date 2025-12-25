@@ -39,14 +39,14 @@
                         android:layout_height="48dp"
                         android:src="@drawable/ic_back_arrow"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:contentDescription="Back"
-                        android:tint="@color/text_primary" />
+                        android:contentDescription="@string/back"
+                        app:tint="@color/text_primary" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Provider Profile"
+                        android:text="@string/provider_profile"
                         android:textSize="20sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_primary"
@@ -58,8 +58,8 @@
                         android:layout_height="48dp"
                         android:src="@drawable/ic_search"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:contentDescription="Search"
-                        android:tint="@color/text_primary" />
+                        android:contentDescription="@string/search"
+                        app:tint="@color/text_primary" />
                 </LinearLayout>
 
                 <!-- Bottom border for header -->
@@ -88,7 +88,7 @@
                     android:layout_centerVertical="true"
                         android:src="@drawable/ic_profile"
                         android:scaleType="centerCrop"
-                    android:contentDescription="Profile Picture"
+                    android:contentDescription="@string/profile_picture"
                     app:civ_border_width="0dp" />
 
                 <!-- Provider Name -->
@@ -99,7 +99,7 @@
                     android:layout_toEndOf="@id/ivProfilePicture"
                     android:layout_alignParentTop="true"
                     android:layout_marginStart="16dp"
-                    android:text="Pulu"
+                    android:text="@string/pulu"
                     android:textSize="24sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary" />
@@ -119,8 +119,8 @@
                         android:layout_height="38dp"
                         android:src="@drawable/heart_outline"
                         android:background="@drawable/button_square_bordered"
-                        android:contentDescription="Favorite"
-                        android:tint="@color/text_primary"
+                        android:contentDescription="@string/favorites"
+                        app:tint="@color/text_primary"
                         android:padding="9dp"
                         android:scaleType="fitCenter" />
 
@@ -130,8 +130,8 @@
                         android:layout_height="38dp"
                         android:src="@drawable/ic_share"
                         android:background="@drawable/button_square_bordered"
-                        android:contentDescription="Share"
-                        android:tint="@color/text_primary"
+                        android:contentDescription="@string/share"
+                        app:tint="@color/text_primary"
                         android:layout_marginStart="10dp"
                         android:padding="9dp"
                         android:scaleType="fitCenter" />
@@ -151,7 +151,7 @@
                     android:id="@+id/tvProfession"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                        android:text="Handyman"
+                        android:text="@string/handyman"
                         android:textSize="13sp"
                         android:textColor="@color/text_secondary" />
 
@@ -166,8 +166,8 @@
                             android:layout_width="16dp"
                             android:layout_height="16dp"
                             android:src="@drawable/ic_star"
-                            android:tint="@color/rating_gold"
-                            android:contentDescription="Star" />
+                            app:tint="@color/rating_gold"
+                            android:contentDescription="@string/star" />
 
                     <TextView
                         android:id="@+id/tvRating"
@@ -183,7 +183,7 @@
                             android:id="@+id/tvReviewCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="(234 reviews)"
+                            android:text="@string/_234_reviews"
                             android:textSize="13sp"
                             android:textColor="@color/text_secondary"
                             android:layout_marginStart="4dp" />
@@ -193,7 +193,7 @@
                         android:id="@+id/tvAvailable"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Available Now"
+                        android:text="@string/available_now"
                         android:textSize="12sp"
                         android:textColor="@color/text_white"
                         android:textStyle="bold"
@@ -245,15 +245,15 @@
                                 android:layout_width="18dp"
                                 android:layout_height="18dp"
                                 android:src="@drawable/ic_clock"
-                                android:tint="@color/text_secondary"
-                                android:contentDescription="Clock"
+                                app:tint="@color/text_secondary"
+                                android:contentDescription="@string/clock"
                                 android:layout_marginBottom="3dp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Avg. Response Time"
-                                android:textSize="9sp"
+                                android:text="@string/avg_response_time"
+                                android:textSize="10sp"
                                 android:textColor="@color/text_secondary"
                                 android:gravity="center"
                                 android:maxLines="2"
@@ -263,7 +263,7 @@
                                 android:id="@+id/tvResponseTime"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="1 hr"
+                                android:text="@string/_1_hr"
                                 android:textSize="20sp"
                                 android:textStyle="bold"
                                 android:textColor="@color/text_primary"
@@ -295,15 +295,15 @@
                                 android:layout_width="18dp"
                                 android:layout_height="18dp"
                                 android:src="@drawable/ic_graph"
-                                android:tint="@color/text_secondary"
-                                android:contentDescription="Graph"
+                                app:tint="@color/text_secondary"
+                                android:contentDescription="@string/graph"
                                 android:layout_marginBottom="3dp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Repeat Customers"
-                                android:textSize="9sp"
+                                android:text="@string/repeat_customers"
+                                android:textSize="10sp"
                                 android:textColor="@color/text_secondary"
                                 android:gravity="center"
                                 android:maxLines="2"
@@ -313,7 +313,7 @@
                                 android:id="@+id/tvRepeatCustomers"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="75%"
+                                android:text="@string/_75"
                                 android:textSize="20sp"
                                 android:textStyle="bold"
                                 android:textColor="@color/text_primary"
@@ -352,7 +352,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Years in Business"
+                                android:text="@string/years_in_business"
                                 android:textSize="12sp"
                                 android:textColor="@color/text_secondary"
                                 android:gravity="center"
@@ -394,7 +394,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Jobs Completed"
+                                android:text="@string/jobs_completed"
                                 android:textSize="12sp"
                                 android:textColor="@color/text_secondary"
                                 android:gravity="center"
@@ -439,7 +439,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Starting from"
+                        android:text="@string/starting_from"
                         android:textSize="12sp"
                         android:textColor="@color/text_white"
                         android:alpha="0.95" />
@@ -448,7 +448,7 @@
                         android:id="@+id/tvPricing"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="$55/hr"
+                        android:text="@string/_55_hr"
                         android:textSize="32sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_white"
@@ -459,7 +459,7 @@
                     android:id="@+id/btnGetQuote"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="GET FREE QUOTE"
+                    android:text="@string/get_free_quote"
                     android:textColor="@color/text_white"
                     android:background="@drawable/button_purple_quote"
                     android:paddingHorizontal="18dp"
@@ -507,7 +507,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Typical Job Costs"
+                                android:text="@string/typical_job_costs"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:textColor="@color/text_primary" />
@@ -518,7 +518,7 @@
                                 android:layout_height="24dp"
                                 android:src="@drawable/ic_back_arrow"
                                 android:rotation="90"
-                                android:contentDescription="Expand" />
+                                android:contentDescription="@string/expand" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -532,7 +532,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="• Leak Repair: $100 - $200"
+                                android:text="@string/leak_repair_100_200"
                                 android:textSize="14sp"
                                 android:textColor="@color/text_secondary"
                                 android:layout_marginBottom="4dp" />
@@ -540,7 +540,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="• Drain Cleaning: $150 - $300"
+                                android:text="@string/drain_cleaning_150_300"
                                 android:textSize="14sp"
                                 android:textColor="@color/text_secondary"
                                 android:layout_marginBottom="4dp" />
@@ -548,7 +548,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="• Water Heater Installation: $800 - $1,500"
+                                android:text="@string/water_heater_installation_800_1_500"
                                 android:textSize="14sp"
                                 android:textColor="@color/text_secondary" />
                         </LinearLayout>
@@ -584,7 +584,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Accepted Payment Methods"
+                                android:text="@string/accepted_payment_methods"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:textColor="@color/text_primary" />
@@ -595,7 +595,7 @@
                                 android:layout_height="24dp"
                                 android:src="@drawable/ic_back_arrow"
                                 android:rotation="90"
-                                android:contentDescription="Expand" />
+                                android:contentDescription="@string/expand" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -609,7 +609,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Cash"
+                                android:text="@string/cash"
                                 android:textSize="14sp"
                                 android:textColor="@color/text_secondary"
                                 android:background="@drawable/search_bar_background"
@@ -620,7 +620,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Credit Card"
+                                android:text="@string/credit_card"
                                 android:textSize="14sp"
                                 android:textColor="@color/text_secondary"
                                 android:background="@drawable/search_bar_background"
@@ -631,7 +631,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Debit Card"
+                                android:text="@string/debit_card"
                                 android:textSize="14sp"
                                 android:textColor="@color/text_secondary"
                                 android:background="@drawable/search_bar_background"
@@ -654,7 +654,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="About"
+                    android:text="@string/about"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
@@ -664,7 +664,7 @@
                     android:id="@+id/tvAbout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Ethan Carter is a skilled plumber with over 8 years of experience. He specializes in residential plumbing repairs, installations, and maintenance. Ethan is known for his prompt service, attention to detail, and commitment to customer satisfaction."
+                    android:text="@string/ethan_carter_is_a_skilled_plumber_with_over_8_years_of_experience_he_specializes_in_residential_plumbing_repairs_installations_and_maintenance_ethan_is_known_for_his_prompt_service_attention_to_detail_and_commitment_to_customer_satisfaction"
                     android:textSize="14sp"
                     android:textColor="@color/text_secondary"
                     android:lineSpacingExtra="4dp"
@@ -682,7 +682,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Leak Repair"
+                        android:text="@string/leak_repair"
                         android:textSize="13sp"
                         android:textColor="@color/text_secondary"
                         android:background="@drawable/search_bar_background"
@@ -695,7 +695,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Drain Cleaning"
+                        android:text="@string/drain_cleaning"
                         android:textSize="13sp"
                         android:textColor="@color/text_secondary"
                         android:background="@drawable/search_bar_background"
@@ -708,7 +708,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Water Heater Installation"
+                        android:text="@string/water_heater_installation"
                         android:textSize="13sp"
                         android:textColor="@color/text_secondary"
                         android:background="@drawable/search_bar_background"
@@ -750,14 +750,14 @@
                                 android:layout_width="32dp"
                                 android:layout_height="32dp"
                                 android:src="@drawable/ic_briefcase"
-                                android:tint="@color/text_secondary"
-                                android:contentDescription="Briefcase"
+                                app:tint="@color/text_secondary"
+                                android:contentDescription="@string/briefcase"
                                 android:layout_marginBottom="8dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                                android:text="Completed Jobs"
+                                android:text="@string/completed_jobs"
                         android:textSize="12sp"
                         android:textColor="@color/text_secondary"
                                 android:gravity="center" />
@@ -798,14 +798,14 @@
                                 android:layout_width="32dp"
                                 android:layout_height="32dp"
                                 android:src="@drawable/ic_diploma"
-                                android:tint="@color/text_secondary"
-                                android:contentDescription="Diploma"
+                                app:tint="@color/text_secondary"
+                                android:contentDescription="@string/diploma"
                                 android:layout_marginBottom="8dp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Experience"
+                                android:text="@string/experience"
                         android:textSize="12sp"
                         android:textColor="@color/text_secondary"
                                 android:gravity="center" />
@@ -814,7 +814,7 @@
                                 android:id="@+id/tvExperience"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="8 years"
+                                android:text="@string/_8_years"
                                 android:textSize="24sp"
                                 android:textStyle="bold"
                                 android:textColor="@color/text_primary"
@@ -861,7 +861,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Service Area Coverage"
+                                android:text="@string/service_area_coverage"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:textColor="@color/text_primary" />
@@ -872,7 +872,7 @@
                                 android:layout_height="24dp"
                                 android:src="@drawable/ic_back_arrow"
                                 android:rotation="90"
-                                android:contentDescription="Expand" />
+                                android:contentDescription="@string/expand" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -915,7 +915,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Languages Spoken"
+                                android:text="@string/languages_spoken"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:textColor="@color/text_primary" />
@@ -926,7 +926,7 @@
                                 android:layout_height="24dp"
                                 android:src="@drawable/ic_back_arrow"
                                 android:rotation="90"
-                                android:contentDescription="Expand" />
+                                android:contentDescription="@string/expand" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -953,7 +953,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Credentials &amp; Certifications"
+                    android:text="@string/credentials_amp_certifications"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
@@ -995,15 +995,15 @@
                                     android:layout_height="16dp"
                                     android:layout_gravity="center"
                             android:src="@drawable/ic_check"
-                                    android:tint="@color/text_white"
-                            android:contentDescription="Verified" />
+                                    app:tint="@color/text_white"
+                            android:contentDescription="@string/verified" />
                             </FrameLayout>
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="License Number"
+                            android:text="@string/license_number"
                             android:textSize="14sp"
                             android:textColor="@color/text_secondary"
                             android:layout_marginStart="12dp" />
@@ -1012,9 +1012,9 @@
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:src="@drawable/ic_shield"
-                                android:tint="@color/verified_green"
+                                app:tint="@color/verified_green"
                                 android:alpha="0.6"
-                                android:contentDescription="Shield" />
+                                android:contentDescription="@string/shield" />
                     </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
@@ -1049,15 +1049,15 @@
                                     android:layout_height="16dp"
                                     android:layout_gravity="center"
                             android:src="@drawable/ic_check"
-                                    android:tint="@color/text_white"
-                            android:contentDescription="Verified" />
+                                    app:tint="@color/text_white"
+                            android:contentDescription="@string/verified" />
                             </FrameLayout>
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Insurance"
+                            android:text="@string/insurance"
                             android:textSize="14sp"
                             android:textColor="@color/text_secondary"
                             android:layout_marginStart="12dp" />
@@ -1066,9 +1066,9 @@
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:src="@drawable/ic_shield"
-                                android:tint="@color/verified_green"
+                                app:tint="@color/verified_green"
                                 android:alpha="0.6"
-                                android:contentDescription="Shield" />
+                                android:contentDescription="@string/shield" />
                     </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
@@ -1103,15 +1103,15 @@
                                     android:layout_height="16dp"
                                     android:layout_gravity="center"
                             android:src="@drawable/ic_check"
-                                    android:tint="@color/text_white"
-                            android:contentDescription="Verified" />
+                                    app:tint="@color/text_white"
+                            android:contentDescription="@string/verified" />
                             </FrameLayout>
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Certifications"
+                            android:text="@string/certifications"
                             android:textSize="14sp"
                             android:textColor="@color/text_secondary"
                             android:layout_marginStart="12dp" />
@@ -1120,9 +1120,9 @@
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:src="@drawable/ic_shield"
-                                android:tint="@color/verified_green"
+                                app:tint="@color/verified_green"
                                 android:alpha="0.6"
-                                android:contentDescription="Shield" />
+                                android:contentDescription="@string/shield" />
                     </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
@@ -1157,15 +1157,15 @@
                                     android:layout_height="16dp"
                                     android:layout_gravity="center"
                             android:src="@drawable/ic_check"
-                                    android:tint="@color/text_white"
-                            android:contentDescription="Verified" />
+                                    app:tint="@color/text_white"
+                            android:contentDescription="@string/verified" />
                             </FrameLayout>
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Background Check"
+                            android:text="@string/background_check"
                             android:textSize="14sp"
                             android:textColor="@color/text_secondary"
                             android:layout_marginStart="12dp" />
@@ -1174,9 +1174,9 @@
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:src="@drawable/ic_shield"
-                                android:tint="@color/verified_green"
+                                app:tint="@color/verified_green"
                                 android:alpha="0.6"
-                                android:contentDescription="Shield" />
+                                android:contentDescription="@string/shield" />
                     </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
@@ -1210,15 +1210,15 @@
                                     android:layout_height="16dp"
                                     android:layout_gravity="center"
                             android:src="@drawable/ic_check"
-                                    android:tint="@color/text_white"
-                            android:contentDescription="Verified" />
+                                    app:tint="@color/text_white"
+                            android:contentDescription="@string/verified" />
                             </FrameLayout>
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Business Registration"
+                            android:text="@string/business_registration"
                             android:textSize="14sp"
                             android:textColor="@color/text_secondary"
                             android:layout_marginStart="12dp" />
@@ -1227,9 +1227,9 @@
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:src="@drawable/ic_shield"
-                                android:tint="@color/verified_green"
+                                app:tint="@color/verified_green"
                                 android:alpha="0.6"
-                                android:contentDescription="Shield" />
+                                android:contentDescription="@string/shield" />
                     </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
                 </LinearLayout>
@@ -1247,7 +1247,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Reviews &amp; Ratings"
+                    android:text="@string/reviews_amp_ratings"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
@@ -1289,39 +1289,39 @@
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:src="@drawable/ic_star"
-                                android:tint="@color/rating_gold" />
+                                app:tint="@color/rating_gold" />
 
                             <ImageView
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:src="@drawable/ic_star"
-                                android:tint="@color/rating_gold" />
+                                app:tint="@color/rating_gold" />
 
                             <ImageView
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:src="@drawable/ic_star"
-                                android:tint="@color/rating_gold" />
+                                app:tint="@color/rating_gold" />
 
                             <ImageView
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:src="@drawable/ic_star"
-                                android:tint="@color/rating_gold" />
+                                app:tint="@color/rating_gold" />
 
                             <ImageView
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:src="@drawable/ic_star"
-                                android:tint="@color/rating_gold"
+                                app:tint="@color/rating_gold"
                                 android:alpha="0.5" />
                         </LinearLayout>
 
                         <TextView
-                            android:id="@+id/tvReviewCount"
+                            android:id="@+id/tvReviewsCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="234 reviews"
+                            android:text="@string/_234_reviews"
                             android:textSize="14sp"
                             android:textColor="@color/text_secondary" />
                     </LinearLayout>
@@ -1517,7 +1517,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Sort"
+                        android:text="@string/sort"
                         android:textColor="@color/text_primary"
                         android:backgroundTint="@color/background_gray"
                         android:layout_marginEnd="8dp"
@@ -1528,7 +1528,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Filter"
+                        android:text="@string/filter"
                         android:textColor="@color/text_primary"
                         android:backgroundTint="@color/background_gray"
                         android:layout_marginStart="8dp"
@@ -1557,7 +1557,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Portfolio / Past Work"
+                    android:text="@string/portfolio_past_work"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
@@ -1577,7 +1577,7 @@
                     android:id="@+id/tvPortfolioDescription"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Installed a new water heater for a client. They were very happy with the quick and efficient service."
+                    android:text="@string/installed_a_new_water_heater_for_a_client_they_were_very_happy_with_the_quick_and_efficient_service"
                     android:textSize="14sp"
                     android:textColor="@color/text_secondary"
                     android:layout_marginTop="12dp" />
@@ -1595,7 +1595,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Availability Calendar"
+                    android:text="@string/availability_calendar"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
@@ -1615,14 +1615,14 @@
                         android:layout_height="48dp"
                         android:src="@drawable/ic_back_arrow"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:contentDescription="Previous Month" />
+                        android:contentDescription="@string/previous_month" />
 
                     <TextView
                         android:id="@+id/tvMonthYear"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="July 2024"
+                        android:text="@string/july_2024"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_primary"
@@ -1635,7 +1635,7 @@
                         android:src="@drawable/ic_back_arrow"
                         android:rotation="180"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:contentDescription="Next Month" />
+                        android:contentDescription="@string/next_month" />
                 </LinearLayout>
 
                 <!-- Calendar Grid -->
@@ -1651,7 +1651,7 @@
                     android:id="@+id/tvSelectedDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Selected: December 30, 2025"
+                    android:text="@string/selected_december_30_2025"
                     android:textSize="14sp"
                     android:textColor="@color/text_primary"
                     android:background="@drawable/calendar_selected_bar"
@@ -1688,7 +1688,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="MESSAGE"
+                    android:text="@string/message"
                     android:textColor="@color/text_primary"
                     android:backgroundTint="@color/background_gray"
                     android:layout_marginEnd="8dp"
@@ -1704,7 +1704,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="BOOK NOW"
+                    android:text="@string/book_now"
                     android:textColor="@color/text_white"
                     android:backgroundTint="@color/primary_blue"
                     android:layout_marginStart="8dp"
@@ -1729,6 +1729,7 @@
         android:layout_height="wrap_content"
         android:background="@color/white"
             app:elevation="0dp"
+        android:padding="5dp"
         app:menu="@menu/bottom_navigation"
         app:itemIconTint="@drawable/bottom_nav_selector"
         app:itemTextColor="@drawable/bottom_nav_selector" />

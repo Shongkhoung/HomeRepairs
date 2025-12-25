@@ -12,8 +12,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
-        android:text="@string/property"
+        android:text="@string/property_details"
         android:textSize="20sp"
+        android:textColor="@color/purple_200"
         android:textStyle="bold"
         android:gravity="center"
         app:layout_constraintTop_toTopOf="parent"
@@ -52,7 +53,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/type_property"
+                android:text="@string/select_your_property_type"
                 android:textColor="@color/black"
                 android:textSize="18sp"
                 android:textStyle="bold"
@@ -105,18 +106,17 @@
                 android:layout_height="50dp"
                 android:background="@drawable/rounded_edittext"
                 android:gravity="center"
-                android:hint="@string/commercial"
+                android:hint="@string/commercial_property"
                 android:textColorHint="@color/black"
                 android:layout_marginBottom="24dp"/>
 
-
-            <!-- Google Map -->
-<!--            <fragment-->
-<!--                android:id="@+id/map"-->
-<!--                android:name="com.google.android.gms.maps.SupportMapFragment"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="200dp"-->
-<!--                android:layout_marginBottom="24dp"/>-->
+            <!-- Google Map (optional) -->
+            <!--            <fragment-->
+            <!--                android:id="@+id/map"-->
+            <!--                android:name="com.google.android.gms.maps.SupportMapFragment"-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="200dp"-->
+            <!--                android:layout_marginBottom="24dp"/>-->
 
             <!-- Buttons -->
             <LinearLayout
@@ -131,7 +131,7 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="48dp"
-                    android:text="@string/Continue"
+                    android:text="@string/continues"
                     android:textColor="@color/white"
                     android:background="@drawable/rounded_corner"
                     android:textStyle="bold"
@@ -142,15 +142,14 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="48dp"
-                    android:text="@string/Skip"
+                    android:text="@string/skip"
                     android:textColor="@color/black"
                     android:gravity="center"
-                    android:layout_marginBottom="10sp"
+                    android:layout_marginBottom="10dp"
                     android:background="@drawable/rounded_edittext"/>
             </LinearLayout>
 
         </LinearLayout>
-
 
     </ScrollView>
 

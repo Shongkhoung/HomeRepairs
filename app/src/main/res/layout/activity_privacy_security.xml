@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -25,7 +26,7 @@
         android:id="@+id/tvSubtitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/learn_how_homerepair_protects_your_data"
+        android:text="@string/learn_how_homerepair_protects_your_data_and_ensures_secure_transactions"
         android:textSize="14sp"
         android:textColor="#777777"
         android:gravity="center"
@@ -58,13 +59,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 app:cardCornerRadius="14dp"
-                android:layout_margin="10sp"
+                android:layout_margin="10dp"
                 app:cardElevation="6dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10sp"
                     android:orientation="horizontal"
                     android:padding="16dp">
 
@@ -72,7 +72,7 @@
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:src="@drawable/ic_privacy"
-                        android:contentDescription="Privacy Icon"
+                        android:contentDescription="@string/privacy_icon"
                         app:tint="@color/primary" />
 
                     <LinearLayout
@@ -94,7 +94,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/privacy_information"
+                            android:text="@string/your_personal_information_is_always_protected_we_never_share_your_data_with_third_parties_without_consent"
                             android:textSize="14sp"
                             android:textColor="#555555"/>
                     </LinearLayout>
@@ -105,7 +105,7 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10sp"
+                android:layout_margin="10dp"
                 android:layout_marginBottom="16dp"
                 app:cardCornerRadius="14dp"
                 app:cardElevation="6dp">
@@ -120,7 +120,7 @@
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:src="@drawable/ic_security"
-                        android:contentDescription="Security Icon"
+                        android:contentDescription="@string/security_icon"
                         app:tint="@color/primary"/>
 
                     <LinearLayout
@@ -142,7 +142,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/security_information"
+                            android:text="@string/all_transactions_and_communications_are_encrypted_to_ensure_your_security_at_all_times"
                             android:textSize="14sp"
                             android:textColor="#555555"/>
                     </LinearLayout>
@@ -154,7 +154,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:layout_margin="10sp"
+                android:layout_margin="10dp"
                 app:cardCornerRadius="14dp"
                 app:cardElevation="6dp">
 
@@ -168,7 +168,7 @@
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:src="@drawable/ic_payment"
-                        android:contentDescription="Payment Icon"
+                        android:contentDescription="@string/payment_icon"
                         app:tint="@color/primary"/>
 
                     <LinearLayout
@@ -190,7 +190,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/Payment_protection"
+                            android:text="@string/all_payments_are_fully_protected_you_can_pay_safely_with_confidence_through_our_secure_platform"
                             android:textSize="14sp"
                             android:textColor="#555555"/>
                     </LinearLayout>
@@ -202,12 +202,12 @@
                 android:id="@+id/btnUnderstand"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:text="@string/understand"
-                android:layout_marginTop="20sp"
+                android:text="@string/i_understand"
+                android:layout_marginTop="20dp"
                 android:textStyle="bold"
-                android:textSize="18dp"
+                android:textSize="16sp"
                 android:textColor="@color/white"
-                android:backgroundTint="@color/primary"
+                android:background="@drawable/rounded_edittext"
                 app:cornerRadius="16dp"/>
         </LinearLayout>
     </ScrollView>

@@ -38,12 +38,14 @@
 
             <ImageView
                 android:id="@+id/ivProviderPhoto"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="20sp"
+                android:layout_marginLeft="20sp"
                 android:contentDescription="@string/provider_photo"
-                android:src="@drawable/appliance_repair"
+                android:src="@drawable/ic_hammer"
                 android:scaleType="centerCrop"
-                android:background="@color/peach_background" />
+                />
         </androidx.cardview.widget.CardView>
 
         <!-- Provider Info -->
@@ -66,7 +68,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Expert Plumber"
+                    android:text="@string/expert_plumber"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
@@ -88,14 +90,14 @@
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:src="@drawable/verify"
-                        android:tint="@color/verified_green"
-                        android:contentDescription="Verified Icon" />
+                        app:tint="@color/verified_green"
+                        android:contentDescription="@string/verified_icon" />
 
                     <TextView
                         android:id="@+id/tvVerified"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Verified"
+                        android:text="@string/verified"
                         android:textSize="9sp"
                         android:textColor="@color/verified_green"
                         android:textStyle="bold"
@@ -135,7 +137,7 @@
                     android:id="@+id/tvReviewCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="(123 reviews)"
+                    android:text="@string/_123_reviews"
                     android:textSize="12sp"
                     android:textColor="@color/gray_text"
                     android:maxLines="1" />
@@ -153,7 +155,7 @@
                     android:id="@+id/tvServiceType"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Plumbing"
+                    android:text="@string/plumbing"
                     android:textSize="13sp"
                     android:textColor="@color/gray_text"
                     android:layout_marginEnd="10dp" />
@@ -169,7 +171,7 @@
                     android:id="@+id/tvAvailability"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Available Now"
+                    android:text="@string/available_now"
                     android:textSize="12sp"
                     android:textColor="#10B981"
                     android:textStyle="bold"

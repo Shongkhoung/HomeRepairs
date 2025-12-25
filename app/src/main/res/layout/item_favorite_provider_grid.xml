@@ -28,7 +28,7 @@
             android:src="@drawable/ic_check_circle"
             android:background="@drawable/circle_white"
             android:padding="4dp"
-            android:contentDescription="Select"
+            android:contentDescription="@string/select"
             android:visibility="gone"
             android:layout_margin="8dp" />
 
@@ -42,7 +42,7 @@
             android:src="@drawable/ic_shield"
             android:background="@drawable/circle_white"
             android:padding="3dp"
-            android:contentDescription="Verified"
+            android:contentDescription="@string/verified"
             android:visibility="gone"
             android:layout_margin="4dp" />
 
@@ -68,7 +68,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:src="@drawable/ic_profile"
-                    android:contentDescription="Provider Icon"
+                    android:contentDescription="@string/provider_icon"
                     android:scaleType="centerCrop"
                     android:adjustViewBounds="false" />
 
@@ -78,7 +78,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="P"
+                    android:text="@string/p"
                     android:textSize="48sp"
                     android:textStyle="bold"
                     android:textColor="#FFFFFF"
@@ -92,8 +92,8 @@
                     android:layout_height="24dp"
                     android:layout_gravity="top|end"
                     android:src="@drawable/heart_filled"
-                    android:tint="#FF4081"
-                    android:contentDescription="Favorite"
+                    app:tint="#FF4081"
+                    android:contentDescription="@string/favorites"
                     android:layout_margin="8dp"
                     android:background="@drawable/circle_white"
                     android:padding="4dp" />
@@ -106,7 +106,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/flProfileIcon"
-            android:text="Pulu"
+            android:text="@string/pulu"
             android:textSize="15sp"
             android:textStyle="bold"
             android:textColor="@color/text_primary"
@@ -120,7 +120,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/tvProviderName"
-            android:text="Handyman"
+            android:text="@string/handyman"
             android:textSize="11sp"
             android:textColor="@color/text_secondary"
             android:layout_marginTop="3dp"
@@ -144,8 +144,8 @@
                 android:layout_width="12dp"
                 android:layout_height="12dp"
                 android:src="@drawable/ic_star"
-                android:tint="#F59E0B"
-                android:contentDescription="Star" />
+                app:tint="#F59E0B"
+                android:contentDescription="@string/star" />
 
             <TextView
                 android:id="@+id/tvRating"
@@ -188,7 +188,7 @@
                 android:id="@+id/tvAvailability"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Available Now"
+                android:text="@string/available_now"
                 android:textSize="10sp"
                 android:textStyle="bold"
                 android:textColor="#10B981" />
@@ -221,7 +221,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginEnd="6dp"
-                android:text="MESSAGE"
+                android:text="@string/message"
                 android:textSize="10sp"
                 android:textStyle="bold"
                 android:textColor="@color/gray_700"
@@ -244,7 +244,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="BOOK"
+                android:text="@string/book"
                 android:textSize="10sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_white"

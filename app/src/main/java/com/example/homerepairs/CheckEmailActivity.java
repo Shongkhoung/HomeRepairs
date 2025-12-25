@@ -25,7 +25,7 @@ public class CheckEmailActivity extends AppCompatActivity {
     private TextView tvBackToSignIn;
     private ProgressBar progressBar;
     private ImageButton btnBack;
-    private ImageView ivCheckIcon;
+    private TextView ivCheckIcon;
 
     private FirebaseAuth auth;
     private String emailAddress;
@@ -82,7 +82,7 @@ public class CheckEmailActivity extends AppCompatActivity {
     private void initializeViews() {
         tvEmailAddress = findViewById(R.id.tvEmailAddress);
         btnEnterResetCode = findViewById(R.id.btnEnterResetCode);
-        tvResendEmail = findViewById(R.id.tvResendEmail);
+//        tvResendEmail = findViewById(R.id.tvResendEmail);
         tvBackToSignIn = findViewById(R.id.tvBackToSignIn);
         progressBar = findViewById(R.id.progressBar);
         btnBack = findViewById(R.id.btnBack);
@@ -199,16 +199,12 @@ public class CheckEmailActivity extends AppCompatActivity {
     }
 
     private void navigateToLogin() {
-        Intent intent = new Intent(this, LoginActivity.class);
+        Intent intent = new Intent(this, SignInActivity.class);
         intent.putExtra("mode", "sign_in"); // Navigate to sign-in mode (Welcome Back)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
     }
 
-    @Override
-    public void onBackPressed() {
-        navigateToLogin();
-    }
 }
 

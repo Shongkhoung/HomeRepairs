@@ -13,7 +13,7 @@
         android:id="@+id/tvSenderName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Provider Name"
+        android:text="@string/provider_name"
         android:textSize="12sp"
         android:textColor="@color/text_secondary"
         android:textStyle="bold"
@@ -31,7 +31,7 @@
             android:id="@+id/tvMessageText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Received message text here"
+            android:text="@string/received_message_text_here"
             android:textSize="14sp"
             android:textColor="@color/text_primary" />
 

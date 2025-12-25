@@ -73,7 +73,7 @@ public class MessagesActivity extends AppCompatActivity {
         currentUserId = getCurrentUserId();
         if (currentUserId == null) {
             // User not authenticated, redirect to login in sign in mode
-            Intent intent = new Intent(this, LoginActivity.class);
+            Intent intent = new Intent(this, SignInActivity.class);
             intent.putExtra("mode", "sign_in");
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);

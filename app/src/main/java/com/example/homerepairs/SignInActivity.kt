@@ -27,103 +27,78 @@ class SignInActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
 
         setupUI()
-        checkCurrentUser()
     }
 
-    /** Set up UI listeners */
     private fun setupUI() {
-        // Skip button — navigate to Home and finish sign-in screen
+
+        // Skip → go to MainActivity directly
         binding.btnSkip.setOnClickListener {
-            startActivity(Intent(this, HomeActivity::class.java))
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
             finish()
         }
 
-        // Forgot password — navigate to ForgotActivity (don't finish so user can come back)
+        // Go to Sign Up screen
+        binding.signup.setOnClickListener {
+            val intent = Intent(this, SignUpActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
+        // Forgot password
         binding.forgotPW.setOnClickListener {
             startActivity(Intent(this, ForgotActivity::class.java))
         }
 
-        // Remember checkbox
-        binding.rememberCheck.setOnCheckedChangeListener { _, isChecked ->
-            Toast.makeText(this, if (isChecked) "Checked!" else "Unchecked!", Toast.LENGTH_SHORT).show()
-        }
-
-        // Navigate to SignUpActivity
-        binding.signup.setOnClickListener {
-            startActivity(Intent(this, SignUpActivity::class.java))
-            finish()
-        }
-
-        // Password eye toggle: detect taps on the drawable end (eye icon)
+        // Password visibility toggle
         binding.password.setOnTouchListener { v, event ->
             if (event.action == MotionEvent.ACTION_UP) {
-                val drawables = binding.password.compoundDrawablesRelative
-                // index 2 = drawableEnd when using compoundDrawablesRelative
-                val drawableEnd = drawables.getOrNull(2)
-                if (drawableEnd != null) {
-                    // compute touch bounds (x is relative to view)
-                    val touchX = event.x.toInt()
-                    val viewWidth = binding.password.width
-                    val paddingEnd = binding.password.paddingEnd
+                val drawableEnd = binding.password.compoundDrawablesRelative[2]
+                drawableEnd?.let {
+                    val touchX = event.x
+                    val drawableWidth = it.intrinsicWidth
+                    val rightEdge = binding.password.width - binding.password.paddingEnd
 
-                    // drawable width: prefer bounds, fallback to intrinsicWidth
-                    val drawableWidth = drawableEnd.bounds.width().takeIf { it > 0 }
-                        ?: drawableEnd.intrinsicWidth
-
-                    val drawableLeftEdge = viewWidth - paddingEnd - drawableWidth
-
-                    if (touchX >= drawableLeftEdge) {
+                    if (touchX >= rightEdge - drawableWidth) {
                         togglePasswordVisibility()
-                        // consume the event so keyboard doesn't also react
                         v.performClick()
                         return@setOnTouchListener true
                     }
                 }
             }
-            // don't consume other touch events
             false
         }
 
         // Sign in button
-        binding.signinBtn.setOnClickListener { signInUser() }
+        binding.signinBtn.setOnClickListener {
+            signInUser()
+        }
     }
 
-    /** Toggle password visibility using proper TransformationMethod */
     private fun togglePasswordVisibility() {
         isPasswordVisible = !isPasswordVisible
-
-        if (isPasswordVisible) {
-            // show text
-            binding.password.transformationMethod = HideReturnsTransformationMethod.getInstance()
-        } else {
-            // hide text
-            binding.password.transformationMethod = PasswordTransformationMethod.getInstance()
-        }
-
-        // Preserve cursor at end
+        binding.password.transformationMethod =
+            if (isPasswordVisible) HideReturnsTransformationMethod.getInstance()
+            else PasswordTransformationMethod.getInstance()
         binding.password.setSelection(binding.password.text?.length ?: 0)
     }
 
-    /** Sign in using Firebase Auth */
     private fun signInUser() {
         val email = binding.email.text.toString().trim()
         val password = binding.password.text.toString().trim()
 
         if (email.isEmpty()) {
-            binding.email.error = "Please enter email"
-            binding.email.requestFocus()
+            binding.email.error = "Enter email"
             return
         }
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            binding.email.error = "Invalid email format"
-            binding.email.requestFocus()
+            binding.email.error = "Invalid email"
             return
         }
 
         if (password.isEmpty()) {
-            binding.password.error = "Please enter password"
-            binding.password.requestFocus()
+            binding.password.error = "Enter password"
             return
         }
 
@@ -131,33 +106,31 @@ class SignInActivity : AppCompatActivity() {
         binding.signinBtn.isEnabled = false
 
         auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { task ->
+            .addOnSuccessListener {
                 binding.progressBar.visibility = View.GONE
                 binding.signinBtn.isEnabled = true
-
-                if (task.isSuccessful) {
-                    navigateToHome(auth.currentUser)
-                } else {
-                    Toast.makeText(
-                        this,
-                        "Authentication failed: ${task.exception?.localizedMessage ?: "Unknown error"}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
+                navigateToHome(auth.currentUser)
+            }
+            .addOnFailureListener {
+                binding.progressBar.visibility = View.GONE
+                binding.signinBtn.isEnabled = true
+                Toast.makeText(this, it.localizedMessage, Toast.LENGTH_LONG).show()
             }
     }
 
-    /** Check if a user is already signed in */
-    private fun checkCurrentUser() {
-        auth.currentUser?.let { navigateToHome(it) }
+    private fun navigateToHome(user: FirebaseUser?) {
+        if (user == null) return
+        Toast.makeText(this, "Welcome ${user.email}", Toast.LENGTH_SHORT).show()
+        startMainActivity()
     }
 
-    /** Navigate to HomeActivity */
-    private fun navigateToHome(user: FirebaseUser?) {
-        user?.let {
-            Toast.makeText(this, "Welcome ${it.email}", Toast.LENGTH_SHORT).show()
-            startActivity(Intent(this, PrivacyAndSecurityActivity::class.java))
-            finish()
+    private fun startMainActivity(skipLogin: Boolean = false) {
+        val intent = Intent(this, MainActivity::class.java)
+        if (skipLogin) {
+            intent.putExtra("skip_login", true)
         }
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
     }
 }

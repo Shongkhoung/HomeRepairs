@@ -45,7 +45,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="My Bookings"
+                            android:text="@string/my_bookings"
                             android:textSize="28sp"
                             android:textStyle="bold"
                             android:textColor="@color/text_primary"
@@ -55,7 +55,7 @@
                             android:id="@+id/tvBookingCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="5 total bookings"
+                            android:text="@string/_5_total_bookings"
                             android:textSize="14sp"
                             android:textColor="@color/text_secondary"
                             android:layout_marginTop="4dp" />
@@ -69,7 +69,7 @@
                         android:src="@drawable/ic_filter"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:contentDescription="Filter"
-                        android:tint="@color/text_secondary"
+                        app:tint="@color/text_secondary"
                         android:padding="10dp" />
                 </LinearLayout>
             </LinearLayout>
@@ -97,13 +97,13 @@
                         android:id="@+id/chipAll"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="All (5)"
+                        android:text="@string/all_5"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:clickable="true"
                         android:checkable="true"
                         android:checked="true"
-                        app:chipBackgroundColor="@color/deep_royal_blue"
+                        app:chipBackgroundColor="@color/button_blue"
                         app:chipStrokeWidth="0dp"
                         app:chipCornerRadius="20dp"
                         app:chipMinHeight="36dp"
@@ -117,7 +117,7 @@
                         android:id="@+id/chipActive"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Active (1)"
+                        android:text="@string/active_1"
                         android:textSize="14sp"
                         android:clickable="true"
                         android:checkable="true"
@@ -136,7 +136,7 @@
                         android:id="@+id/chipScheduled"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Scheduled (1)"
+                        android:text="@string/scheduled_1"
                         android:textSize="14sp"
                         android:clickable="true"
                         android:checkable="true"
@@ -155,7 +155,7 @@
                         android:id="@+id/chipCompleted"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Completed (3)"
+                        android:text="@string/completed_3"
                         android:textSize="14sp"
                         android:clickable="true"
                         android:checkable="true"
@@ -184,7 +184,7 @@
                 android:id="@+id/tvEmptyState"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="No bookings yet"
+                android:text="@string/no_bookings_yet"
                 android:textSize="16sp"
                 android:textColor="@color/text_secondary"
                 android:gravity="center"
@@ -193,6 +193,7 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
@@ -200,6 +201,7 @@
         android:layout_gravity="bottom"
         android:background="@drawable/bottom_nav_background"
         app:elevation="0dp"
+        android:padding="5dp"
         app:menu="@menu/bottom_navigation"
         app:itemIconTint="@drawable/bottom_nav_selector"
         app:itemTextColor="@drawable/bottom_nav_selector"
@@ -238,7 +240,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Loading..."
+                android:text="@string/loading"
                 android:textSize="16sp"
                 android:textColor="@color/text_white"
                 android:textStyle="bold" />

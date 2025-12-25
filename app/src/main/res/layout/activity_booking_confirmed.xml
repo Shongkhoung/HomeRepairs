@@ -22,6 +22,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
+                android:layout_marginTop="40sp"
                 android:paddingHorizontal="16dp"
                 android:paddingTop="16dp"
                 android:paddingBottom="16dp">
@@ -30,16 +31,16 @@
                     android:id="@+id/btnBack"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:src="@drawable/ic_back_arrow"
+                    android:src="@drawable/ic_backbutton"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="Back"
-                    android:tint="@color/text_primary" />
+                    android:contentDescription="@string/back"
+                    app:tint="@color/text_primary"  />
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Booking Confirmed"
+                    android:text="@string/Booking_confirmed"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
@@ -95,19 +96,14 @@
                     android:id="@+id/tvBookingConfirmed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Booking Confirmed!"
+                    android:text="@string/booking_confirmed"
                     android:textSize="24sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
                     android:layout_marginBottom="8dp" />
 
-                <TextView
-                    android:id="@+id/tvBookingReference"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Booking reference: #1234567890"
-                    android:textSize="14sp"
-                    android:textColor="@color/text_secondary" />
+
+
             </LinearLayout>
 
             <!-- Service Details Card -->
@@ -143,7 +139,7 @@
                                 android:id="@+id/tvServiceCategory"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Plumbing"
+                                android:text="@string/plumbing"
                                 android:textSize="12sp"
                                 android:textColor="@color/text_secondary"
                                 android:layout_marginBottom="4dp" />
@@ -152,7 +148,7 @@
                                 android:id="@+id/tvServiceName"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Leaky Faucet Repair"
+                                android:text="@string/leaky_faucet_repair"
                                 android:textSize="18sp"
                                 android:textStyle="bold"
                                 android:textColor="@color/text_primary"
@@ -162,7 +158,7 @@
                                 android:id="@+id/tvServiceDateTime"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Tomorrow, 10:00 AM - 11:00 AM"
+                                android:text="@string/tomorrow_10_00_am_11_00_am"
                                 android:textSize="14sp"
                                 android:textColor="@color/text_secondary" />
                         </LinearLayout>
@@ -172,7 +168,7 @@
                             android:layout_width="80dp"
                             android:layout_height="80dp"
                             android:src="@drawable/services_plumber_icon"
-                            android:contentDescription="Service Image"
+                            android:contentDescription="@string/service_image"
                             android:scaleType="centerCrop"
                             android:layout_marginStart="16dp" />
                     </LinearLayout>
@@ -190,8 +186,9 @@
                             android:layout_width="0dp"
                             android:layout_height="48dp"
                             android:layout_weight="1"
+                            android:textSize="16sp"
                             android:layout_marginEnd="8dp"
-                            android:text="Call"
+                            android:text="@string/call"
                             android:textColor="@color/text_white"
                             android:backgroundTint="@color/primary_blue"
                             android:minHeight="48dp"
@@ -201,9 +198,10 @@
                             android:id="@+id/btnMessage"
                             android:layout_width="0dp"
                             android:layout_height="48dp"
+                            android:textSize="16sp"
                             android:layout_weight="1"
                             android:layout_marginStart="8dp"
-                            android:text="Message"
+                            android:text="@string/message"
                             android:textColor="@color/text_primary"
                             android:backgroundTint="@color/background_gray"
                             android:minHeight="48dp"
@@ -221,54 +219,58 @@
                 android:paddingTop="8dp">
 
                 <!-- Add to Calendar Button -->
-                <Button
+                <TextView
                     android:id="@+id/btnAddToCalendar"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
+                    android:textSize="16sp"
                     android:layout_marginBottom="12dp"
-                    android:text="Add to calendar"
+                    android:text="@string/add_to_calendar"
                     android:textColor="@color/text_primary"
-                    android:backgroundTint="@color/background_gray"
+                    android:background="@drawable/rounded_edittext"
                     android:minHeight="48dp"
-                    style="@style/Widget.Material3.Button.OutlinedButton" />
+                    android:gravity="center"
+                    />
 
                 <!-- View Booking Details Button -->
                 <Button
                     android:id="@+id/btnViewBookingDetails"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
+                    android:textSize="16sp"
                     android:layout_marginBottom="12dp"
-                    android:text="View Booking Details"
+                    android:text="@string/view_booking_details"
                     android:textColor="@color/text_white"
-                    android:backgroundTint="@color/primary_blue"
+                    android:background="@drawable/rounded_edittext"
                     android:minHeight="48dp"
                     style="@style/Widget.Material3.Button" />
 
                 <!-- Book Another Service Button -->
-                <Button
+                <TextView
                     android:id="@+id/btnBookAnotherService"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:layout_marginBottom="12dp"
-                    android:text="Book Another Service"
+                    android:text="@string/book_another_service"
                     android:textColor="@color/text_primary"
-                    android:backgroundTint="@color/background_gray"
+                    android:gravity="center"
+                    android:background="@drawable/rounded_edittext"
                     android:minHeight="48dp"
-                    style="@style/Widget.Material3.Button.OutlinedButton" />
+                     />
 
                 <!-- Return to Home Link -->
                 <TextView
                     android:id="@+id/tvReturnToHome"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Return to Home"
+                    android:text="@string/return_to_home"
                     android:textSize="16sp"
                     android:textColor="@color/primary_blue"
                     android:gravity="center"
                     android:paddingVertical="16dp"
                     android:clickable="true"
                     android:focusable="true"
-                    android:background="?attr/selectableItemBackground" />
+                    android:background="@drawable/rounded_edittext" />
             </LinearLayout>
 
         </LinearLayout>
@@ -282,6 +284,7 @@
         android:layout_gravity="bottom"
         android:background="@color/white"
         app:elevation="8dp"
+        android:padding="5dp"
         app:menu="@menu/bottom_navigation"
         app:itemIconTint="@drawable/bottom_nav_selector"
         app:itemTextColor="@drawable/bottom_nav_selector" />

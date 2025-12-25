@@ -58,11 +58,48 @@ public class UserProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
 
+        View btnPrivacy = findViewById(R.id.btnPrivacy);
+
+        btnPrivacy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate to PrivacyActivity
+                Intent intent = new Intent(UserProfileActivity.this, PrivacyAndSecurityActivity.class);
+                startActivity(intent);
+                ;
+            }
+        });
+
+        View btnTerms = findViewById(R.id.btnTerms);
+
+        btnTerms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate to PrivacyActivity
+                Intent intent = new Intent(UserProfileActivity.this, TermsConditionsActivity.class);
+                startActivity(intent);
+                ;
+            }
+        });
+
+        View btnHelpcenter = findViewById(R.id.btnHelpCenter);
+
+        btnHelpcenter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate to PrivacyActivity
+                Intent intent = new Intent(UserProfileActivity.this, HelpCenterActivity.class);
+                startActivity(intent);
+                ;
+            }
+        });
+
+
         // Check if user is authenticated
         String userId = AuthHelper.getCurrentUserId(this);
         if (userId == null) {
             // User not authenticated, redirect to login
-            Intent intent = new Intent(this, LoginActivity.class);
+            Intent intent = new Intent(this, SignInActivity.class);
             intent.putExtra("mode", "sign_in");
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
@@ -153,18 +190,9 @@ public class UserProfileActivity extends AppCompatActivity {
             android.widget.Toast.makeText(this, "App Settings - Coming soon",
                 android.widget.Toast.LENGTH_SHORT).show();
         });
-        findViewById(R.id.btnPrivacy).setOnClickListener(v -> {
-            android.widget.Toast.makeText(this, "Privacy & Security - Coming soon",
-                android.widget.Toast.LENGTH_SHORT).show();
-        });
-        findViewById(R.id.btnHelpCenter).setOnClickListener(v -> {
-            android.widget.Toast.makeText(this, "Help Center - Coming soon",
-                android.widget.Toast.LENGTH_SHORT).show();
-        });
-        findViewById(R.id.btnTerms).setOnClickListener(v -> {
-            android.widget.Toast.makeText(this, "Terms & Conditions - Coming soon",
-                android.widget.Toast.LENGTH_SHORT).show();
-        });
+
+
+       
         findViewById(R.id.btnInviteFriends).setOnClickListener(v -> {
             android.widget.Toast.makeText(this, "Invite Friends - Coming soon",
                 android.widget.Toast.LENGTH_SHORT).show();
@@ -314,7 +342,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 AuthHelper.signOut();
 
                 // Navigate to login screen in sign in mode (not create account)
-                Intent intent = new Intent(this, LoginActivity.class);
+                Intent intent = new Intent(this, SignInActivity.class);
                 intent.putExtra("mode", "sign_in");
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);

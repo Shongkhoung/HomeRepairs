@@ -41,7 +41,6 @@
             android:textStyle="bold"/>
     </androidx.appcompat.widget.Toolbar>
 
-
     <!-- Scrollable content -->
     <ScrollView
         android:id="@+id/scrollView"
@@ -59,8 +58,7 @@
             android:paddingBottom="20dp"
             android:layout_marginTop="10dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-        >
+            android:orientation="vertical">
 
             <!-- Introduction -->
             <androidx.cardview.widget.CardView
@@ -80,7 +78,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/welcome"
+                        android:text="@string/welcome_to_our_app_please_read_these_terms_carefully_before_using_our_services"
                         android:textSize="14sp"
                         android:textColor="#555555"/>
                 </LinearLayout>
@@ -91,8 +89,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="14dp"
                 android:layout_margin="5dp"
+                app:cardCornerRadius="14dp"
                 app:cardElevation="6dp">
 
                 <LinearLayout
@@ -113,7 +111,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/User_obligations"
+                        android:text="@string/users_must_provide_accurate_information_and_use_the_app_responsibly_at_all_times"
                         android:textSize="14sp"
                         android:textColor="#555555"/>
                 </LinearLayout>
@@ -146,7 +144,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/App_usage"
+                        android:text="@string/the_app_is_provided_for_personal_use_only_unauthorized_commercial_use_is_prohibited"
                         android:textSize="14sp"
                         android:textColor="#555555"/>
                 </LinearLayout>
@@ -179,7 +177,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/Limitation_of_liability"
+                        android:text="@string/we_are_not_liable_for_any_indirect_or_incidental_damages_arising_from_the_use_of_the_app"
                         android:textSize="14sp"
                         android:textColor="#555555"/>
                 </LinearLayout>
@@ -194,7 +192,7 @@
                 android:text="@string/accept"
                 android:layout_marginTop="20sp"
                 android:gravity="center"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/white"
                 android:background="@drawable/rounded_corner"

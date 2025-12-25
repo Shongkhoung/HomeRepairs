@@ -37,6 +37,8 @@ android {
         jvmTarget = "11"
     }
     buildFeatures {
+        viewBinding = true
+        dataBinding = true
         compose = true
     }
 }
@@ -53,6 +55,15 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.ui:ui-text-google-fonts")
+
+    // Material Components (Chip, BottomNavigationView)
+    implementation ("com.google.android.material:material:1.12.0")
+
+    // RecyclerView
+    implementation ("androidx.recyclerview:recyclerview:1.3.2")
+
+    // Lottie Animation
+    implementation ("com.airbnb.android:lottie:6.4.0")
     
     // Java XML-based dependencies
     implementation("androidx.appcompat:appcompat:1.6.1")

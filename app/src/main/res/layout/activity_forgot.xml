@@ -24,7 +24,7 @@
             android:layout_height="40dp"
             android:layout_gravity="start|center_vertical"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/back"
+            android:contentDescription="back"
             android:src="@drawable/ic_backbutton" />
 
         <!-- Title -->
@@ -33,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/forgot_pw"
+            android:text="@string/forgot_password"
             android:textColor="@android:color/white"
             android:textSize="20sp"
             android:textStyle="bold"/>
@@ -57,7 +57,7 @@
                 android:id="@+id/tvSubHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/enter_your_registered_phone_number_to_receive_a_verification_code"
+                android:text="@string/enter_your_registered_email_address_to_receive_a_verification_code"
                 android:textSize="16sp"
                 android:textColor="@color/black"
                 android:gravity="center"
@@ -68,9 +68,10 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="6dp"
                 android:hint="@string/email_address"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_marginBottom="24dp">
+                android:layout_marginBottom="28dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etEmailOrPhone"
@@ -87,8 +88,9 @@
                 android:id="@+id/btnReset"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:text="@string/send_otp"
+                android:text="@string/sent_otp"
                 android:textAllCaps="false"
+                android:layout_marginTop="10px"
                 android:backgroundTint="?attr/colorPrimary"
                 android:textColor="@android:color/white"
                 app:cornerRadius="12dp"

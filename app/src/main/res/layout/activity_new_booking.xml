@@ -24,7 +24,7 @@
                 app:cardElevation="3dp"
                 app:cardBackgroundColor="@color/white"
                 app:strokeWidth="0dp">
-                
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -44,16 +44,16 @@
                         android:id="@+id/btnBack"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
-                        android:src="@drawable/ic_back_arrow"
+                        android:src="@drawable/ic_backbutton"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:contentDescription="Back"
-                        android:tint="@color/text_primary" />
+                        android:contentDescription="@string/back"
+                        app:tint="@color/text_primary" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="New Booking"
+                        android:text="@string/new_booking"
                         android:textSize="20sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_primary"
@@ -110,7 +110,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Describe your problem"
+                    android:text="@string/describe_your_problem"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
@@ -120,7 +120,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Service"
+                    android:text="@string/services"
                     android:textSize="14sp"
                     android:textColor="@color/text_secondary"
                     android:layout_marginBottom="8dp" />
@@ -148,8 +148,8 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/services_plumber_icon"
-                            android:tint="@color/text_primary"
-                            android:contentDescription="Service Icon" />
+                            app:tint="@color/text_primary"
+                            android:contentDescription="@string/service_icon" />
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -162,7 +162,7 @@
                                 android:id="@+id/tvServiceName"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Leaky faucet"
+                                android:text="@string/leaky_faucet"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:textColor="@color/text_primary" />
@@ -171,7 +171,7 @@
                                 android:id="@+id/tvServiceCategory"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Plumbing"
+                                android:text="@string/plumbing"
                                 android:textSize="14sp"
                                 android:textColor="@color/text_secondary"
                                 android:layout_marginTop="2dp" />
@@ -183,7 +183,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Issue description"
+                    android:text="@string/issue_description"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
@@ -194,7 +194,7 @@
                     android:id="@+id/etIssueDescription"
                     android:layout_width="match_parent"
                     android:layout_height="140dp"
-                    android:hint="Describe the issue in detail..."
+                    android:hint="@string/describe_the_issue_in_detail"
                     android:textSize="14sp"
                     android:textColor="@color/text_primary"
                     android:textColorHint="@color/text_secondary"
@@ -218,7 +218,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Photos"
+                    android:text="@string/photos"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
@@ -227,7 +227,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Add photos to help the professional understand the issue better"
+                    android:text="@string/add_photos_to_help_the_professional_understand_the_issue_better"
                     android:textSize="14sp"
                     android:textColor="@color/text_secondary"
                     android:layout_marginBottom="16dp" />
@@ -261,7 +261,7 @@
                                 android:layout_height="match_parent"
                                 android:src="@drawable/ic_profile"
                                 android:scaleType="centerCrop"
-                                android:contentDescription="Photo 1"
+                                android:contentDescription="@string/photo_1"
                                 android:visibility="gone" />
 
                             <ImageView
@@ -270,8 +270,8 @@
                                 android:layout_height="32dp"
                                 android:layout_gravity="center"
                                 android:src="@drawable/ic_add"
-                                android:tint="@color/text_secondary"
-                                android:contentDescription="Add Photo"
+                                app:tint="@color/text_secondary"
+                                android:contentDescription="@string/add_photo"
                                 android:visibility="visible" />
                         </FrameLayout>
                     </com.google.android.material.card.MaterialCardView>
@@ -298,7 +298,7 @@
                                 android:layout_height="match_parent"
                                 android:src="@drawable/ic_profile"
                                 android:scaleType="centerCrop"
-                                android:contentDescription="Photo 2"
+                                android:contentDescription="@string/photo_2"
                                 android:visibility="gone" />
 
                             <ImageView
@@ -307,8 +307,8 @@
                                 android:layout_height="32dp"
                                 android:layout_gravity="center"
                                 android:src="@drawable/ic_add"
-                                android:tint="@color/text_secondary"
-                                android:contentDescription="Add Photo"
+                                app:tint="@color/text_secondary"
+                                android:contentDescription="@string/add_photo"
                                 android:visibility="visible" />
                         </FrameLayout>
                     </com.google.android.material.card.MaterialCardView>
@@ -335,7 +335,7 @@
                                 android:layout_height="match_parent"
                                 android:src="@drawable/ic_profile"
                                 android:scaleType="centerCrop"
-                                android:contentDescription="Photo 3"
+                                android:contentDescription="@string/photo_3"
                                 android:visibility="gone" />
 
                             <ImageView
@@ -344,8 +344,8 @@
                                 android:layout_height="32dp"
                                 android:layout_gravity="center"
                                 android:src="@drawable/ic_add"
-                                android:tint="@color/text_secondary"
-                                android:contentDescription="Add Photo"
+                                app:tint="@color/text_secondary"
+                                android:contentDescription="@string/add_photo"
                                 android:visibility="visible" />
                         </FrameLayout>
                     </com.google.android.material.card.MaterialCardView>
@@ -356,26 +356,29 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:gravity="center"
                     android:layout_marginTop="12dp">
 
                     <Button
                         android:id="@+id/btnTakePhoto"
-                        android:layout_width="0dp"
-                        android:layout_height="48dp"
-                        android:layout_weight="1"
-                        android:text="Take photo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:paddingTop="12dp"
+                        android:paddingBottom="12sp"
+                        android:text="@string/take_photo"
                         android:textColor="@color/text_primary"
                         android:backgroundTint="@color/background_gray"
-                        android:layout_marginEnd="8dp"
+                        android:layout_marginEnd="14dp"
                         android:textSize="14sp"
                         android:textStyle="normal" />
 
                     <Button
                         android:id="@+id/btnUploadFromGallery"
                         android:layout_width="0dp"
-                        android:layout_height="48dp"
+                        android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Upload from gallery"
+                        android:text="@string/upload_from_gallery"
                         android:textColor="@color/text_primary"
                         android:backgroundTint="@color/background_gray"
                         android:layout_marginStart="8dp"
@@ -396,7 +399,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Urgency"
+                    android:text="@string/urgency"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
@@ -405,14 +408,16 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="center"
                     android:orientation="horizontal">
 
                     <Button
                         android:id="@+id/btnEmergency"
-                        android:layout_width="0dp"
-                        android:layout_height="48dp"
-                        android:layout_weight="1"
-                        android:text="Emergency"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="12dp"
+                        android:paddingBottom="12sp"
+                        android:text="@string/emergency"
                         android:textColor="@color/text_primary"
                         android:backgroundTint="@color/background_gray"
                         android:layout_marginEnd="6dp"
@@ -421,10 +426,11 @@
 
                     <Button
                         android:id="@+id/btnSameDay"
-                        android:layout_width="0dp"
-                        android:layout_height="48dp"
-                        android:layout_weight="1"
-                        android:text="Same Day"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/same_day"
+                        android:paddingTop="12dp"
+                        android:paddingBottom="12sp"
                         android:textColor="@color/text_primary"
                         android:backgroundTint="@color/background_gray"
                         android:layout_marginHorizontal="3dp"
@@ -434,9 +440,9 @@
                     <Button
                         android:id="@+id/btnScheduleLater"
                         android:layout_width="0dp"
-                        android:layout_height="48dp"
+                        android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Schedule Later"
+                        android:text="@string/schedule_later"
                         android:textColor="@color/text_primary"
                         android:backgroundTint="@color/background_gray"
                         android:layout_marginStart="6dp"
@@ -457,7 +463,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Property location"
+                    android:text="@string/property_location"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
@@ -482,8 +488,8 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_house"
-                            android:tint="@color/text_primary"
-                            android:contentDescription="Location Icon" />
+                            app:tint="@color/text_primary"
+                            android:contentDescription="@string/location_icon" />
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -496,7 +502,7 @@
                                 android:id="@+id/tvLocationName"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Home"
+                                android:text="@string/home"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:textColor="@color/text_primary" />
@@ -505,7 +511,7 @@
                                 android:id="@+id/tvLocationAddress"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="123 Maple Street, Anytown"
+                                android:text="@string/_123_maple_street_anytown"
                                 android:textSize="14sp"
                                 android:textColor="@color/text_secondary"
                                 android:layout_marginTop="2dp" />
@@ -531,7 +537,7 @@
             android:id="@+id/btnNext"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:text="Next"
+            android:text="@string/next"
             android:textColor="@color/text_white"
             android:backgroundTint="@color/primary_blue"
             android:textSize="16sp"
@@ -548,6 +554,7 @@
             android:layout_height="wrap_content"
             android:background="@color/white"
             app:elevation="8dp"
+            android:padding="5dp"
             app:menu="@menu/bottom_navigation"
             app:itemIconTint="@drawable/bottom_nav_selector"
             app:itemTextColor="@drawable/bottom_nav_selector" />

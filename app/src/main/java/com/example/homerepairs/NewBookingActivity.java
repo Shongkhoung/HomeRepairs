@@ -478,7 +478,7 @@ public class NewBookingActivity extends AppCompatActivity {
                 // User not authenticated, redirect to login in sign in mode
                 android.widget.Toast.makeText(this, "Please log in to create a booking", 
                     android.widget.Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(this, LoginActivity.class);
+                Intent intent = new Intent(this, SignInActivity.class);
                 intent.putExtra("mode", "sign_in");
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);

@@ -66,16 +66,16 @@ public class MainActivity extends AppCompatActivity {
     private FusedLocationProviderClient fusedLocationClient;
     private ConnectivityManager connectivityManager;
     private ConnectivityManager.NetworkCallback networkCallback;
-    
+
     // Store last known location for refetching when internet is restored
     private double lastKnownLatitude = 11.5564; // Default: Phnom Penh
     private double lastKnownLongitude = 104.9282;
-    
+
     // Handler for periodic weather refresh
     private android.os.Handler weatherRefreshHandler;
     private Runnable weatherRefreshRunnable;
     private static final long WEATHER_REFRESH_INTERVAL = 60000; // 1 minute for real-time sync
-    
+
     // Debounce mechanism to prevent duplicate weather fetches
     private android.os.Handler weatherDebounceHandler;
     private Runnable weatherDebounceRunnable;
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Track network state to prevent excessive weather fetches
     private boolean wasInternetAvailable = false;
-    
+
     // User data
     private FirebaseUserService userService;
     private ListenerRegistration userProfileListener;
@@ -126,11 +126,11 @@ public class MainActivity extends AppCompatActivity {
     private ServiceCategoryAdapter categoryAdapter;
     private ProviderAdapter providerAdapter;
     private RecentActivityAdapterEnhanced activityAdapter;
-    
+
     // Category display state
     private boolean showingAllCategories = false;
     private List<ServiceCategory> allCategories = new java.util.ArrayList<>();
-    
+
     // Recent Activity display state
     private boolean showingAllActivities = false;
     private List<RecentActivity> allActivities = new java.util.ArrayList<>();
@@ -138,19 +138,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+        setContentView(R.layout.activity_main);
+        boolean skipLogin = getIntent().getBooleanExtra("skip_login", false);
+
         // Check if user is authenticated
         if (!AuthHelper.isAuthenticated()) {
             // Redirect to login screen in sign in mode (user likely needs to sign in, not create account)
-            Intent intent = new Intent(this, LoginActivity.class);
+            Intent intent = new Intent(this, SignInActivity.class);
             intent.putExtra("mode", "sign_in");
             startActivity(intent);
             finish();
             return;
         }
-        
+
         setContentView(R.layout.activity_main);
-        
+
         // Set status bar color to white to match screen background
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.white));
@@ -164,10 +166,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize Firebase Authentication (anonymous sign-in for testing)
         initializeFirebaseAuth();
-        
+
         // Initialize user service for loading user data
         userService = new FirebaseUserService();
-        
+
         initializeViews();
         setupViewModel();
         setupAdapters();
@@ -176,21 +178,22 @@ public class MainActivity extends AppCompatActivity {
         setupBottomNavigation();
         requestLocationPermission();
         setupNetworkCallback();
-        
+
         // Load user data from Firebase
         loadUserData();
-        
+
         // Wait for layout to be ready before hiding loading overlay
         waitForLayoutReady();
         // Initialize debounce handler
         weatherDebounceHandler = new android.os.Handler(android.os.Looper.getMainLooper());
         setupWeatherRefresh();
-        
+
         // Check network status after a short delay to ensure views are ready
         new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
             checkNetworkStatus();
         }, 500);
     }
+
 
     @Override
     protected void onResume() {
@@ -219,13 +222,13 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         // Clean up network callback
         unregisterNetworkCallback();
-        
+
         // Remove user profile listener
         if (userProfileListener != null) {
             userProfileListener.remove();
             userProfileListener = null;
         }
-        
+
         // Clean up offline delay handler
         if (offlineDelayHandler != null && offlineDelayRunnable != null) {
             offlineDelayHandler.removeCallbacks(offlineDelayRunnable);
@@ -280,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
             ivWeatherIcon.setAnimation(R.raw.sunny_weather);
             ivWeatherIcon.playAnimation();
         }
-        
+
         // Initialize button icons
         if (ivEmergencyIcon != null) {
             // Emergency uses Lottie animation
@@ -288,10 +291,10 @@ public class MainActivity extends AppCompatActivity {
             ivEmergencyIcon.playAnimation();
         }
         // Booking Later and Favorite icons are set in XML layout using drawable resources
-        
+
         // Initialize internet loading indicator as hidden
         showInternetLoading(false);
-        
+
     }
 
     /**
@@ -305,7 +308,7 @@ public class MainActivity extends AppCompatActivity {
     private String getTimeBasedGreeting() {
         java.util.Calendar calendar = java.util.Calendar.getInstance();
         int hourOfDay = calendar.get(java.util.Calendar.HOUR_OF_DAY);
-        
+
         String greeting;
         if (hourOfDay >= 0 && hourOfDay < 12) {
             // 12:00 a.m. to 12:00 p.m. (noon)
@@ -317,16 +320,16 @@ public class MainActivity extends AppCompatActivity {
             // 6:00 p.m. until midnight (18:00 to 23:59)
             greeting = "Good Evening";
         }
-        
+
         // Use real user name if available, otherwise use fallback
         String userName = currentUserName != null ? currentUserName : AuthHelper.getCurrentUserName(this);
         if (userName == null || userName.isEmpty() || userName.equals("You")) {
             userName = "User"; // Fallback
         }
-        
+
         return greeting + ", " + userName + " 👋";
     }
-    
+
     /**
      * Load user data from Firestore and set up real-time listener
      */
@@ -337,7 +340,7 @@ public class MainActivity extends AppCompatActivity {
             updateGreeting();
             return;
         }
-        
+
         // Set up real-time listener for user profile
         userProfileListener = userService.listenToUserProfile(userId, new FirebaseUserService.UserProfileCallback() {
             @Override
@@ -345,18 +348,18 @@ public class MainActivity extends AppCompatActivity {
                 // Extract user name and email from profile (same as UserProfileActivity)
                 String name = null;
                 String email = null;
-                
+
                 if (userProfile != null && !userProfile.isEmpty()) {
                     name = userProfile.get("name") != null ? userProfile.get("name").toString() : null;
                     email = userProfile.get("email") != null ? userProfile.get("email").toString() : null;
-                    
+
                     if (name != null && !name.isEmpty()) {
                         currentUserName = name;
                         // Save to SharedPreferences for quick access
                         AuthHelper.saveUserName(MainActivity.this, name);
                     }
                 }
-                
+
                 // Fallback to Firebase Auth if Firestore doesn't have data
                 com.google.firebase.auth.FirebaseUser user = AuthHelper.getCurrentUser();
                 if (user != null) {
@@ -365,38 +368,38 @@ public class MainActivity extends AppCompatActivity {
                             currentUserName = user.getDisplayName();
                         }
                     }
-                    
+
                     if (email == null || email.isEmpty()) {
                         email = user.getEmail();
                     }
                 }
-                
+
                 // Update greeting with real user name
                 updateGreeting();
-                
+
                 // Update profile icon with letter only (no image loading)
                 updateProfileIcon(name, email);
             }
-            
+
             @Override
             public void onError(String error) {
                 android.util.Log.e("MainActivity", "Error loading user profile: " + error);
                 // Fallback to AuthHelper for user name
                 currentUserName = AuthHelper.getCurrentUserName(MainActivity.this);
-                
+
                 // Fallback to Firebase Auth for email
                 com.google.firebase.auth.FirebaseUser user = AuthHelper.getCurrentUser();
                 String email = null;
                 if (user != null) {
                     email = user.getEmail();
                 }
-                
+
                 updateGreeting();
                 updateProfileIcon(currentUserName, email);
             }
         });
     }
-    
+
     /**
      * Update profile icon with initial letter only (no image loading)
      * Uses the same logic as UserProfileActivity to ensure consistency
@@ -411,7 +414,7 @@ public class MainActivity extends AppCompatActivity {
         }
         updateProfileIcon(name, email);
     }
-    
+
     /**
      * Update profile icon with initial letter only (no image loading)
      * @param name User's name (from Firestore or Firebase Auth)
@@ -421,11 +424,11 @@ public class MainActivity extends AppCompatActivity {
         if (ivProfileIcon == null || tvProfileLetter == null) {
             return;
         }
-        
+
         // Always show letter, never load images (matching profile screen behavior)
         ivProfileIcon.setVisibility(View.GONE);
         tvProfileLetter.setVisibility(View.VISIBLE);
-        
+
         // Get first letter - same priority as profile screen:
         // 1. First letter of name
         // 2. First letter of email
@@ -436,10 +439,10 @@ public class MainActivity extends AppCompatActivity {
         } else if (email != null && !email.isEmpty()) {
             firstLetter = email.substring(0, 1).toUpperCase();
         }
-        
+
         tvProfileLetter.setText(firstLetter);
     }
-    
+
     /**
      * Update greeting text with current user name
      */
@@ -459,10 +462,10 @@ public class MainActivity extends AppCompatActivity {
         if (fileName == null || fileName.isEmpty()) {
             return 0;
         }
-        
+
         // Remove .json extension if present
         String name = fileName.replace(".json", "");
-        
+
         // Map file names to R.raw resource IDs
         switch (name) {
             case "sunny":
@@ -526,7 +529,7 @@ public class MainActivity extends AppCompatActivity {
                     displayActivities = new java.util.ArrayList<>(activities);
                 }
                 activityAdapter.updateActivities(displayActivities);
-                
+
                 // Update "View All" button text
                 updateViewAllActivityButton();
             }
@@ -702,7 +705,7 @@ public class MainActivity extends AppCompatActivity {
             rvCategories.setLayoutManager(categoryLayoutManager);
             rvCategories.setAdapter(categoryAdapter);
             rvCategories.setHasFixedSize(true);
-            
+
             // Set up smooth animations for item changes
             DefaultItemAnimator animator = new DefaultItemAnimator();
             animator.setAddDuration(600);
@@ -710,7 +713,7 @@ public class MainActivity extends AppCompatActivity {
             animator.setMoveDuration(600);
             animator.setChangeDuration(600);
             rvCategories.setItemAnimator(animator);
-            
+
             android.util.Log.d("MainActivity", "RecyclerView setup complete, adapter item count: " + categoryAdapter.getItemCount());
         } else {
             android.util.Log.e("MainActivity", "RecyclerView or adapter is null!");
@@ -722,7 +725,7 @@ public class MainActivity extends AppCompatActivity {
                 this, LinearLayoutManager.HORIZONTAL, false);
         rvFeaturedProviders.setLayoutManager(providerLayoutManager);
         rvFeaturedProviders.setAdapter(providerAdapter);
-        
+
         // Calculate card width to match recent activity card width
         // Recent activity: RecyclerView width = screen width - 40dp (container padding 20dp each side)
         //                 Card width = RecyclerView width - 32dp (16dp margin each side) = screen width - 72dp
@@ -736,12 +739,12 @@ public class MainActivity extends AppCompatActivity {
             // Since RecyclerView width = screen width - 40dp, we can calculate:
             // card width = recyclerViewWidth - 32dp (to match recent activity card width)
             int cardWidth = recyclerViewWidth - (int) (32 * density);
-            
+
             // Set the card width on the adapter
             if (providerAdapter != null) {
                 providerAdapter.setCardWidth(cardWidth);
             }
-            
+
             // Add padding to center the last card on screen
             // Account for card margins: 16dp left + 8dp right = 24dp total
             int cardWithMargins = cardWidth + (int) (24 * density);
@@ -767,7 +770,7 @@ public class MainActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             });
         }
-        
+
         btnNotification.setOnClickListener(v -> {
             Toast.makeText(this, "Notifications", Toast.LENGTH_SHORT).show();
         });
@@ -802,7 +805,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    
+
     /**
      * Toggle between showing 6 categories and all categories with smooth animation
      */
@@ -810,12 +813,12 @@ public class MainActivity extends AppCompatActivity {
         if (allCategories == null || allCategories.isEmpty()) {
             return;
         }
-        
+
         // Disable clicks during animation
         if (tvViewAllServices != null) {
             tvViewAllServices.setEnabled(false);
         }
-        
+
         if (showingAllCategories) {
             // Show only first 6 with smooth animation
             List<ServiceCategory> limitedCategories;
@@ -824,13 +827,13 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 limitedCategories = new java.util.ArrayList<>(allCategories);
             }
-            
+
             categoryAdapter.updateCategories(limitedCategories);
             showingAllCategories = false;
             if (tvViewAllServices != null) {
                 tvViewAllServices.setText("View all >");
             }
-            
+
             // Re-enable after animation starts (shorter delay for better UX)
             rvCategories.postDelayed(() -> {
                 if (tvViewAllServices != null) {
@@ -844,7 +847,7 @@ public class MainActivity extends AppCompatActivity {
             if (tvViewAllServices != null) {
                 tvViewAllServices.setText("Show less >");
             }
-            
+
             // Re-enable after animation starts (shorter delay for better UX)
             rvCategories.postDelayed(() -> {
                 if (tvViewAllServices != null) {
@@ -853,7 +856,7 @@ public class MainActivity extends AppCompatActivity {
             }, 300);
         }
     }
-    
+
     /**
      * Toggle between showing 2 activities and all activities
      */
@@ -861,12 +864,12 @@ public class MainActivity extends AppCompatActivity {
         if (allActivities == null || allActivities.isEmpty()) {
             return;
         }
-        
+
         // Disable clicks during update
         if (tvViewAllActivity != null) {
             tvViewAllActivity.setEnabled(false);
         }
-        
+
         if (showingAllActivities) {
             // Collapse: Show only first 2 activities
             List<RecentActivity> limitedActivities;
@@ -875,11 +878,11 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 limitedActivities = new java.util.ArrayList<>(allActivities);
             }
-            
+
             activityAdapter.updateActivities(limitedActivities);
             showingAllActivities = false;
             updateViewAllActivityButton();
-            
+
             // Re-enable after update
             rvRecentActivity.postDelayed(() -> {
                 if (tvViewAllActivity != null) {
@@ -891,7 +894,7 @@ public class MainActivity extends AppCompatActivity {
             activityAdapter.updateActivities(new java.util.ArrayList<>(allActivities));
             showingAllActivities = true;
             updateViewAllActivityButton();
-            
+
             // Re-enable after update
             rvRecentActivity.postDelayed(() -> {
                 if (tvViewAllActivity != null) {
@@ -900,7 +903,7 @@ public class MainActivity extends AppCompatActivity {
             }, 100);
         }
     }
-    
+
     /**
      * Update "View All" button text for activities based on current state
      */
@@ -908,7 +911,7 @@ public class MainActivity extends AppCompatActivity {
         if (tvViewAllActivity == null) {
             return;
         }
-        
+
         if (showingAllActivities) {
             tvViewAllActivity.setText("Show less");
             tvViewAllActivity.setVisibility(View.VISIBLE);
@@ -941,12 +944,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupBottomNavigation() {
         BottomNavigationView bottomNavigation = findViewById(R.id.bottomNavigation);
-        
+
         // Remove elevation/shadow to eliminate divider - keep the navigation bar background
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             bottomNavigation.setElevation(0f);
         }
-        
+
         bottomNavigation.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.nav_home) {
@@ -987,7 +990,7 @@ public class MainActivity extends AppCompatActivity {
         if (llScreenLoading == null) {
             return;
         }
-        
+
         if (show) {
             llScreenLoading.setVisibility(View.VISIBLE);
             llScreenLoading.setAlpha(0f);
@@ -1021,10 +1024,10 @@ public class MainActivity extends AppCompatActivity {
         if (llScreenLoading == null) {
             return;
         }
-        
+
         // Record start time
         loadingStartTime = System.currentTimeMillis();
-        
+
         // Show loading overlay if it's not already visible
         if (llScreenLoading.getVisibility() != View.VISIBLE) {
             llScreenLoading.setVisibility(View.VISIBLE);
@@ -1043,7 +1046,7 @@ public class MainActivity extends AppCompatActivity {
                 ivScreenLoading.playAnimation();
             }
         }
-        
+
         // Get root view
         View rootView = findViewById(android.R.id.content);
         if (rootView == null) {
@@ -1051,7 +1054,7 @@ public class MainActivity extends AppCompatActivity {
             new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> hideScreenLoading(), MIN_LOADING_DURATION);
             return;
         }
-        
+
         // Wait for layout to be measured and laid out
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(new android.view.ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -1060,11 +1063,11 @@ public class MainActivity extends AppCompatActivity {
                 if (rootView.getWidth() > 0 && rootView.getHeight() > 0) {
                     // Remove listener to avoid multiple calls
                     rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    
+
                     // Calculate remaining time to meet minimum duration
                     long elapsedTime = System.currentTimeMillis() - loadingStartTime;
                     long remainingTime = MIN_LOADING_DURATION - elapsedTime;
-                    
+
                     // Wait for minimum duration or additional 200ms, whichever is longer
                     long delayTime = Math.max(remainingTime, 200);
                     rootView.postDelayed(() -> hideScreenLoading(), delayTime);
@@ -1080,12 +1083,12 @@ public class MainActivity extends AppCompatActivity {
         if (llScreenLoading == null || llScreenLoading.getVisibility() != View.VISIBLE) {
             return;
         }
-        
+
         // Stop Lottie animation
         if (ivScreenLoading != null) {
             ivScreenLoading.cancelAnimation();
         }
-        
+
         llScreenLoading.animate()
                 .alpha(0f)
                 .setDuration(200)
@@ -1216,13 +1219,13 @@ public class MainActivity extends AppCompatActivity {
         if (llInternetLoading == null) {
             return;
         }
-        
+
         // Cancel any pending delay
         if (offlineDelayHandler != null && offlineDelayRunnable != null) {
             offlineDelayHandler.removeCallbacks(offlineDelayRunnable);
             offlineDelayRunnable = null;
         }
-        
+
         if (show) {
             // Create delay runnable for 2 seconds
             offlineDelayRunnable = new Runnable() {
@@ -1231,11 +1234,11 @@ public class MainActivity extends AppCompatActivity {
                     if (llInternetLoading == null) {
                         return;
                     }
-                    
+
                     // Show with smooth fade-in animation after 2 second delay
                     llInternetLoading.setVisibility(View.VISIBLE);
                     llInternetLoading.setAlpha(0f);
-                    
+
                     // Fade in overlay background
                     llInternetLoading.animate()
                             .alpha(1f)
@@ -1243,20 +1246,20 @@ public class MainActivity extends AppCompatActivity {
                             .setStartDelay(100)
                             .setInterpolator(new android.view.animation.DecelerateInterpolator())
                             .start();
-                    
+
                     // Animate loading content with delay
                     if (tvInternetMessage != null && ivNoConnection != null) {
                         tvInternetMessage.setAlpha(0f);
                         ivNoConnection.setAlpha(0f);
                         ivNoConnection.setScaleX(0.8f);
                         ivNoConnection.setScaleY(0.8f);
-                        
+
                         // Start Lottie animation
                         if (ivNoConnection != null) {
                             ivNoConnection.setAnimation(R.raw.no_connection);
                             ivNoConnection.playAnimation();
                         }
-                        
+
                         // Animate text first
                         tvInternetMessage.animate()
                                 .alpha(1f)
@@ -1264,7 +1267,7 @@ public class MainActivity extends AppCompatActivity {
                                 .setStartDelay(300)
                                 .setInterpolator(new android.view.animation.DecelerateInterpolator())
                                 .start();
-                        
+
                         // Animate Lottie animation with scale effect
                         ivNoConnection.animate()
                                 .alpha(1f)
@@ -1277,7 +1280,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             };
-            
+
             // Post delay of 2 seconds (2000 milliseconds)
             offlineDelayHandler.postDelayed(offlineDelayRunnable, 2000);
         } else {
@@ -1341,7 +1344,7 @@ public class MainActivity extends AppCompatActivity {
                                             networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
                         android.util.Log.d("MainActivity", "Network capabilities changed - hasInternet: " + hasInternet);
                         showInternetLoading(!hasInternet);
-                        
+
                         // Only fetch weather if internet just became available (transition from offline to online)
                         // This prevents excessive fetches when capabilities change while already online
                         if (hasInternet && !wasInternetAvailable) {
@@ -1391,7 +1394,7 @@ public class MainActivity extends AppCompatActivity {
         if (llInternetLoading == null) {
             return; // Views not initialized yet
         }
-        
+
         // Initialize network state tracking
         boolean hasNetwork = NetworkUtils.isNetworkAvailable(this);
         wasInternetAvailable = hasNetwork;
@@ -1408,15 +1411,15 @@ public class MainActivity extends AppCompatActivity {
             performWeatherFetch();
             return;
         }
-        
+
         long currentTime = System.currentTimeMillis();
         long timeSinceLastFetch = currentTime - lastWeatherFetchTime;
-        
+
         // If a fetch happened recently, cancel the pending one and schedule a new one
         if (weatherDebounceRunnable != null) {
             weatherDebounceHandler.removeCallbacks(weatherDebounceRunnable);
         }
-        
+
         // Only fetch if enough time has passed since last fetch
         if (lastWeatherFetchTime > 0 && timeSinceLastFetch < WEATHER_DEBOUNCE_DELAY) {
             long remainingDelay = WEATHER_DEBOUNCE_DELAY - timeSinceLastFetch;
@@ -1429,7 +1432,7 @@ public class MainActivity extends AppCompatActivity {
             performWeatherFetch();
         }
     }
-    
+
     /**
      * Actually perform the weather fetch
      */
@@ -1459,11 +1462,11 @@ public class MainActivity extends AppCompatActivity {
                 public void onSuccess() {
                     android.util.Log.d("MainActivity", "Firebase Auth: Anonymous sign-in successful");
                 }
-                
+
                 @Override
                 public void onError(String error) {
                     // Log as warning instead of error since we have a fallback mechanism
-                    android.util.Log.w("MainActivity", "Firebase Auth: Sign-in failed: " + error + 
+                    android.util.Log.w("MainActivity", "Firebase Auth: Sign-in failed: " + error +
                             ". App will continue using device ID for user identification.");
                     // App continues normally with device ID fallback - no user action needed
                 }
@@ -1472,7 +1475,7 @@ public class MainActivity extends AppCompatActivity {
             android.util.Log.d("MainActivity", "Firebase Auth: User already authenticated");
         }
     }
-    
+
     private void setupWeatherRefresh() {
         weatherRefreshHandler = new android.os.Handler(android.os.Looper.getMainLooper());
         weatherRefreshRunnable = new Runnable() {
@@ -1529,10 +1532,10 @@ public class MainActivity extends AppCompatActivity {
             if (addresses != null && !addresses.isEmpty()) {
                 Address address = addresses.get(0);
                 String cityName = null;
-                
+
                 // Check if we're in Phnom Penh area (coordinates roughly within Phnom Penh)
                 // Phnom Penh coordinates: approximately 11.55°N, 104.92°E
-                if (latitude >= 11.40 && latitude <= 11.70 && 
+                if (latitude >= 11.40 && latitude <= 11.70 &&
                     longitude >= 104.75 && longitude <= 105.10) {
                     // We're in Phnom Penh area, use "Phnom Penh" as city name
                     cityName = "Phnom Penh";
@@ -1540,7 +1543,7 @@ public class MainActivity extends AppCompatActivity {
                     // Try to get the city name from address
                     // First try locality (city/district)
                     cityName = address.getLocality();
-                    
+
                     // If locality is null or seems like a district, try admin area (province)
                     if (cityName == null || cityName.isEmpty()) {
                         cityName = address.getAdminArea();
@@ -1551,13 +1554,13 @@ public class MainActivity extends AppCompatActivity {
                             cityName = "Phnom Penh";
                         }
                     }
-                    
+
                     // If still null, try sub-admin area or feature name
                 if (cityName == null || cityName.isEmpty()) {
                         cityName = address.getSubAdminArea();
                     }
                 }
-                
+
                 if (cityName != null && !cityName.isEmpty()) {
                     viewModel.setUserLocation(cityName);
                 } else {
@@ -1568,7 +1571,7 @@ public class MainActivity extends AppCompatActivity {
             }
         } catch (IOException e) {
             // If geocoding fails, check if coordinates are in Phnom Penh area
-            if (latitude >= 11.40 && latitude <= 11.70 && 
+            if (latitude >= 11.40 && latitude <= 11.70 &&
                 longitude >= 104.75 && longitude <= 105.10) {
                 viewModel.setUserLocation("Phnom Penh");
             } else {

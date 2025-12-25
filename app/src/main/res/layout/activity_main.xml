@@ -46,7 +46,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Home Repair"
+                        android:text="@string/home_repair"
                         android:textSize="28sp"
                         android:textStyle="bold"
                         android:textColor="@color/deep_royal_blue"
@@ -73,7 +73,7 @@
                             android:src="@drawable/ic_notification"
                             android:background="?attr/selectableItemBackgroundBorderless"
                             android:contentDescription="Notifications"
-                            android:tint="@color/text_primary"
+                            app:tint="@color/text_primary"
                             android:padding="8dp" />
                         
                         <!-- Notification Badge -->
@@ -112,7 +112,7 @@
                             android:id="@+id/tvProfileLetter"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:text="A"
+                            android:text="@string/a"
                             android:textSize="16sp"
                             android:textStyle="bold"
                             android:textColor="@color/text_white"
@@ -133,7 +133,7 @@
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:src="@drawable/ic_location"
-                        android:tint="@color/text_secondary"
+                        app:tint="@color/text_secondary"
                         android:layout_marginEnd="6dp"
                         android:contentDescription="Location" />
                     
@@ -141,14 +141,14 @@
                         android:id="@+id/tvLocation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Phnom Penh"
+                        android:text="@string/phnom_penh"
                         android:textSize="14sp"
                         android:textColor="@color/text_secondary" />
                     
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text=" • "
+                        android:text="@string/dot"
                         android:textSize="14sp"
                         android:textColor="@color/text_secondary"
                         android:layout_marginHorizontal="4dp" />
@@ -168,7 +168,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="23°C Cloudy"
+                        android:text="@string/_23_c_cloudy"
                         android:textSize="14sp"
                         android:textColor="@color/text_secondary" />
                 </LinearLayout>
@@ -184,7 +184,7 @@
                         android:id="@+id/tvGreeting"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Good Evening, Alex"
+                        android:text="@string/good_evening_alex"
                         android:textColor="@color/text_primary"
                         android:textSize="18sp"
                         android:textStyle="bold"
@@ -216,7 +216,7 @@
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:src="@drawable/ic_search"
-                        android:tint="@color/text_secondary"
+                        app:tint="@color/text_secondary"
                         android:layout_marginEnd="10dp" />
 
                     <EditText
@@ -224,7 +224,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:hint="Search services or providers..."
+                        android:hint="@string/search_services_or_providers"
                         android:textSize="14sp"
                         android:textColor="@color/text_primary"
                         android:textColorHint="@color/text_secondary"
@@ -258,7 +258,7 @@
                     android:layout_height="wrap_content"
                         android:layout_marginEnd="12dp"
                     app:cardCornerRadius="16dp"
-                    app:cardBackgroundColor="@color/deep_royal_blue"
+                    app:cardBackgroundColor="@color/button_blue"
                     app:cardElevation="2dp"
                     android:clickable="true"
                     android:focusable="true"
@@ -277,7 +277,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:layout_marginEnd="10dp"
-                            android:contentDescription="Emergency service icon"
+                            android:contentDescription="@string/emergency_service_icon"
                             app:lottie_autoPlay="true"
                             app:lottie_loop="true"
                             app:lottie_speed="1.0" />
@@ -285,7 +285,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Emergency"
+                            android:text="@string/emergency"
                             android:textSize="14sp"
                             android:textStyle="bold"
                                 android:textColor="@color/text_white" />
@@ -320,14 +320,14 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:layout_marginEnd="10dp"
-                            android:contentDescription="Booking later icon"
+                            android:contentDescription="@string/booking_later_icon"
                             android:src="@drawable/booking_later"
-                            android:tint="@color/text_primary" />
+                            app:tint="@color/text_primary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Bookings"
+                            android:text="@string/bookings"
                             android:textSize="14sp"
                             android:textStyle="bold"
                                 android:textColor="@color/text_primary" />
@@ -361,14 +361,14 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:layout_marginEnd="10dp"
-                            android:contentDescription="Favorite icon"
+                            android:contentDescription="@string/favorite_icon"
                             android:src="@drawable/heart"
-                            android:tint="@color/text_primary" />
+                            app:tint="@color/text_primary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Favorites"
+                            android:text="@string/favorites"
                             android:textSize="14sp"
                             android:textStyle="bold"
                                 android:textColor="@color/text_primary" />
@@ -397,7 +397,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Services"
+                        android:text="@string/services"
                         android:textSize="24sp"
                         android:textStyle="bold"
                         android:textColor="@color/deep_royal_blue"
@@ -407,7 +407,7 @@
                         android:id="@+id/tvViewAllServices"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="View all >"
+                        android:text="@string/view_all"
                         android:textSize="14sp"
                         android:textColor="@color/text_secondary"
                         android:clickable="true"
@@ -442,7 +442,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Featured Pro"
+                        android:text="@string/featured_pro"
                         android:textSize="22sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_primary"
@@ -451,7 +451,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Highly recommended"
+                        android:text="@string/highly_recommended"
                         android:textSize="14sp"
                         android:textColor="@color/text_secondary"
                         android:layout_marginTop="4dp" />
@@ -488,7 +488,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Recent Activity"
+                        android:text="@string/recent_activity"
                         android:textSize="22sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_primary"
@@ -498,7 +498,7 @@
                         android:id="@+id/tvViewAllActivity"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="View All"
+                        android:text="@string/view_alls"
                         android:textSize="14sp"
                         android:textColor="@color/logo_purple"
                         android:clickable="true"
@@ -555,6 +555,7 @@
         android:layout_gravity="bottom"
         android:background="@drawable/bottom_nav_background"
         app:elevation="0dp"
+        android:padding="5dp"
         app:menu="@menu/bottom_navigation"
         app:itemIconTint="@drawable/bottom_nav_selector"
         app:itemTextColor="@drawable/bottom_nav_selector"
@@ -603,7 +604,7 @@
                 android:id="@+id/tvInternetMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="No Internet Connection"
+                android:text="@string/no_internet_connection"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@color/error"
@@ -645,7 +646,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Loading..."
+                android:text="@string/loadings"
                 android:textSize="16sp"
                 android:textColor="@color/text_white"
                 android:textStyle="bold" />

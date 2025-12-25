@@ -43,7 +43,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="My Favorites"
+                            android:text="@string/my_favorites"
                             android:textSize="22sp"
                             android:textStyle="bold"
                             android:textColor="@color/text_primary" />
@@ -52,7 +52,7 @@
                             android:id="@+id/tvProviderCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="0 saved providers"
+                            android:text="@string/_0_saved_providers"
                             android:textSize="13sp"
                             android:textColor="@color/text_secondary"
                             android:layout_marginTop="3dp" />
@@ -68,7 +68,7 @@
                             android:id="@+id/btnSelect"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="SELECT"
+                            android:text="@string/select"
                             android:textSize="12sp"
                             android:textColor="@color/primary_blue"
                             android:backgroundTint="#E3F2FD"
@@ -86,8 +86,8 @@
                             android:layout_height="36dp"
                             android:src="@drawable/ic_search"
                             android:background="?attr/selectableItemBackgroundBorderless"
-                            android:contentDescription="Search"
-                            android:tint="@color/gray_600"
+                            android:contentDescription="@string/search"
+                            app:tint="@color/gray_600"
                             android:layout_marginStart="8dp"
                             android:padding="8dp" />
                     </LinearLayout>
@@ -99,19 +99,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scrollbars="none"
-                android:paddingBottom="12dp">
+                android:paddingBottom="12dp"
+                android:fillViewport="true">
 
-                <LinearLayout
-                    android:id="@+id/llCategoryFilters"
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupCategories"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
                     android:paddingStart="20dp"
                     android:paddingEnd="20dp"
-                    android:gravity="center_vertical">
-
-                    <!-- Categories will be added dynamically -->
-                </LinearLayout>
+                    app:singleLine="true"
+                    app:singleSelection="false"/>
             </HorizontalScrollView>
 
 
@@ -135,8 +133,8 @@
                     android:id="@+id/llEmptyState"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     android:gravity="center"
+                    android:orientation="vertical"
                     android:paddingTop="80dp"
                     android:paddingBottom="40dp"
                     android:visibility="gone">
@@ -150,41 +148,41 @@
                         <ImageView
                             android:layout_width="60dp"
                             android:layout_height="60dp"
+                            android:contentDescription="@string/empty_heart"
                             android:src="@drawable/heart_outline"
-                            android:tint="@color/text_tertiary"
-                            android:contentDescription="Empty Heart" />
+                            app:tint="@color/text_tertiary" />
                     </FrameLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="No Favorites Yet"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
+                        android:layout_marginTop="24dp"
+                        android:text="@string/no_favorites_yet"
                         android:textColor="@color/text_primary"
-                        android:layout_marginTop="24dp" />
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tvEmptyMessage"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="No providers in your favorites"
-                        android:textSize="14sp"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/no_providers_in_your_favorites"
                         android:textColor="@color/text_secondary"
-                        android:layout_marginTop="8dp" />
+                        android:textSize="14sp" />
 
                     <Button
                         android:id="@+id/btnBrowseServices"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Browse Services"
-                        android:textSize="14sp"
-                        android:textColor="@color/text_white"
+                        android:layout_marginTop="24dp"
                         android:backgroundTint="@color/primary_blue"
+                        android:minHeight="44dp"
                         android:paddingHorizontal="24dp"
                         android:paddingVertical="12dp"
-                        android:layout_marginTop="24dp"
-                        android:minHeight="44dp" />
+                        android:text="@string/browse_services"
+                        android:textColor="@color/text_white"
+                        android:textSize="14sp" />
                 </LinearLayout>
             </FrameLayout>
         </LinearLayout>
@@ -208,7 +206,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="0 selected"
+            android:text="@string/_0_selected"
             android:textSize="14sp"
             android:textStyle="bold"
             android:textColor="@color/text_primary" />
@@ -217,7 +215,7 @@
             android:id="@+id/btnDeleteSelected"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="DELETE"
+            android:text="@string/delete"
             android:textSize="12sp"
             android:textColor="@color/text_white"
             android:backgroundTint="@color/warning_red"
@@ -235,6 +233,7 @@
         android:layout_gravity="bottom"
         android:background="@color/white"
         app:elevation="8dp"
+        android:padding="5dp"
         app:menu="@menu/bottom_navigation"
         app:itemIconTint="@drawable/bottom_nav_selector"
         app:itemTextColor="@drawable/bottom_nav_selector" />

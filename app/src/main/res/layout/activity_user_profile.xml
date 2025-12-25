@@ -33,7 +33,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Profile"
+                    android:text="@string/profile"
                     android:textSize="24sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary" />
@@ -44,8 +44,8 @@
                     android:layout_height="36dp"
                     android:src="@drawable/edit_tool"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="Edit Profile"
-                    android:tint="@color/text_secondary"
+                    android:contentDescription="@string/edit_profile"
+                    app:tint="@color/text_secondary"
                     android:padding="6dp"
                     android:scaleType="fitCenter" />
             </LinearLayout>
@@ -100,7 +100,7 @@
                                     android:layout_height="match_parent"
                                     android:scaleType="centerCrop"
                                     android:visibility="gone"
-                                    android:contentDescription="Profile Image" />
+                                    android:contentDescription="@string/profile_image" />
 
                                 <!-- Avatar Letter (shown when no image) -->
                                 <TextView
@@ -108,7 +108,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:gravity="center"
-                                    android:text="A"
+                                    android:text="@string/a"
                                     android:textSize="40sp"
                                     android:textStyle="bold"
                                     android:textColor="@color/text_white"
@@ -135,8 +135,8 @@
                                     android:layout_height="match_parent"
                                     android:src="@drawable/ic_camera"
                                     android:padding="6dp"
-                                    android:contentDescription="Change Profile Picture"
-                                    android:tint="#000000" />
+                                    android:contentDescription="@string/change_profile_picture"
+                                    app:tint="#000000" />
                             </com.google.android.material.card.MaterialCardView>
                         </FrameLayout>
 
@@ -152,7 +152,7 @@
                                 android:id="@+id/tvUserName"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Alex Johnson"
+                                android:text="@string/alex_johnson"
                                 android:textSize="22sp"
                                 android:textStyle="bold"
                                 android:textColor="#000000" />
@@ -163,7 +163,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="Member since Jan 2024"
+                                android:text="@string/member_since_jan_2024"
                                 android:textSize="12sp"
                                 android:textColor="#757575" />
 
@@ -186,15 +186,15 @@
                                         android:layout_width="16dp"
                                         android:layout_height="16dp"
                                         android:src="@drawable/ic_email"
-                                        android:tint="@color/text_secondary"
-                                        android:contentDescription="Email" />
+                                        app:tint="@color/text_secondary"
+                                        android:contentDescription="@string/email" />
 
                                     <TextView
                                         android:id="@+id/tvEmail"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="8dp"
-                                        android:text="alex.johnson@email.com"
+                                        android:text="@string/alex_johnson_email_com"
                                         android:textSize="13sp"
                                         android:textColor="#757575"
                                         android:maxLines="1"
@@ -214,8 +214,8 @@
                                         android:layout_width="16dp"
                                         android:layout_height="16dp"
                                         android:src="@drawable/ic_phone"
-                                        android:tint="@color/text_secondary"
-                                        android:contentDescription="Phone" />
+                                        app:tint="@color/text_secondary"
+                                        android:contentDescription="@string/phone" />
 
                                     <TextView
                                         android:id="@+id/tvPhone"
@@ -240,15 +240,15 @@
                                         android:layout_width="16dp"
                                         android:layout_height="16dp"
                                         android:src="@drawable/ic_location"
-                                        android:tint="@color/text_secondary"
-                                        android:contentDescription="Location" />
+                                        app:tint="@color/text_secondary"
+                                        android:contentDescription="@string/location" />
 
                                     <TextView
                                         android:id="@+id/tvLocation"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="8dp"
-                                        android:text="Phnom Penh, Cambodia"
+                                        android:text="@string/phnom_penh_cambodia"
                                         android:textSize="13sp"
                                         android:textColor="#757575"
                                         android:includeFontPadding="false" />
@@ -295,8 +295,8 @@
                                     android:layout_height="match_parent"
                                     android:src="@drawable/ic_suitcase"
                                     android:padding="12dp"
-                                    android:contentDescription="Bookings"
-                                    android:tint="@color/white" />
+                                    android:contentDescription="@string/bookings"
+                                    app:tint="@color/white" />
                             </com.google.android.material.card.MaterialCardView>
 
                             <TextView
@@ -313,7 +313,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="Bookings"
+                                android:text="@string/bookings"
                                 android:textSize="12sp"
                                 android:textColor="#757575" />
                         </LinearLayout>
@@ -340,8 +340,8 @@
                                     android:layout_height="match_parent"
                                     android:src="@drawable/ic_star_outline"
                                     android:padding="12dp"
-                                    android:contentDescription="Reviews"
-                                    android:tint="@color/white" />
+                                    android:contentDescription="@string/reviews"
+                                    app:tint="@color/white" />
                             </com.google.android.material.card.MaterialCardView>
 
                             <TextView
@@ -358,7 +358,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="Reviews"
+                                android:text="@string/reviews"
                                 android:textSize="12sp"
                                 android:textColor="#757575" />
                         </LinearLayout>
@@ -385,8 +385,8 @@
                                     android:layout_height="match_parent"
                                     android:src="@drawable/ic_heart_outline"
                                     android:padding="12dp"
-                                    android:contentDescription="Favorites"
-                                    android:tint="@color/white" />
+                                    android:contentDescription="@string/favorites"
+                                    app:tint="@color/white" />
                             </com.google.android.material.card.MaterialCardView>
 
                             <TextView
@@ -403,7 +403,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="Favorites"
+                                android:text="@string/favorites"
                                 android:textSize="12sp"
                                 android:textColor="#757575" />
                         </LinearLayout>
@@ -419,7 +419,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="12dp"
-                android:text="Account"
+                android:text="@string/account"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary" />
@@ -465,8 +465,8 @@
                                 android:layout_height="match_parent"
                                 android:src="@drawable/ic_person"
                                 android:padding="9dp"
-                                android:tint="@color/primary_blue"
-                                android:contentDescription="Personal Information" />
+                                app:tint="@color/primary_blue"
+                                android:contentDescription="@string/personal_information" />
                         </com.google.android.material.card.MaterialCardView>
 
                         <TextView
@@ -474,7 +474,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginStart="12dp"
-                            android:text="Personal Information"
+                            android:text="@string/personal_information"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             android:textColor="@color/text_primary" />
@@ -483,9 +483,9 @@
                             android:layout_width="18dp"
                             android:layout_height="18dp"
                             android:src="@drawable/ic_back_arrow"
-                            android:tint="@color/text_secondary"
+                            app:tint="@color/text_secondary"
                             android:rotation="180"
-                            android:contentDescription="Arrow" />
+                            android:contentDescription="@string/arrow" />
                     </LinearLayout>
 
                     <View
@@ -519,8 +519,8 @@
                                 android:layout_height="match_parent"
                                 android:src="@drawable/ic_credit_card"
                                 android:padding="9dp"
-                                android:tint="#4CAF50"
-                                android:contentDescription="Payment Methods" />
+                                app:tint="#4CAF50"
+                                android:contentDescription="@string/payment_methods" />
                         </com.google.android.material.card.MaterialCardView>
 
                         <TextView
@@ -528,7 +528,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginStart="12dp"
-                            android:text="Payment Methods"
+                            android:text="@string/payment_method"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             android:textColor="@color/text_primary" />
@@ -537,9 +537,9 @@
                             android:layout_width="18dp"
                             android:layout_height="18dp"
                             android:src="@drawable/ic_back_arrow"
-                            android:tint="@color/text_secondary"
+                            app:tint="@color/text_secondary"
                             android:rotation="180"
-                            android:contentDescription="Arrow" />
+                            android:contentDescription="@string/arrow" />
                     </LinearLayout>
 
                     <View
@@ -573,8 +573,8 @@
                                 android:layout_height="match_parent"
                                 android:src="@drawable/ic_location"
                                 android:padding="9dp"
-                                android:tint="#9C27B0"
-                                android:contentDescription="Addresses" />
+                                app:tint="#9C27B0"
+                                android:contentDescription="@string/addresses" />
                         </com.google.android.material.card.MaterialCardView>
 
                         <TextView
@@ -582,7 +582,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginStart="12dp"
-                            android:text="Addresses"
+                            android:text="@string/addresses"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             android:textColor="@color/text_primary" />
@@ -591,9 +591,9 @@
                             android:layout_width="18dp"
                             android:layout_height="18dp"
                             android:src="@drawable/ic_back_arrow"
-                            android:tint="@color/text_secondary"
+                            app:tint="@color/text_secondary"
                             android:rotation="180"
-                            android:contentDescription="Arrow" />
+                            android:contentDescription="@string/arrow" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -604,7 +604,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginBottom="12dp"
-                android:text="Preferences"
+                android:text="@string/preferences"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary" />
@@ -650,8 +650,8 @@
                                 android:layout_height="match_parent"
                                 android:src="@drawable/ic_notification"
                                 android:padding="9dp"
-                                android:tint="#FF9800"
-                                android:contentDescription="Notifications" />
+                                app:tint="#FF9800"
+                                android:contentDescription="@string/notifications" />
                         </com.google.android.material.card.MaterialCardView>
 
                         <TextView
@@ -659,7 +659,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginStart="12dp"
-                            android:text="Notifications"
+                            android:text="@string/notifications"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             android:textColor="@color/text_primary" />
@@ -682,9 +682,9 @@
                             android:layout_width="18dp"
                             android:layout_height="18dp"
                             android:src="@drawable/ic_back_arrow"
-                            android:tint="@color/text_secondary"
+                            app:tint="@color/text_secondary"
                             android:rotation="180"
-                            android:contentDescription="Arrow" />
+                            android:contentDescription="@string/arrow" />
                     </LinearLayout>
 
                     <View
@@ -718,8 +718,8 @@
                                 android:layout_height="match_parent"
                                 android:src="@drawable/ic_settings"
                                 android:padding="9dp"
-                                android:tint="@color/text_secondary"
-                                android:contentDescription="App Settings" />
+                                app:tint="@color/text_secondary"
+                                android:contentDescription="@string/app_settings" />
                         </com.google.android.material.card.MaterialCardView>
 
                         <TextView
@@ -727,7 +727,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginStart="12dp"
-                            android:text="App Settings"
+                            android:text="@string/app_settings"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             android:textColor="@color/text_primary" />
@@ -736,9 +736,9 @@
                             android:layout_width="18dp"
                             android:layout_height="18dp"
                             android:src="@drawable/ic_back_arrow"
-                            android:tint="@color/text_secondary"
+                            app:tint="@color/text_secondary"
                             android:rotation="180"
-                            android:contentDescription="Arrow" />
+                            android:contentDescription="@string/arrow" />
                     </LinearLayout>
 
                     <View
@@ -772,8 +772,8 @@
                                 android:layout_height="match_parent"
                                 android:src="@drawable/ic_shield"
                                 android:padding="9dp"
-                                android:tint="#F44336"
-                                android:contentDescription="Privacy &amp; Security" />
+                                app:tint="#F44336"
+                                android:contentDescription="@string/privacy_amp_security" />
                         </com.google.android.material.card.MaterialCardView>
 
                         <TextView
@@ -781,7 +781,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginStart="12dp"
-                            android:text="Privacy &amp; Security"
+                            android:text="@string/privacy_amp_security"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             android:textColor="@color/text_primary" />
@@ -790,9 +790,9 @@
                             android:layout_width="18dp"
                             android:layout_height="18dp"
                             android:src="@drawable/ic_back_arrow"
-                            android:tint="@color/text_secondary"
+                            app:tint="@color/text_secondary"
                             android:rotation="180"
-                            android:contentDescription="Arrow" />
+                            android:contentDescription="@string/arrow" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -803,7 +803,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginBottom="12dp"
-                android:text="Support"
+                android:text="@string/support"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary" />
@@ -849,8 +849,8 @@
                                 android:layout_height="match_parent"
                                 android:src="@drawable/ic_help"
                                 android:padding="9dp"
-                                android:tint="#00BFA5"
-                                android:contentDescription="Help Center" />
+                                app:tint="#00BFA5"
+                                android:contentDescription="@string/help_center" />
                         </com.google.android.material.card.MaterialCardView>
 
                         <TextView
@@ -858,7 +858,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginStart="12dp"
-                            android:text="Help Center"
+                            android:text="@string/help_center"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             android:textColor="@color/text_primary" />
@@ -867,9 +867,9 @@
                             android:layout_width="18dp"
                             android:layout_height="18dp"
                             android:src="@drawable/ic_back_arrow"
-                            android:tint="@color/text_secondary"
+                            app:tint="@color/text_secondary"
                             android:rotation="180"
-                            android:contentDescription="Arrow" />
+                            android:contentDescription="@string/arrow" />
                     </LinearLayout>
 
                     <View
@@ -903,8 +903,8 @@
                                 android:layout_height="match_parent"
                                 android:src="@drawable/ic_document"
                                 android:padding="9dp"
-                                android:tint="#3F51B5"
-                                android:contentDescription="Terms &amp; Conditions" />
+                                app:tint="#3F51B5"
+                                android:contentDescription="@string/terms_amp_conditions" />
                         </com.google.android.material.card.MaterialCardView>
 
                         <TextView
@@ -912,7 +912,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginStart="12dp"
-                            android:text="Terms &amp; Conditions"
+                            android:text="@string/terms_amp_conditions"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             android:textColor="@color/text_primary" />
@@ -921,9 +921,9 @@
                             android:layout_width="18dp"
                             android:layout_height="18dp"
                             android:src="@drawable/ic_back_arrow"
-                            android:tint="@color/text_secondary"
+                            app:tint="@color/text_secondary"
                             android:rotation="180"
-                            android:contentDescription="Arrow" />
+                            android:contentDescription="@string/arrow" />
                     </LinearLayout>
 
                     <View
@@ -957,8 +957,8 @@
                                 android:layout_height="match_parent"
                                 android:src="@drawable/ic_people"
                                 android:padding="9dp"
-                                android:tint="@color/favorite_pink"
-                                android:contentDescription="Invite Friends" />
+                                app:tint="@color/favorite_pink"
+                                android:contentDescription="@string/invite_friends" />
                         </com.google.android.material.card.MaterialCardView>
 
                         <TextView
@@ -966,7 +966,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginStart="12dp"
-                            android:text="Invite Friends"
+                            android:text="@string/invite_friends"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             android:textColor="@color/text_primary" />
@@ -975,9 +975,9 @@
                             android:layout_width="18dp"
                             android:layout_height="18dp"
                             android:src="@drawable/ic_back_arrow"
-                            android:tint="@color/text_secondary"
+                            app:tint="@color/text_secondary"
                             android:rotation="180"
-                            android:contentDescription="Arrow" />
+                            android:contentDescription="@string/arrow" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -1010,15 +1010,15 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@drawable/ic_logout"
-                        android:tint="#F44336"
-                        android:contentDescription="Logout" />
+                        app:tint="#F44336"
+                        android:contentDescription="@string/logout" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginStart="12dp"
-                        android:text="Log Out"
+                        android:text="@string/log_out"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="#F44336" />
@@ -1031,7 +1031,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="24dp"
-                android:text="Home Repair v1.0.0"
+                android:text="@string/home_repair_v1_0_0"
                 android:textSize="12sp"
                 android:textColor="@color/text_secondary" />
 
@@ -1050,6 +1050,7 @@
         android:layout_gravity="bottom"
         android:background="@drawable/bottom_nav_background"
         app:elevation="0dp"
+        android:padding="5dp"
         app:menu="@menu/bottom_navigation"
         app:itemIconTint="@drawable/bottom_nav_selector"
         app:itemTextColor="@drawable/bottom_nav_selector"
@@ -1088,7 +1089,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Loading..."
+                android:text="@string/loadings"
                 android:textSize="16sp"
                 android:textColor="@color/text_white"
                 android:textStyle="bold" />

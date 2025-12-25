@@ -45,8 +45,8 @@
                     android:src="@drawable/plumbing"
                     android:scaleType="centerInside"
                     android:padding="10dp"
-                    android:tint="@color/text_white"
-                    android:contentDescription="Service Icon" />
+                    app:tint="@color/text_white"
+                    android:contentDescription="@string/service_icon" />
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Service Info Column -->
@@ -74,7 +74,7 @@
                     android:id="@+id/tvProviderName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Panha Williams"
+                    android:text="@string/panha_williams"
                     android:textSize="14sp"
                     android:textColor="@color/text_secondary"
                     android:maxLines="1"
@@ -86,7 +86,7 @@
                 android:id="@+id/chipStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Completed"
+                android:text="@string/completed"
                 android:textSize="11sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_white"
@@ -110,15 +110,15 @@
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:src="@drawable/ic_clock"
-                android:tint="@color/text_secondary"
+                app:tint="@color/text_secondary"
                 android:layout_marginEnd="6dp"
-                android:contentDescription="Time" />
+                android:contentDescription="@string/time" />
 
             <TextView
                 android:id="@+id/tvTimeAgo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="5 days ago"
+                android:text="@string/_5_days_ago"
                 android:textSize="12sp"
                 android:textColor="@color/text_secondary"
                 android:layout_marginEnd="16dp" />
@@ -127,9 +127,9 @@
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:src="@drawable/ic_star"
-                android:tint="@color/rating_gold"
+                app:tint="@color/rating_gold"
                 android:layout_marginEnd="6dp"
-                android:contentDescription="Rating" />
+                android:contentDescription="@string/rating" />
 
             <TextView
                 android:id="@+id/tvRating"
@@ -157,7 +157,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Total Cost"
+                    android:text="@string/total_cost"
                     android:textSize="11sp"
                     android:textColor="@color/text_secondary"
                     android:layout_marginBottom="4dp" />
@@ -182,7 +182,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Duration"
+                    android:text="@string/duration"
                     android:textSize="11sp"
                     android:textColor="@color/text_secondary"
                     android:layout_marginBottom="4dp" />
@@ -210,7 +210,7 @@
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:layout_weight="1"
-                android:text="BOOK AGAIN"
+                android:text="@string/book_again"
                 android:textSize="11sp"
                 android:textStyle="bold"
                 android:textAllCaps="true"
@@ -234,7 +234,7 @@
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:layout_weight="1"
-                android:text="REVIEW"
+                android:text="@string/review"
                 android:textSize="11sp"
                 android:textStyle="bold"
                 android:textAllCaps="true"

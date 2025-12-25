@@ -79,7 +79,7 @@ public class FavoritesActivity extends AppCompatActivity {
         tvProviderCount = findViewById(R.id.tvProviderCount);
         tvEmptyMessage = findViewById(R.id.tvEmptyMessage);
         btnBrowseServices = findViewById(R.id.btnBrowseServices);
-        llCategoryFilters = findViewById(R.id.llCategoryFilters);
+//        llCategoryFilters = findViewById(R.id.llCategoryFilters);
         llSelectionBar = findViewById(R.id.llSelectionBar);
         tvSelectedCount = findViewById(R.id.tvSelectedCount);
         btnDeleteSelected = findViewById(R.id.btnDeleteSelected);

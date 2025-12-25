@@ -21,7 +21,7 @@
             android:id="@+id/tvMessageText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Your message text here"
+            android:text="@string/your_message_text_here"
             android:textSize="14sp"
             android:textColor="@color/text_white" />
 
