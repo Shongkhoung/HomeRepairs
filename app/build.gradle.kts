@@ -108,6 +108,10 @@ dependencies {
 
     // Google Sign-In
     implementation("com.google.android.gms:play-services-auth:21.2.0")
+    // Firebase Storage
+    implementation ("com.google.firebase:firebase-storage:20.3.0")
+    // Firebase Firestore (optional, if you save booking info)
+    implementation ("com.google.firebase:firebase-firestore:24.9.1")
     
     // Facebook Sign-In
     implementation("com.facebook.android:facebook-android-sdk:16.3.0")
@@ -119,7 +123,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
-
-
 }

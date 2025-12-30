@@ -1,5 +1,6 @@
 package com.example.homerepairs;
 
+
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -26,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -45,6 +47,7 @@ import com.example.homerepairs.utils.AuthHelper;
 import com.example.homerepairs.utils.NetworkUtils;
 import com.example.homerepairs.viewmodel.HomeViewModel;
 import com.example.homerepairs.services.FirebaseUserService;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -195,6 +198,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
+
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -330,6 +336,30 @@ public class MainActivity extends AppCompatActivity {
         return greeting + ", " + userName + " 👋";
     }
 
+    private void showSignOutConfirmation() {
+        new AlertDialog.Builder(this)
+                .setTitle("Sign Out")
+                .setMessage("Are you sure you want to sign out?")
+                .setPositiveButton("Sign Out", (dialog, which) -> performSignOut())
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+    FirebaseAuth auth;
+    private void performSignOut() {
+        try {
+
+            auth.signOut();
+            Toast.makeText(this, "Signed out successfully", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "Could not sign out. Try again.", Toast.LENGTH_LONG).show();
+        }
+
+        Intent intent = new Intent(this, SignInActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+
     /**
      * Load user data from Firestore and set up real-time listener
      */
@@ -443,9 +473,7 @@ public class MainActivity extends AppCompatActivity {
         tvProfileLetter.setText(firstLetter);
     }
 
-    /**
-     * Update greeting text with current user name
-     */
+
     private void updateGreeting() {
         if (tvGreeting != null) {
             tvGreeting.setText(getTimeBasedGreeting());
@@ -453,11 +481,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    /**
-     * Convert Lottie file name to R.raw resource ID
-     * @param fileName Lottie JSON file name (e.g., "sunny_weather.json")
-     * @return Resource ID from R.raw, or 0 if not found
-     */
     private int getLottieResourceId(String fileName) {
         if (fileName == null || fileName.isEmpty()) {
             return 0;
@@ -726,18 +749,9 @@ public class MainActivity extends AppCompatActivity {
         rvFeaturedProviders.setLayoutManager(providerLayoutManager);
         rvFeaturedProviders.setAdapter(providerAdapter);
 
-        // Calculate card width to match recent activity card width
-        // Recent activity: RecyclerView width = screen width - 40dp (container padding 20dp each side)
-        //                 Card width = RecyclerView width - 32dp (16dp margin each side) = screen width - 72dp
-        // Featured provider: RecyclerView width = screen width - 40dp (container padding 20dp each side)
-        //                    Card width should match recent activity = screen width - 72dp
-        //                    Card margins = 16dp + 8dp = 24dp
         rvFeaturedProviders.post(() -> {
             int recyclerViewWidth = rvFeaturedProviders.getWidth();
             float density = getResources().getDisplayMetrics().density;
-            // Recent activity card width = screen width - 72dp
-            // Since RecyclerView width = screen width - 40dp, we can calculate:
-            // card width = recyclerViewWidth - 32dp (to match recent activity card width)
             int cardWidth = recyclerViewWidth - (int) (32 * density);
 
             // Set the card width on the adapter
@@ -745,8 +759,7 @@ public class MainActivity extends AppCompatActivity {
                 providerAdapter.setCardWidth(cardWidth);
             }
 
-            // Add padding to center the last card on screen
-            // Account for card margins: 16dp left + 8dp right = 24dp total
+
             int cardWithMargins = cardWidth + (int) (24 * density);
             int paddingEnd = (recyclerViewWidth - cardWithMargins) / 2;
             if (paddingEnd > 0) {
@@ -755,14 +768,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Recent activity - Vertical layout
+
         LinearLayoutManager activityLayoutManager = new LinearLayoutManager(this);
         rvRecentActivity.setLayoutManager(activityLayoutManager);
         rvRecentActivity.setAdapter(activityAdapter);
     }
 
     private void setupButtons() {
-        // Profile icon click - navigate to Profile screen
+
         if (cardProfileIcon != null) {
             cardProfileIcon.setOnClickListener(v -> {
                 Intent intent = new Intent(this, UserProfileActivity.class);
@@ -784,20 +797,17 @@ public class MainActivity extends AppCompatActivity {
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
 
-        // View all services click handler
         if (tvViewAllServices != null) {
             tvViewAllServices.setOnClickListener(v -> {
                 toggleCategoriesView();
             });
         }
 
-        // View all activity click handler - toggle expand/collapse
         if (tvViewAllActivity != null) {
             tvViewAllActivity.setOnClickListener(v -> {
                 toggleActivitiesView();
             });
         }
-
         etSearch.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 // Could open search activity
@@ -806,9 +816,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Toggle between showing 6 categories and all categories with smooth animation
-     */
     private void toggleCategoriesView() {
         if (allCategories == null || allCategories.isEmpty()) {
             return;
@@ -856,10 +863,6 @@ public class MainActivity extends AppCompatActivity {
             }, 300);
         }
     }
-
-    /**
-     * Toggle between showing 2 activities and all activities
-     */
     private void toggleActivitiesView() {
         if (allActivities == null || allActivities.isEmpty()) {
             return;
@@ -904,9 +907,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Update "View All" button text for activities based on current state
-     */
     private void updateViewAllActivityButton() {
         if (tvViewAllActivity == null) {
             return;
@@ -926,10 +926,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
-    /**
-     * Helper method to navigate to booking screen with urgency level
-     */
     private void navigateToBooking(String urgency) {
         try {
             Intent intent = new Intent(MainActivity.this, NewBookingActivity.class);
@@ -982,10 +978,6 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigation.setSelectedItemId(R.id.nav_home);
     }
 
-    /**
-     * Show or hide screen transition loading overlay
-     * @param show true to show, false to hide
-     */
     private void showScreenLoading(boolean show) {
         if (llScreenLoading == null) {
             return;
@@ -1016,10 +1008,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Wait for layout to be fully rendered before hiding loading overlay
-     * Ensures loading shows for minimum duration
-     */
     private void waitForLayoutReady() {
         if (llScreenLoading == null) {
             return;
@@ -1075,10 +1063,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-    /**
-     * Hide screen loading overlay with animation
-     */
     private void hideScreenLoading() {
         if (llScreenLoading == null || llScreenLoading.getVisibility() != View.VISIBLE) {
             return;
@@ -1125,7 +1109,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
     private void getCurrentLocation() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -1211,10 +1194,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Show or hide internet loading indicator with message
-     * @param show true to show, false to hide
-     */
     private void showInternetLoading(boolean show) {
         if (llInternetLoading == null) {
             return;
@@ -1301,9 +1280,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Setup network callback to monitor network state changes in real-time
-     */
     private void setupNetworkCallback() {
         if (connectivityManager == null) {
             return;
@@ -1374,9 +1350,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Unregister network callback
-     */
     private void unregisterNetworkCallback() {
         if (connectivityManager != null && networkCallback != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             try {
@@ -1387,9 +1360,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Check network status in real-time and update loading indicator
-     */
     private void checkNetworkStatus() {
         if (llInternetLoading == null) {
             return; // Views not initialized yet
@@ -1402,9 +1372,6 @@ public class MainActivity extends AppCompatActivity {
         showInternetLoading(!hasNetwork);
     }
 
-    /**
-     * Refetch weather data when internet is restored (with debouncing)
-     */
     private void refetchWeatherData() {
         if (weatherDebounceHandler == null) {
             // Handler not initialized yet, perform fetch immediately
@@ -1433,9 +1400,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Actually perform the weather fetch
-     */
     private void performWeatherFetch() {
         lastWeatherFetchTime = System.currentTimeMillis();
         android.util.Log.d("MainActivity", "Refetching weather data with location: " + lastKnownLatitude + ", " + lastKnownLongitude);
@@ -1447,14 +1411,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Setup periodic weather refresh to keep data in sync
-     */
-    /**
-     * Initialize Firebase Authentication
-     * Signs in anonymously if not already authenticated
-     * Note: If anonymous auth fails, app will use device ID fallback (see AuthHelper.getCurrentUserId)
-     */
     private void initializeFirebaseAuth() {
         if (!AuthHelper.isAuthenticated()) {
             AuthHelper.signInAnonymously(new AuthHelper.OnAuthCompleteListener() {
@@ -1490,9 +1446,6 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
-    /**
-     * Start periodic weather refresh
-     */
     private void startWeatherRefresh() {
         if (weatherRefreshHandler != null && weatherRefreshRunnable != null) {
             weatherRefreshHandler.removeCallbacks(weatherRefreshRunnable);
@@ -1500,18 +1453,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Stop periodic weather refresh
-     */
     private void stopWeatherRefresh() {
         if (weatherRefreshHandler != null && weatherRefreshRunnable != null) {
             weatherRefreshHandler.removeCallbacks(weatherRefreshRunnable);
         }
     }
 
-    /**
-     * Refresh weather data if online (with debouncing)
-     */
     private void refreshWeatherIfOnline() {
         if (NetworkUtils.isNetworkAvailable(this) && lastKnownLatitude != 0 && lastKnownLongitude != 0) {
             long currentTime = System.currentTimeMillis();

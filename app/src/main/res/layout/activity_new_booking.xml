@@ -55,6 +55,7 @@
                         android:layout_weight="1"
                         android:text="@string/new_booking"
                         android:textSize="20sp"
+                        android:layout_marginRight="45sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_primary"
                         android:gravity="center" />
@@ -269,10 +270,10 @@
                                 android:layout_width="32dp"
                                 android:layout_height="32dp"
                                 android:layout_gravity="center"
-                                android:src="@drawable/ic_add"
-                                app:tint="@color/text_secondary"
                                 android:contentDescription="@string/add_photo"
-                                android:visibility="visible" />
+                                android:src="@drawable/ic_add"
+                                android:visibility="visible"
+                                app:tint="@color/text_secondary" />
                         </FrameLayout>
                     </com.google.android.material.card.MaterialCardView>
 
@@ -352,104 +353,9 @@
                 </LinearLayout>
 
                 <!-- Photo Action Buttons -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:layout_marginTop="12dp">
-
-                    <Button
-                        android:id="@+id/btnTakePhoto"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:paddingTop="12dp"
-                        android:paddingBottom="12sp"
-                        android:text="@string/take_photo"
-                        android:textColor="@color/text_primary"
-                        android:backgroundTint="@color/background_gray"
-                        android:layout_marginEnd="14dp"
-                        android:textSize="14sp"
-                        android:textStyle="normal" />
-
-                    <Button
-                        android:id="@+id/btnUploadFromGallery"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/upload_from_gallery"
-                        android:textColor="@color/text_primary"
-                        android:backgroundTint="@color/background_gray"
-                        android:layout_marginStart="8dp"
-                        android:textSize="14sp"
-                        android:textStyle="normal" />
-                </LinearLayout>
             </LinearLayout>
 
             <!-- Urgency section -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingHorizontal="16dp"
-                android:paddingTop="24dp"
-                android:paddingBottom="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/urgency"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_primary"
-                    android:layout_marginBottom="16dp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <Button
-                        android:id="@+id/btnEmergency"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="12dp"
-                        android:paddingBottom="12sp"
-                        android:text="@string/emergency"
-                        android:textColor="@color/text_primary"
-                        android:backgroundTint="@color/background_gray"
-                        android:layout_marginEnd="6dp"
-                        android:textSize="14sp"
-                        android:textStyle="normal" />
-
-                    <Button
-                        android:id="@+id/btnSameDay"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/same_day"
-                        android:paddingTop="12dp"
-                        android:paddingBottom="12sp"
-                        android:textColor="@color/text_primary"
-                        android:backgroundTint="@color/background_gray"
-                        android:layout_marginHorizontal="3dp"
-                        android:textSize="14sp"
-                        android:textStyle="normal" />
-
-                    <Button
-                        android:id="@+id/btnScheduleLater"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/schedule_later"
-                        android:textColor="@color/text_primary"
-                        android:backgroundTint="@color/background_gray"
-                        android:layout_marginStart="6dp"
-                        android:textSize="14sp"
-                        android:textStyle="normal" />
-                </LinearLayout>
-            </LinearLayout>
 
             <!-- Property location section -->
             <LinearLayout
@@ -474,6 +380,7 @@
                     android:layout_height="wrap_content"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="0dp"
+                    android:layout_marginBottom="60dp"
                     app:cardBackgroundColor="@color/background_gray"
                     app:strokeWidth="0dp">
 
@@ -485,11 +392,11 @@
                         android:gravity="center_vertical">
 
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:contentDescription="@string/location_icon"
                             android:src="@drawable/ic_house"
-                            app:tint="@color/text_primary"
-                            android:contentDescription="@string/location_icon" />
+                            app:tint="@color/text_primary" />
 
                         <LinearLayout
                             android:layout_width="0dp"

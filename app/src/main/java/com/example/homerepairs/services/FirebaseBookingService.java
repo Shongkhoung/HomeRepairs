@@ -18,6 +18,7 @@ public class FirebaseBookingService {
     private static final String COLLECTION_BOOKINGS = "bookings";
     private FirebaseFirestore db;
 
+    // Callback interfaces for booking operations
     public interface BookingCallback {
         void onSuccess(Booking booking);
         void onError(String error);
@@ -73,7 +74,7 @@ public class FirebaseBookingService {
                     .add(booking)
                     .addOnSuccessListener(documentReference -> {
                         Log.d(TAG, "Booking created successfully with ID: " + documentReference.getId());
-                        booking.setId(documentReference.getId());
+                        booking.setId(documentReference.getId());  // Set the Firestore document ID
                         callback.onSuccess(booking);
                     })
                     .addOnFailureListener(e -> {
@@ -112,8 +113,8 @@ public class FirebaseBookingService {
                         }
                     } else {
                         Log.e(TAG, "Error getting booking by ID", task.getException());
-                        callback.onError("Failed to load booking: " + 
-                            (task.getException() != null ? task.getException().getMessage() : "Unknown error"));
+                        callback.onError("Failed to load booking: " +
+                                (task.getException() != null ? task.getException().getMessage() : "Unknown error"));
                     }
                 });
     }
@@ -148,8 +149,8 @@ public class FirebaseBookingService {
                         callback.onSuccess(bookings);
                     } else {
                         Log.e(TAG, "Error getting bookings by user ID", task.getException());
-                        callback.onError("Failed to load bookings: " + 
-                            (task.getException() != null ? task.getException().getMessage() : "Unknown error"));
+                        callback.onError("Failed to load bookings: " +
+                                (task.getException() != null ? task.getException().getMessage() : "Unknown error"));
                     }
                 });
     }
@@ -183,8 +184,8 @@ public class FirebaseBookingService {
                         callback.onSuccess(bookings);
                     } else {
                         Log.e(TAG, "Error getting bookings by provider ID", task.getException());
-                        callback.onError("Failed to load bookings: " + 
-                            (task.getException() != null ? task.getException().getMessage() : "Unknown error"));
+                        callback.onError("Failed to load bookings: " +
+                                (task.getException() != null ? task.getException().getMessage() : "Unknown error"));
                     }
                 });
     }
@@ -203,8 +204,8 @@ public class FirebaseBookingService {
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error updating booking status", e);
-                    callback.onError("Failed to update booking: " + 
-                        (e.getMessage() != null ? e.getMessage() : "Unknown error"));
+                    callback.onError("Failed to update booking: " +
+                            (e.getMessage() != null ? e.getMessage() : "Unknown error"));
                 });
     }
 
@@ -224,8 +225,8 @@ public class FirebaseBookingService {
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error updating booking", e);
-                    callback.onError("Failed to update booking: " + 
-                        (e.getMessage() != null ? e.getMessage() : "Unknown error"));
+                    callback.onError("Failed to update booking: " +
+                            (e.getMessage() != null ? e.getMessage() : "Unknown error"));
                 });
     }
 
@@ -242,8 +243,8 @@ public class FirebaseBookingService {
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error deleting booking", e);
-                    callback.onError("Failed to delete booking: " + 
-                        (e.getMessage() != null ? e.getMessage() : "Unknown error"));
+                    callback.onError("Failed to delete booking: " +
+                            (e.getMessage() != null ? e.getMessage() : "Unknown error"));
                 });
     }
 
@@ -256,4 +257,3 @@ public class FirebaseBookingService {
         return String.valueOf(reference);
     }
 }
-
