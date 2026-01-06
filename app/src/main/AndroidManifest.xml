@@ -26,12 +26,16 @@
         android:theme="@style/Theme.HomeRepairs"
         tools:targetApi="31">
 
-        <!-- Disable Facebook SDK auto-init -->
+        <!-- Facebook SDK App ID -->
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id"/>
+        <!-- Disable auto-initialization if needed -->
         <meta-data
             android:name="com.facebook.sdk.AutoInitEnabled"
             android:value="false"/>
 
-        <!-- SPLASH SCREEN (Launcher Activity) -->
+        <!-- Splash Screen (Launcher Activity) -->
         <activity
             android:name=".SplashScreen"
             android:exported="true"
@@ -42,40 +46,48 @@
             </intent-filter>
         </activity>
 
-        <!-- MAIN HOME SCREEN -->
-
-
-        <!-- GET STARTED SCREEN -->
+        <!-- Auth & Main Activities -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"/>
+        <activity
+            android:name=".SignInActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".SignUpActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ForgotActivity"
+            android:exported="true"/>
+        <activity
+            android:name=".CheckEmailActivity"
+            android:exported="true"/>
+        <activity
+            android:name=".VerifyOtpActivity"
+            android:exported="true"/>
         <activity
             android:name=".GetStartActivity"
-            android:exported="true"
-            android:theme="@style/Theme.HomeRepairs"/>
+            android:exported="true"/>
 
-        <!-- AUTH SCREENS -->
-        <activity android:name=".MainActivity" android:exported="true" />
-        <activity android:name=".SignInActivity" android:exported="true" />
-        <activity android:name=".SignUpActivity" />
-        <activity android:name=".ForgotActivity" />
-        <activity android:name=".CheckEmailActivity" />
-        <activity android:name=".VerifyOtpActivity" />
-
-        <!-- OTHER ACTIVITIES -->
-        <activity android:name=".PlumbingActivity" />
-        <activity android:name=".ProviderProfileActivity" />
-        <activity android:name=".NewBookingActivity" />
-        <activity android:name=".BookingConfirmedActivity" />
-        <activity android:name=".BookingDetailsActivity" />
-        <activity android:name=".ReviewConfirmActivity" />
-        <activity android:name=".BookingsActivity" />
-        <activity android:name=".MessagesActivity" />
-        <activity android:name=".ChatActivity" />
-        <activity android:name=".FavoritesActivity" />
-        <activity android:name=".UserProfileActivity" />
-        <activity android:name=".PrivacyAndSecurityActivity" />
-        <activity android:name=".TermsConditionsActivity" />
-        <activity android:name=".SavedLocationActivity" />
-        <activity android:name=".AddPropertyActivity" />
-        <activity android:name=".HelpCenterActivity" />
+        <!-- Other App Activities -->
+        <activity android:name=".PlumbingActivity" android:exported="false"/>
+        <activity android:name=".ProviderProfileActivity" android:exported="false"/>
+        <activity android:name=".NewBookingActivity" android:exported="false"/>
+        <activity android:name=".BookingConfirmedActivity" android:exported="false"/>
+        <activity android:name=".BookingDetailsActivity" android:exported="false"/>
+        <activity android:name=".ReviewConfirmActivity" android:exported="false"/>
+        <activity android:name=".BookingsActivity" android:exported="false"/>
+        <activity android:name=".MessagesActivity" android:exported="false"/>
+        <activity android:name=".ChatActivity" android:exported="false"/>
+        <activity android:name=".FavoritesActivity" android:exported="false"/>
+        <activity android:name=".UserProfileActivity" android:exported="false"/>
+        <activity android:name=".PrivacyAndSecurityActivity" android:exported="false"/>
+        <activity android:name=".TermsConditionsActivity" android:exported="false"/>
+        <activity android:name=".SavedLocationActivity" android:exported="false"/>
+        <activity android:name=".AddPropertyActivity" android:exported="false"/>
+        <activity android:name=".HelpCenterActivity" android:exported="false"/>
 
         <!-- Firebase Notification Service -->
         <service
@@ -85,6 +97,9 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+        <meta-data android:name="com.facebook.sdk.AutoInitEnabled" android:value="false"/>
 
     </application>
+
 </manifest>

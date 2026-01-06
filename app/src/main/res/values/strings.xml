@@ -1,10 +1,12 @@
 <resources>
+    <string name="facebook_app_id">3780717545568373</string>
     <string name="app_name">HomeRepairs</string>
     <string name="provider_photo">Provider Photo</string>
     <string name="_22_c_sunny">22°C Sunny</string>
     <string name="weather_icon">Weather Icon</string>
+    <string name="default_web_client_id">615606852632-h0pa0qdns5dhlejq0d4vu2c7hn9ootls.apps.googleusercontent.com</string>
+
     <!-- Google Sign-In Web Client ID -->
-    <string name="default_web_client_id">516691618362-349lkerufe5tavgtj66gc8s9lcgu09rb.apps.googleusercontent.com</string>
     <string name="sign_in">Sign In</string>
     <string name="get_start">Get Start</string>
     <string name="booking_confirmed">Booking Confirmed!</string>

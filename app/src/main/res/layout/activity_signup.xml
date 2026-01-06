@@ -193,19 +193,13 @@
                 android:layout_marginBottom="16dp">
 
                 <ImageView
-                    android:id="@+id/SignInChrome"
+                    android:id="@+id/btnSignInChrome"
                     android:contentDescription="@string/google_sign_in"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:layout_marginEnd="16dp"
                     android:src="@drawable/ic_chrome"/>
 
-                <ImageView
-                    android:id="@+id/SignInFacebook"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:contentDescription="@string/facebook_sign_in"
-                    android:src="@drawable/ic_facebook"/>
+
             </LinearLayout>
 
             <!-- Already have account -->
