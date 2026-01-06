@@ -24,7 +24,7 @@ import com.airbnb.lottie.LottieAnimationView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BookingsActivity extends AppCompatActivity {
+public class BookingsActivity extends BaseActivity {
 
     private RecyclerView rvBookings;
     private TextView tvEmptyState;
@@ -33,7 +33,7 @@ public class BookingsActivity extends AppCompatActivity {
     private FirebaseBookingService bookingService;
     private List<Booking> allBookings = new ArrayList<>();
     private String currentFilter = "All";
-    
+
     // Filter chips
     private Chip chipAll;
     private Chip chipActive;
@@ -54,9 +54,17 @@ public class BookingsActivity extends AppCompatActivity {
         setupFilterTabs();
         setupBottomNavigation();
         loadBookings();
-        
+
         // Wait for layout to be ready before hiding loading overlay
         waitForLayoutReady();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Reload bookings when returning to this screen (e.g., after completing a
+        // booking)
+        loadBookings();
     }
 
     private void initializeViews() {
@@ -69,13 +77,14 @@ public class BookingsActivity extends AppCompatActivity {
         chipCompleted = findViewById(R.id.chipCompleted);
         llScreenLoading = findViewById(R.id.llScreenLoading);
         ivScreenLoading = findViewById(R.id.ivScreenLoading);
-        
+
         bookingService = new FirebaseBookingService();
-        
+
         // Filter button click handler
         findViewById(R.id.btnFilter).setOnClickListener(v -> {
             // Show filter dialog or bottom sheet (can be implemented later)
-            android.widget.Toast.makeText(this, "Filter options coming soon", android.widget.Toast.LENGTH_SHORT).show();
+            android.widget.Toast
+                    .makeText(this, getString(R.string.filter_coming_soon), android.widget.Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -89,13 +98,13 @@ public class BookingsActivity extends AppCompatActivity {
                     @Override
                     public void onBookAgain(Booking booking) {
                         // Navigate to provider profile or new booking
-                            Intent intent = new Intent(BookingsActivity.this, ProviderProfileActivity.class);
+                        Intent intent = new Intent(BookingsActivity.this, ProviderProfileActivity.class);
                         if (booking.getProviderName() != null) {
                             intent.putExtra("provider_name", booking.getProviderName());
                         }
-                            startActivity(intent);
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                        }
+                        startActivity(intent);
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    }
 
                     @Override
                     public void onReview(Booking booking) {
@@ -115,7 +124,10 @@ public class BookingsActivity extends AppCompatActivity {
                             intent.setData(android.net.Uri.parse("tel:" + booking.getPhoneNumber()));
                             startActivity(intent);
                         } else {
-                            android.widget.Toast.makeText(BookingsActivity.this, "Phone number not available", android.widget.Toast.LENGTH_SHORT).show();
+                            android.widget.Toast
+                                    .makeText(BookingsActivity.this, getString(R.string.phone_not_available),
+                                            android.widget.Toast.LENGTH_SHORT)
+                                    .show();
                         }
                     }
 
@@ -124,20 +136,32 @@ public class BookingsActivity extends AppCompatActivity {
                         // Navigate to tracking screen or booking details
                         Intent intent = new Intent(BookingsActivity.this, BookingDetailsActivity.class);
                         intent.putExtra("booking_id", booking.getId());
-                            startActivity(intent);
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                        }
+                        startActivity(intent);
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    }
 
                     @Override
                     public void onViewDetails(Booking booking) {
-                        // Navigate to booking details
-                        Intent intent = new Intent(BookingsActivity.this, BookingDetailsActivity.class);
+                        // Navigate to view booking details
+                        Intent intent = new Intent(BookingsActivity.this, ViewBookingActivity.class);
                         intent.putExtra("booking_id", booking.getId());
                         startActivity(intent);
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                     }
-                }
-        );
+
+                    @Override
+                    public void onDelete(Booking booking) {
+                        // Show confirmation dialog before deleting
+                        new android.app.AlertDialog.Builder(BookingsActivity.this)
+                                .setTitle(getString(R.string.dialog_cancel_booking_title))
+                                .setMessage(getString(R.string.dialog_cancel_booking_message))
+                                .setPositiveButton(getString(R.string.dialog_yes_cancel), (dialog, which) -> {
+                                    deleteBooking(booking);
+                                })
+                                .setNegativeButton(getString(R.string.dialog_no), null)
+                                .show();
+                    }
+                });
         rvBookings.setAdapter(bookingAdapter);
     }
 
@@ -200,10 +224,10 @@ public class BookingsActivity extends AppCompatActivity {
 
     private void filterBookings(String filter) {
         List<Booking> filteredBookings = new ArrayList<>();
-        
+
         for (Booking booking : allBookings) {
             String status = booking.getStatus() != null ? booking.getStatus() : "Pending";
-            
+
             switch (filter) {
                 case "All":
                     filteredBookings.add(booking);
@@ -226,24 +250,24 @@ public class BookingsActivity extends AppCompatActivity {
                     break;
             }
         }
-        
+
         bookingAdapter.updateBookings(filteredBookings);
         updateBookingCount(filteredBookings.size());
-        
+
         if (filteredBookings.isEmpty()) {
             rvBookings.setVisibility(View.GONE);
             tvEmptyState.setVisibility(View.VISIBLE);
-            } else {
+        } else {
             rvBookings.setVisibility(View.VISIBLE);
             tvEmptyState.setVisibility(View.GONE);
-            }
+        }
     }
 
     private void loadBookings() {
         String userId = AuthHelper.getCurrentUserId(this);
         if (userId == null || userId.isEmpty()) {
-            // Use sample data for testing
-            allBookings = getSampleBookings();
+            // No user logged in - show empty state
+            allBookings = new ArrayList<>();
             updateBookingCount(allBookings.size());
             updateFilterChipCounts();
             filterBookings(currentFilter);
@@ -254,8 +278,8 @@ public class BookingsActivity extends AppCompatActivity {
             @Override
             public void onSuccess(List<Booking> bookings) {
                 if (bookings == null || bookings.isEmpty()) {
-                    // Use sample data if no bookings found
-                    allBookings = getSampleBookings();
+                    // No bookings found - show empty state
+                    allBookings = new ArrayList<>();
                 } else {
                     allBookings = bookings;
                 }
@@ -267,11 +291,51 @@ public class BookingsActivity extends AppCompatActivity {
             @Override
             public void onError(String error) {
                 android.util.Log.e("BookingsActivity", "Error loading bookings: " + error);
-                // Use sample data on error
-                allBookings = getSampleBookings();
+                // Show error message and empty state
+                android.widget.Toast.makeText(BookingsActivity.this,
+                        "Failed to load bookings: " + error,
+                        android.widget.Toast.LENGTH_SHORT).show();
+                allBookings = new ArrayList<>();
                 updateBookingCount(allBookings.size());
                 updateFilterChipCounts();
                 filterBookings(currentFilter);
+            }
+        });
+    }
+
+    private void deleteBooking(Booking booking) {
+        if (booking == null || booking.getId() == null) {
+            android.widget.Toast.makeText(this, "Cannot delete booking: Invalid booking data",
+                    android.widget.Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Show progress
+        android.widget.Toast.makeText(this, getString(R.string.msg_canceling_booking),
+                android.widget.Toast.LENGTH_SHORT).show();
+
+        bookingService.deleteBooking(booking.getId(), new FirebaseBookingService.BookingCallback() {
+            @Override
+            public void onSuccess(Booking deletedBooking) {
+                android.util.Log.d("BookingsActivity", "Booking deleted successfully: " + booking.getId());
+                android.widget.Toast.makeText(BookingsActivity.this, getString(R.string.msg_booking_canceled),
+                        android.widget.Toast.LENGTH_SHORT).show();
+
+                // Remove from local list
+                allBookings.remove(booking);
+
+                // Update UI
+                updateBookingCount(allBookings.size());
+                updateFilterChipCounts();
+                filterBookings(currentFilter);
+            }
+
+            @Override
+            public void onError(String error) {
+                android.util.Log.e("BookingsActivity", "Error deleting booking: " + error);
+                android.widget.Toast.makeText(BookingsActivity.this,
+                        getString(R.string.error_cancel_booking, error),
+                        android.widget.Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -385,7 +449,7 @@ public class BookingsActivity extends AppCompatActivity {
     }
 
     private void updateBookingCount(int count) {
-        tvBookingCount.setText(count + " total bookings");
+        tvBookingCount.setText(getString(R.string.booking_count_format, count));
     }
 
     private void updateFilterChipCounts() {
@@ -408,19 +472,19 @@ public class BookingsActivity extends AppCompatActivity {
             }
         }
 
-        chipAll.setText("All (" + allCount + ")");
-        chipActive.setText("Active (" + activeCount + ")");
-        chipScheduled.setText("Scheduled (" + scheduledCount + ")");
-        chipCompleted.setText("Completed (" + completedCount + ")");
+        chipAll.setText(getString(R.string.filter_all_count, allCount));
+        chipActive.setText(getString(R.string.filter_active_count, activeCount));
+        chipScheduled.setText(getString(R.string.filter_scheduled_count, scheduledCount));
+        chipCompleted.setText(getString(R.string.filter_completed_count, completedCount));
     }
 
     private void setupBottomNavigation() {
         BottomNavigationView bottomNavigation = findViewById(R.id.bottomNavigation);
-        
+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             bottomNavigation.setElevation(0f);
         }
-        
+
         bottomNavigation.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.nav_home) {
@@ -455,13 +519,14 @@ public class BookingsActivity extends AppCompatActivity {
 
     /**
      * Show or hide screen transition loading overlay
+     * 
      * @param show true to show, false to hide
      */
     private void showScreenLoading(boolean show) {
         if (llScreenLoading == null) {
             return;
         }
-        
+
         if (show) {
             llScreenLoading.setVisibility(View.VISIBLE);
             llScreenLoading.setAlpha(0f);
@@ -495,10 +560,10 @@ public class BookingsActivity extends AppCompatActivity {
         if (llScreenLoading == null) {
             return;
         }
-        
+
         // Record start time
         loadingStartTime = System.currentTimeMillis();
-        
+
         // Show loading overlay if it's not already visible
         if (llScreenLoading.getVisibility() != View.VISIBLE) {
             llScreenLoading.setVisibility(View.VISIBLE);
@@ -517,34 +582,36 @@ public class BookingsActivity extends AppCompatActivity {
                 ivScreenLoading.playAnimation();
             }
         }
-        
+
         // Get root view
         View rootView = findViewById(android.R.id.content);
         if (rootView == null) {
             // Fallback: hide after minimum duration
-            new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> hideScreenLoading(), MIN_LOADING_DURATION);
+            new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> hideScreenLoading(),
+                    MIN_LOADING_DURATION);
             return;
         }
-        
+
         // Wait for layout to be measured and laid out
-        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new android.view.ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                // Check if layout is ready (has dimensions)
-                if (rootView.getWidth() > 0 && rootView.getHeight() > 0) {
-                    // Remove listener to avoid multiple calls
-                    rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    
-                    // Calculate remaining time to meet minimum duration
-                    long elapsedTime = System.currentTimeMillis() - loadingStartTime;
-                    long remainingTime = MIN_LOADING_DURATION - elapsedTime;
-                    
-                    // Wait for minimum duration or additional 200ms, whichever is longer
-                    long delayTime = Math.max(remainingTime, 200);
-                    rootView.postDelayed(() -> hideScreenLoading(), delayTime);
-                }
-            }
-        });
+        rootView.getViewTreeObserver()
+                .addOnGlobalLayoutListener(new android.view.ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        // Check if layout is ready (has dimensions)
+                        if (rootView.getWidth() > 0 && rootView.getHeight() > 0) {
+                            // Remove listener to avoid multiple calls
+                            rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                            // Calculate remaining time to meet minimum duration
+                            long elapsedTime = System.currentTimeMillis() - loadingStartTime;
+                            long remainingTime = MIN_LOADING_DURATION - elapsedTime;
+
+                            // Wait for minimum duration or additional 200ms, whichever is longer
+                            long delayTime = Math.max(remainingTime, 200);
+                            rootView.postDelayed(() -> hideScreenLoading(), delayTime);
+                        }
+                    }
+                });
     }
 
     /**
@@ -554,12 +621,12 @@ public class BookingsActivity extends AppCompatActivity {
         if (llScreenLoading == null || llScreenLoading.getVisibility() != View.VISIBLE) {
             return;
         }
-        
+
         // Stop Lottie animation
         if (ivScreenLoading != null) {
             ivScreenLoading.cancelAnimation();
         }
-        
+
         llScreenLoading.animate()
                 .alpha(0f)
                 .setDuration(200)

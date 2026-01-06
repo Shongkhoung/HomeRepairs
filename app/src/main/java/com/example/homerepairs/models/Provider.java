@@ -22,7 +22,7 @@ public class Provider {
 
     // Constructor for local/mock data
     public Provider(String name, String service, double rating, int reviewCount,
-                   String availability, String price, int profileImageResId, boolean isVerified, boolean isAvailableNow) {
+            String availability, String price, int profileImageResId, boolean isVerified, boolean isAvailableNow) {
         this.name = name;
         this.service = service;
         this.rating = rating;
@@ -126,4 +126,3 @@ public class Provider {
         this.profileImageUrl = profileImageUrl;
     }
 }
-

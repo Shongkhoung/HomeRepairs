@@ -21,6 +21,7 @@ import com.google.android.material.card.MaterialCardView;
 import java.util.List;
 
 public class ProviderListAdapter extends RecyclerView.Adapter<ProviderListAdapter.ProviderViewHolder> {
+    private final java.util.Set<Integer> animatedPositions = new java.util.HashSet<>();
     private List<Provider> providers;
     private OnProviderClickListener listener;
 
@@ -35,6 +36,7 @@ public class ProviderListAdapter extends RecyclerView.Adapter<ProviderListAdapte
 
     public void updateProviders(List<Provider> newProviders) {
         this.providers = newProviders;
+        animatedPositions.clear(); // Clear tracking on data refresh
         notifyDataSetChanged();
     }
 
@@ -49,7 +51,8 @@ public class ProviderListAdapter extends RecyclerView.Adapter<ProviderListAdapte
     @Override
     public void onBindViewHolder(@NonNull ProviderViewHolder holder, int position) {
         if (providers == null || position >= providers.size()) {
-            android.util.Log.e("ProviderListAdapter", "Invalid position: " + position + ", providers size: " + (providers != null ? providers.size() : 0));
+            android.util.Log.e("ProviderListAdapter", "Invalid position: " + position + ", providers size: "
+                    + (providers != null ? providers.size() : 0));
             return;
         }
         Provider provider = providers.get(position);
@@ -96,61 +99,58 @@ public class ProviderListAdapter extends RecyclerView.Adapter<ProviderListAdapte
                 android.util.Log.e("ProviderListAdapter", "Provider is null in bind method");
                 return;
             }
-            
-            android.util.Log.d("ProviderListAdapter", "Binding provider at position " + position + ": " + provider.getName());
-            
+
+            android.util.Log.d("ProviderListAdapter",
+                    "Binding provider at position " + position + ": " + provider.getName());
+
             // CRITICAL: Set up click listener FIRST, before any animation
             // This ensures clicks work immediately, even during animation
             setupClickListener(provider, position);
-            
+
             // CRITICAL: Ensure view is always visible and clickable for first click to work
             itemView.setAlpha(1f);
             itemView.setClickable(true);
             itemView.setEnabled(true);
             itemView.setTranslationY(0f); // Reset translation first
-            
-            // Add smooth slide-up animation for items (only on first bind)
-            // Use a tag to track if this view has been animated before
-            Boolean hasAnimated = (Boolean) itemView.getTag();
-            if (hasAnimated == null || !hasAnimated) {
-                itemView.setTag(true);
-                // Start from slightly below, but keep alpha at 1 so clicks work
-                itemView.setTranslationY(30f);
-                // Animate only translation, keep alpha at 1 to maintain clickability
-                // Remove withLayer() as it can interfere with touch events
+
+            // Add smooth slide-down animation for items (only once per position)
+            if (position != RecyclerView.NO_POSITION && !animatedPositions.contains(position)) {
+                animatedPositions.add(position);
+                // Start from slightly below for "slide-up" effect (matching Recent Activity)
+                itemView.setTranslationY(100f);
+                itemView.setAlpha(0f);
+
+                // Animate to normal position and full opacity
                 itemView.animate()
                         .translationY(0f)
+                        .alpha(1f)
                         .setDuration(400)
-                        .setStartDelay(position * 50) // Staggered animation
-                        .setInterpolator(new android.view.animation.DecelerateInterpolator(1.2f))
+                        .setStartDelay(position * 30) // Staggered animation (closer group)
+                        .setInterpolator(new android.view.animation.DecelerateInterpolator(2.0f))
                         .start();
             } else {
-                // If already animated, ensure it's in final position
+                // If already animated or invalid position, ensure it's in final position
                 itemView.setTranslationY(0f);
+                itemView.setAlpha(1f);
             }
-            
+
             // Load profile image - prioritize URL from Firebase, fallback to local resource
             if (ivProviderPhoto != null) {
                 String imageUrl = provider.getProfileImageUrl();
                 if (imageUrl != null && !imageUrl.isEmpty() && !imageUrl.equals("null")) {
                     // Load image from URL using Glide - high quality, fills entire circle
-                    android.util.Log.d("ProviderListAdapter", "Loading image from URL for " + provider.getName() + ": " + imageUrl);
+                    android.util.Log.d("ProviderListAdapter",
+                            "Loading image from URL for " + provider.getName() + ": " + imageUrl);
                     Glide.with(ivProviderPhoto.getContext())
                             .load(imageUrl)
-                            .placeholder(R.drawable.ic_profile)
-                            .error(R.drawable.ic_profile)
-                            .circleCrop()
-                            .into(ivProviderPhoto);
-                } else if (provider.getProfileImageResId() != 0) {
-                    // Fallback to local resource - also use Glide for consistent circular cropping
-                    Glide.with(ivProviderPhoto.getContext())
-                            .load(provider.getProfileImageResId())
+                            .placeholder(R.drawable.no_profile_image)
+                            .error(R.drawable.no_profile_image)
                             .circleCrop()
                             .into(ivProviderPhoto);
                 } else {
                     // Default placeholder - use Glide for consistent circular cropping
                     Glide.with(ivProviderPhoto.getContext())
-                            .load(R.drawable.ic_profile)
+                            .load(R.drawable.no_profile_image)
                             .circleCrop()
                             .into(ivProviderPhoto);
                 }
@@ -200,7 +200,7 @@ public class ProviderListAdapter extends RecyclerView.Adapter<ProviderListAdapte
                         ivVerifiedIcon.setVisibility(View.VISIBLE);
                     }
                     if (tvVerified != null) {
-                    tvVerified.setVisibility(View.VISIBLE);
+                        tvVerified.setVisibility(View.VISIBLE);
                     }
                 } else {
                     llVerified.setVisibility(View.GONE);
@@ -208,14 +208,15 @@ public class ProviderListAdapter extends RecyclerView.Adapter<ProviderListAdapte
                         ivVerifiedIcon.setVisibility(View.GONE);
                     }
                     if (tvVerified != null) {
-                    tvVerified.setVisibility(View.GONE);
+                        tvVerified.setVisibility(View.GONE);
                     }
                 }
             }
 
-            // Click listener is set up in setupClickListener() method called at start of bind()
+            // Click listener is set up in setupClickListener() method called at start of
+            // bind()
         }
-        
+
         /**
          * Set up click listener for the provider card
          * Called at the start of bind() to ensure clicks work immediately
@@ -223,50 +224,52 @@ public class ProviderListAdapter extends RecyclerView.Adapter<ProviderListAdapte
         private void setupClickListener(Provider provider, int position) {
             // Use itemView directly since cardProvider is the root view (same reference)
             View targetView = cardProvider != null ? cardProvider : itemView;
-            
+
             if (targetView != null) {
                 // Clear any previous click listener
                 targetView.setOnClickListener(null);
-                
+
                 // Use the provider from bind directly to avoid position lookup issues
                 final Provider currentProvider = provider;
                 final int currentPosition = position;
-                
+
                 // Ensure view is clickable and can receive touch events immediately
                 targetView.setClickable(true);
-                targetView.setFocusable(true);
                 targetView.setEnabled(true);
                 targetView.setAlpha(1f); // Ensure view is visible for clicks
                 targetView.setVisibility(View.VISIBLE); // Ensure view is visible
-                
+
                 // Recursively ensure ALL child views don't block touch events
                 makeChildrenNonClickable(targetView);
-                
+
                 // Also set up touch listener for debugging
                 targetView.setOnTouchListener((v, event) -> {
                     if (event.getAction() == android.view.MotionEvent.ACTION_DOWN) {
-                        android.util.Log.d("ProviderListAdapter", "Touch DOWN detected on card for: " + provider.getName());
+                        android.util.Log.d("ProviderListAdapter",
+                                "Touch DOWN detected on card for: " + provider.getName());
                     }
                     // Return false to allow click listener to work
                     return false;
                 });
-                
+
                 // Set click listener immediately (synchronously)
                 targetView.setOnClickListener(v -> {
                     int adapterPosition = getAdapterPosition();
-                    android.util.Log.d("ProviderListAdapter", "Card clicked! ViewHolder position: " + currentPosition + ", Adapter position: " + adapterPosition);
-                    
+                    android.util.Log.d("ProviderListAdapter", "Card clicked! ViewHolder position: " + currentPosition
+                            + ", Adapter position: " + adapterPosition);
+
                     if (listener != null) {
                         // Use the provider from bind, but verify with adapter position if valid
                         Provider clickedProvider = currentProvider;
-                        if (adapterPosition != RecyclerView.NO_POSITION && 
-                            adapterPosition >= 0 && adapterPosition < providers.size()) {
+                        if (adapterPosition != RecyclerView.NO_POSITION &&
+                                adapterPosition >= 0 && adapterPosition < providers.size()) {
                             // Use provider from adapter position if valid
                             clickedProvider = providers.get(adapterPosition);
                         }
-                        
+
                         if (clickedProvider != null) {
-                            android.util.Log.d("ProviderListAdapter", "Calling listener for provider: " + clickedProvider.getName());
+                            android.util.Log.d("ProviderListAdapter",
+                                    "Calling listener for provider: " + clickedProvider.getName());
                             animateClick(targetView);
                             listener.onProviderClick(clickedProvider);
                         } else {
@@ -276,15 +279,17 @@ public class ProviderListAdapter extends RecyclerView.Adapter<ProviderListAdapte
                         android.util.Log.e("ProviderListAdapter", "Listener is null");
                     }
                 });
-                
-                android.util.Log.d("ProviderListAdapter", "Click listener set up for provider: " + provider.getName() + ", view clickable: " + targetView.isClickable());
+
+                android.util.Log.d("ProviderListAdapter", "Click listener set up for provider: " + provider.getName()
+                        + ", view clickable: " + targetView.isClickable());
             } else {
                 android.util.Log.e("ProviderListAdapter", "Both cardProvider and itemView are null!");
             }
         }
-        
+
         /**
-         * Recursively make all child views non-clickable to ensure parent receives touch events
+         * Recursively make all child views non-clickable to ensure parent receives
+         * touch events
          */
         private void makeChildrenNonClickable(View view) {
             if (view instanceof android.view.ViewGroup) {
@@ -300,38 +305,38 @@ public class ProviderListAdapter extends RecyclerView.Adapter<ProviderListAdapte
                 }
             }
         }
-        
+
         /**
-         * Smooth scale animation on click: scale to 0.96 for 80ms, then back to 1.0 with overshoot
+         * Smooth scale animation on click: scale to 0.96 for 80ms, then back to 1.0
+         * with overshoot
          */
         private void animateClick(View view) {
             ObjectAnimator scaleDownX = ObjectAnimator.ofFloat(view, "scaleX", 1.0f, 0.96f);
             ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(view, "scaleY", 1.0f, 0.96f);
-            
+
             scaleDownX.setDuration(80);
             scaleDownY.setDuration(80);
             scaleDownX.setInterpolator(new android.view.animation.DecelerateInterpolator(1.5f));
             scaleDownY.setInterpolator(new android.view.animation.DecelerateInterpolator(1.5f));
-            
+
             scaleDownX.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     ObjectAnimator scaleUpX = ObjectAnimator.ofFloat(view, "scaleX", 0.96f, 1.0f);
                     ObjectAnimator scaleUpY = ObjectAnimator.ofFloat(view, "scaleY", 0.96f, 1.0f);
-                    
+
                     scaleUpX.setDuration(120);
                     scaleUpY.setDuration(120);
                     scaleUpX.setInterpolator(new OvershootInterpolator(1.1f));
                     scaleUpY.setInterpolator(new OvershootInterpolator(1.1f));
-                    
+
                     scaleUpX.start();
                     scaleUpY.start();
                 }
             });
-            
+
             scaleDownX.start();
             scaleDownY.start();
         }
     }
 }
-

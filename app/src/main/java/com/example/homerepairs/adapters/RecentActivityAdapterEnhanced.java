@@ -24,13 +24,14 @@ import java.util.Map;
  * Enhanced Recent Activity Adapter with status chips and colored icons
  * Features: Status badges, action buttons, colored service icons
  */
-public class RecentActivityAdapterEnhanced extends RecyclerView.Adapter<RecentActivityAdapterEnhanced.ActivityViewHolder> {
+public class RecentActivityAdapterEnhanced
+        extends RecyclerView.Adapter<RecentActivityAdapterEnhanced.ActivityViewHolder> {
     private List<RecentActivity> activities;
     private OnActivityClickListener listener;
-    
+
     // Map status to color
     private static final Map<String, Integer> STATUS_COLORS = new HashMap<>();
-    
+
     static {
         STATUS_COLORS.put("Completed", R.color.success);
         STATUS_COLORS.put("Available", R.color.success);
@@ -40,10 +41,10 @@ public class RecentActivityAdapterEnhanced extends RecyclerView.Adapter<RecentAc
         STATUS_COLORS.put("Upcoming", R.color.success);
         STATUS_COLORS.put("Unavailable", R.color.error);
     }
-    
+
     // Map action text to background drawable
     private static final Map<String, Integer> ACTION_BACKGROUNDS = new HashMap<>();
-    
+
     static {
         ACTION_BACKGROUNDS.put("Book Again", R.drawable.button_action_background);
         ACTION_BACKGROUNDS.put("View Details", R.drawable.button_action_info_background);
@@ -52,7 +53,9 @@ public class RecentActivityAdapterEnhanced extends RecyclerView.Adapter<RecentAc
 
     public interface OnActivityClickListener {
         void onBookAgain(RecentActivity activity);
+
         void onViewDetails(RecentActivity activity);
+
         void onCancel(RecentActivity activity);
     }
 
@@ -60,9 +63,44 @@ public class RecentActivityAdapterEnhanced extends RecyclerView.Adapter<RecentAc
         this.activities = activities;
         this.listener = listener;
     }
-    
+
+    private String searchQuery = "";
+
     public void updateActivities(List<RecentActivity> newActivities) {
         this.activities = newActivities;
+        notifyDataSetChanged();
+    }
+
+    /**
+     * Update activities with granular notifications to avoid re-binding existing
+     * items.
+     */
+    public void updateActivitiesGranular(List<RecentActivity> newActivities, boolean expanded) {
+        if (this.activities == null || newActivities == null) {
+            updateActivities(newActivities);
+            return;
+        }
+
+        int oldSize = this.activities.size();
+        int newSize = newActivities.size();
+        this.activities = newActivities;
+
+        if (expanded && newSize > oldSize) {
+            notifyItemRangeInserted(oldSize, newSize - oldSize);
+        } else if (!expanded && newSize < oldSize) {
+            notifyItemRangeRemoved(newSize, oldSize - newSize);
+        } else {
+            notifyDataSetChanged();
+        }
+    }
+
+    /**
+     * Set search query to highlight matching activities
+     * 
+     * @param query Search query (empty string to show all normally)
+     */
+    public void setSearchQuery(String query) {
+        this.searchQuery = query != null ? query.toLowerCase().trim() : "";
         notifyDataSetChanged();
     }
 
@@ -114,7 +152,7 @@ public class RecentActivityAdapterEnhanced extends RecyclerView.Adapter<RecentAc
             if (listener != null && getAdapterPosition() != RecyclerView.NO_POSITION) {
                 RecentActivity activity = activities.get(getAdapterPosition());
                 String action = activity.getActionText();
-                
+
                 if (action.contains("Book Again")) {
                     listener.onBookAgain(activity);
                 } else if (action.contains("View Details")) {
@@ -126,60 +164,74 @@ public class RecentActivityAdapterEnhanced extends RecyclerView.Adapter<RecentAc
         }
 
         void bind(RecentActivity activity) {
+            // Calculate match status
+            boolean isMatch = true;
+            if (searchQuery != null && !searchQuery.isEmpty()) {
+                String title = activity.getTitle() != null ? activity.getTitle().toLowerCase() : "";
+                String details = activity.getDetails() != null ? activity.getDetails().toLowerCase() : "";
+                isMatch = title.contains(searchQuery) || details.contains(searchQuery);
+            }
+
+            // Apply dimming if not a match - DISABLED as per user request
+            if (cardView != null) {
+                cardView.setAlpha(1.0f);
+            }
+            // Always enable click
+            if (cardView != null) {
+                cardView.setEnabled(true);
+            }
+
             String imageUrl = activity.getProfileImageUrl();
-            boolean hasValidImageUrl = imageUrl != null && 
-                                      !imageUrl.isEmpty() && 
-                                      !imageUrl.equals("null") &&
-                                      !imageUrl.trim().isEmpty();
-            
+            boolean hasValidImageUrl = imageUrl != null &&
+                    !imageUrl.isEmpty() &&
+                    !imageUrl.equals("null") &&
+                    !imageUrl.trim().isEmpty();
+
             // Load profile image from Firebase Storage URL if available
             if (hasValidImageUrl) {
                 // Load provider profile image from Firebase Storage using Glide
-                android.util.Log.d("RecentActivityAdapter", "Loading profile image for " + activity.getTitle() + " from URL: " + imageUrl);
-                
-                // Set grey placeholder background
-                if (iconContainer != null) {
-                    iconContainer.setBackgroundResource(R.drawable.circle_profile_placeholder);
-                }
-                
+                android.util.Log.d("RecentActivityAdapter",
+                        "Loading profile image for " + activity.getTitle() + " from URL: " + imageUrl);
+
                 // Remove any color filters
                 ivActivityIcon.clearColorFilter();
                 ivActivityIcon.setColorFilter(null);
-                
+
                 // Use center crop for proper circular display
                 ivActivityIcon.setScaleType(android.widget.ImageView.ScaleType.CENTER_CROP);
-                
+
                 // Load image with Glide - circular crop
                 Glide.with(itemView.getContext())
-                    .load(imageUrl)
-                    .placeholder(R.drawable.circle_profile_placeholder) // Show grey placeholder while loading
-                    .error(R.drawable.circle_profile_placeholder) // Show grey placeholder on error
-                    .circleCrop() // Make it circular
-                    .into(ivActivityIcon);
+                        .load(imageUrl)
+                        .placeholder(R.drawable.no_profile_image) // Show no_profile_image while loading
+                        .error(R.drawable.no_profile_image) // Show no_profile_image on error
+                        .circleCrop() // Make it circular
+                        .into(ivActivityIcon);
             } else {
-                // No profile image - show grey placeholder circle
-                android.util.Log.d("RecentActivityAdapter", "No profile image URL for " + activity.getTitle() + ", showing placeholder");
-                
-                // Set grey placeholder background
-                if (iconContainer != null) {
-                    iconContainer.setBackgroundResource(R.drawable.circle_profile_placeholder);
-                }
-                
-                // Clear image and show placeholder
-                ivActivityIcon.setImageDrawable(null);
+                // No profile image - show default no_profile_image
+                android.util.Log.d("RecentActivityAdapter",
+                        "No profile image URL for " + activity.getTitle() + ", showing default");
+
+                // Clear any color filters
                 ivActivityIcon.clearColorFilter();
                 ivActivityIcon.setScaleType(android.widget.ImageView.ScaleType.CENTER_CROP);
+
+                // Load default image with Glide for consistent circular crop
+                Glide.with(itemView.getContext())
+                        .load(R.drawable.no_profile_image)
+                        .circleCrop()
+                        .into(ivActivityIcon);
             }
-            
+
             // Set text - Title is the activity/service name
             tvActivityTitle.setText(activity.getTitle());
-            
+
             // Provider name - from details field
             tvProviderName.setText(activity.getDetails());
-            
+
             // Time ago
             tvActivityDate.setText(activity.getTimeAgo());
-            
+
             // Set status chip
             chipStatus.setText(activity.getStatus());
             Integer statusColorRes = STATUS_COLORS.get(activity.getStatus());
@@ -190,7 +242,7 @@ public class RecentActivityAdapterEnhanced extends RecyclerView.Adapter<RecentAc
                 chipStatus.setChipBackgroundColorResource(R.color.success);
             }
         }
-        
+
         private int getCategoryColor(int iconResId) {
             // Map icon resources to category colors
             // This is a simplified mapping - adjust based on your icons
@@ -198,4 +250,3 @@ public class RecentActivityAdapterEnhanced extends RecyclerView.Adapter<RecentAc
         }
     }
 }
-

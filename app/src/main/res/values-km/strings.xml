@@ -1,0 +1,309 @@
+<resources>
+    <string name="app_name">HomeRepairs</string>
+    <string name="provider_photo">រូបថតអ្នកផ្តល់សេវា</string>
+    <string name="_22_c_sunny">២២°C ថ្ងៃវះ</string>
+    <string name="weather_icon">រូបតំណាងអាកាសធាតុ</string>
+    <string name="back">ត្រឡប់ក្រោយ</string>
+    
+    <!-- Profile - Payment Methods -->
+    <string name="title_payment_methods">វិធីសាស្ត្រទូទាត់</string>
+    <string name="card_visa_label">Visa •••• 4242</string>
+    <string name="card_mastercard_label">Mastercard •••• 8888</string>
+    <string name="expires_placeholder">ផុតកំណត់: ១២/២៥</string>
+    <string name="default_label">លំនាំដើម</string>
+    <string name="btn_add_payment_method">បន្ថែមវិធីសាស្ត្រទូទាត់</string>
+    <string name="msg_delete_payment">តើអ្នកពិតជាចង់លុប %1$s មែនទេ?</string>
+    <string name="msg_deleted">បានលុប %1$s</string>
+    
+    <!-- Profile - Addresses -->
+    <string name="title_addresses">អាសយដ្ឋាន</string>
+    <string name="address_home_label">ផ្ទះ</string>
+    <string name="address_work_label">កន្លែងធ្វើការ</string>
+    <string name="address_home_value">ផ្ទះលេខ ១២៣ ផ្លូវធំ\nភ្នំពេញ</string>
+    <string name="address_work_value">ផ្ទះលេខ ៤៥៦ ផ្លូវការិយាល័យ\nភ្នំពេញ</string>
+    <string name="btn_add_address">បន្ថែមអាសយដ្ឋាន</string>
+    <string name="msg_delete_address">តើអ្នកពិតជាចង់លុប %1$s មែនទេ?</string>
+    
+    <!-- Profile - Notifications -->
+    <string name="title_notifications">ការជូនដំណឹង</string>
+    <string name="unread_notifications_count">អ្នកមានការជូនដំណឹងមិនទាន់អានចំនួន ៣</string>
+    <string name="push_notifications">ការជូនដំណឹងតាម Push</string>
+    <string name="push_desc">ទទួលបានការជូនដំណឹងនៅលើឧបករណ៍របស់អ្នក</string>
+    <string name="email_notifications">ការជូនដំណឹងតាមអ៊ីមែល</string>
+    <string name="email_desc">ទទួលបានការធ្វើបច្ចុប្បន្នភាពតាមអ៊ីមែល</string>
+    <string name="sms_notifications">ការជូនដំណឹងតាម SMS</string>
+    <string name="sms_desc">ទទួលបានសារខ្លី</string>
+    <string name="order_updates">ការធ្វើបច្ចុប្បន្នភាពការបញ្ជាទិញ</string>
+    <string name="order_desc">តាមដានការបញ្ជាទិញរបស់អ្នក</string>
+    <string name="promotions">ប្រូម៉ូសិន</string>
+    <string name="promo_desc">ការផ្តល់ជូនពិសេសនិងកិច្ចព្រមព្រៀង</string>
+    
+    <!-- Profile - App Settings -->
+    <string name="title_app_settings">ការកំណត់កម្មវិធី</string>
+    <string name="language">ភាសា</string>
+    <string name="theme">រចនាប័ទ្ម</string>
+    <string name="currency">រូបិយប័ណ្ណ</string>
+    <string name="select_language">ជ្រើសរើសភាសា</string>
+    <string name="select_theme">ជ្រើសរើសរចនាប័ទ្ម</string>
+    <string name="select_currency">ជ្រើសរើសរូបិយប័ណ្ណ</string>
+    
+    <!-- Profile - Privacy & Security -->
+    <string name="title_privacy_security">ឯកជនភាព និងសុវត្ថិភាព</string>
+    <string name="change_password">ផ្លាស់ប្តូរពាក្យសម្ងាត់</string>
+    <string name="change_password_desc">ធ្វើបច្ចុប្បន្នភាពពាក្យសម្ងាត់របស់អ្នក</string>
+    <string name="two_factor_auth">ការផ្ទៀងផ្ទាត់ពីរជំហាន</string>
+    <string name="two_factor_desc">បន្ថែមស្រទាប់សុវត្ថិភាពបន្ថែម</string>
+    <string name="privacy_settings">ការកំណត់ឯកជនភាព</string>
+    <string name="privacy_settings_desc">គ្រប់គ្រងទិន្នន័យរបស់អ្នក</string>
+    <string name="delete_account">លុបគណនី</string>
+    <string name="delete_account_confirmation">តើអ្នកពិតជាចង់លុបគណនីរបស់អ្នកមែនទេ? សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។</string>
+    <string name="delete_account_initiated">ដំណើរការលុបគណនីបានចាប់ផ្តើម</string>
+    <string name="cancel">បោះបង់</string>
+    <string name="delete">លុប</string>
+    <string name="title_add_payment">បន្ថែមវិធីសាស្ត្រទូទាត់</string>
+    <string name="card_number">លេខកាត</string>
+    <string name="card_holder">ឈ្មោះម្ចាស់កាត</string>
+    <string name="expiry_date">កាលបរិច្ឆេទផុតកំណត់ (ខែ/ឆ្នាំ)</string>
+    <string name="cvv">CVV</string>
+    <string name="save_payment">រក្សាទុកវិធីសាស្ត្រទូទាត់</string>
+    
+    <string name="title_add_address">បន្ថែមអាសយដ្ឋាន</string>
+    <string name="address_name">ឈ្មោះអាសយដ្ឋាន (ឧទាហរណ៍៖ ផ្ទះ)</string>
+    <string name="street_address">អាសយដ្ឋានផ្លូវ</string>
+    <string name="city">ទីក្រុង</string>
+    <string name="zip_code">លេខកូដតំបន់</string>
+    <string name="save_address">រក្សាទុកអាសយដ្ឋាន</string>
+    
+    <string name="msg_payment_saved">វិធីសាស្ត្រទូទាត់ត្រូវបានរក្សាទុក</string>
+    <string name="msg_address_saved">អាសយដ្ឋានត្រូវបានរក្សាទុក</string>
+
+    <!-- Main Activity -->
+    <string name="title_home_repairs">Home Repairs</string>
+    <string name="greeting_format">សួស្តី, %1$s</string>
+    <string name="search_hint">ស្វែងរកសេវាកម្ម ឬអ្នកជំនាញ...</string>
+    <string name="btn_emergency">បន្ទាន់</string>
+    <string name="btn_bookings">ការកក់</string>
+    <string name="btn_favorites">ចំណូលចិត្ត</string>
+    <string name="section_services">សេវាកម្ម</string>
+    <string name="view_all">មើលទាំងអស់ ></string>
+    <string name="section_featured_pro">អ្នកជំនាញឆ្នើម</string>
+    <string name="subtitle_highly_recommended">ដែលត្រូវបានណែនាំយ៉ាងខ្លាំង</string>
+    <string name="section_recent_activity">សកម្មភាពថ្មីៗ</string>
+    <string name="view_all_caps">មើលទាំងអស់</string>
+    <string name="view_less">បង្ហាញតិច</string>
+    <string name="view_less_arrow">បង្ហាញតិច ></string>
+    <string name="no_internet">គ្មានការតភ្ជាប់អ៊ីនធឺណិត</string>
+    <string name="loading">កំពុងផ្ទុក...</string>
+
+    <!-- Bookings Activity -->
+    <string name="title_my_bookings">ការកក់របស់ខ្ញុំ</string>
+    <string name="bookings_count_format">ការកក់សរុប %1$d</string>
+    <string name="filter_all">ទាំងអស់ (%1$d)</string>
+    <string name="filter_active">សកម្ម (%1$d)</string>
+    <string name="filter_scheduled">បានកំណត់ពេល (%1$d)</string>
+    <string name="filter_completed">បានបញ្ចប់</string>
+    <string name="no_bookings">មិនទាន់មានការកក់នៅឡើយទេ</string>
+
+    <!-- New Booking Activity -->
+    <string name="title_new_booking">ការកក់ថ្មី</string>
+    <string name="step_describe">ពណ៌នាអំពីបញ្ហារបស់អ្នក</string>
+    <string name="label_service">សេវាកម្ម</string>
+    <string name="service_select">ជ្រើសរើសសេវាកម្ម</string>
+    <string name="service_category_placeholder">ចុចដើម្បីជ្រើសរើស</string>
+    <string name="label_issue_description">ការពិពណ៌នាអំពីបញ្ហា</string>
+    <string name="hint_issue_description">ពណ៌នាអំពីបញ្ហាយ៉ាងលម្អិត...</string>
+    <string name="label_photos">រូបថត</string>
+    <string name="hint_add_photos">បន្ថែមរូបថតដើម្បីជួយអ្នកជំនាញយល់ពីបញ្ហាកាន់តែច្បាស់</string>
+    <string name="btn_take_photo">ថតរូប</string>
+    <string name="btn_gallery">វិចិត្រសាល</string>
+    <string name="label_urgency">ភាពបន្ទាន់</string>
+    <string name="btn_same_day">ថ្ងៃនេះ</string>
+    <string name="btn_schedule">កាលវិភាគ</string>
+    <string name="label_property_location">ទីតាំងអចលនទ្រព្យ</string>
+    <string name="btn_next">បន្ទាប់</string>
+    <string name="msg_describe_issue">សូមពណ៌នាអំពីបញ្ហា</string>
+    <string name="msg_select_urgency">សូមជ្រើសរើសភាពបន្ទាន់</string>
+    <string name="msg_login_required_booking">សូមចូលប្រើដើម្បីបង្កើតការកក់</string>
+    <string name="msg_booking_created">ការកក់ត្រូវបានបង្កើតដោយជោគជ័យ!</string>
+
+    <!-- Provider Profile Activity -->
+    <string name="label_response">ការឆ្លើយតប</string>
+    <string name="label_jobs_done">ការងារដែលបានធ្វើ</string>
+    <string name="label_repeat">ការប្រើប្រាស់ម្តងទៀត</string>
+    <string name="label_starting_from">ចាប់ផ្តើមពី</string>
+    <string name="btn_get_quote">ស្នើសុំតម្លៃ</string>
+    <string name="section_about">អំពីការងារ</string>
+    <string name="label_location">ទីតាំង</string>
+    <string name="section_details">ព័ត៌មានលម្អិត</string>
+    <string name="label_typical_job_costs">តម្លៃការងារធម្មតា</string>
+    <string name="btn_book_now">កក់ឥឡូវនេះ</string>
+    <string name="reviews_count_format">(%1$d ការវាយតម្លៃ)</string>
+
+    <!-- Profile Activity -->
+    <string name="title_profile">ប្រវត្តិរូប</string>
+    <string name="btn_edit">កែប្រែ</string>
+    <string name="label_bookings">ការកក់</string>
+    <string name="label_reviews">ការវាយតម្លៃ</string>
+    <string name="label_favorites">ចំណូលចិត្ត</string>
+    <string name="title_account">គណនី</string>
+    <string name="title_preferences">ការកំណត់</string>
+    <string name="btn_logout">ចាកចេញ</string>
+    <string name="title_logout">ចាកចេញ</string>
+    <string name="msg_logout_confirm">តើអ្នកពិតជាចង់ចាកចេញមែនទេ?</string>
+    <string name="msg_logged_out">បានចាកចេញដោយជោគជ័យ</string>
+    <string name="msg_user_not_authenticated">អ្នកប្រើប្រាស់មិនទាន់បានចូល</string>
+    <string name="msg_no_email">គ្មានអ៊ីមែល</string>
+    <string name="msg_enter_full_name">សូមបញ្ចូលឈ្មោះពេញរបស់អ្នក</string>
+    <string name="msg_profile_updated">ប្រវត្តិរូបត្រូវបានធ្វើបច្ចុប្បន្នភាពដោយជោគជ័យ</string>
+    <string name="error_update_profile">បរាជ័យក្នុងការធ្វើបច្ចុប្បន្នភាពប្រវត្តិរូប៖ %1$s</string>
+    <string name="msg_uploading_profile_pic">កំពុងផ្ទុករូបភាពប្រវត្តិរូប...</string>
+    <string name="msg_profile_pic_updated">រូបភាពប្រវត្តិរូបត្រូវបានធ្វើបច្ចុប្បន្នភាពដោយជោគជ័យ</string>
+    <string name="error_upload_image">បរាជ័យក្នុងការផ្ទុករូបភាព៖ %1$s</string>
+    <string name="msg_permission_denied_image">ការអនុញ្ញាតត្រូវបានបដិសេធ។ មិនអាចជ្រើសរើសរូបភាពបានទេ។</string>
+    <string name="title_select_profile_pic">ជ្រើសរើសរូបភាពប្រវត្តិរូប</string>
+
+    <!-- Edit Profile Dialog -->
+    <string name="title_personal_info">ព័ត៌មានផ្ទាល់ខ្លួន</string>
+    <string name="label_full_name">ឈ្មោះពេញ</string>
+    <string name="label_email">អ៊ីមែល</string>
+    <string name="label_phone">លេខទូរស័ព្ទ</string>
+    <string name="label_location_profile">ទីតាំង</string>
+    <string name="btn_save_changes">រក្សាទុកការផ្លាស់ប្តូរ</string>
+
+    <!-- Java Code Strings -->
+    <!-- MainActivity -->
+    <string name="default_location">ភ្នំពេញ</string>
+    <string name="default_weather">២២°C ថ្ងៃជា</string>
+    <string name="greeting_morning">អរុណសួស្តី</string>
+    <string name="greeting_afternoon">ទិវាសួស្តី</string>
+    <string name="greeting_evening">សាយ័នសួស្តី</string>
+    <string name="default_user">អ្នកប្រើប្រាស់</string>
+    <string name="view_all_arrow">មើលទាំងអស់ ></string>
+    <string name="error_weather_fetch">មិនអាចទាញយកទិន្នន័យអាកាសធាតុបានទេ</string>
+    <string name="opening_category">កំពុងបើក %1$s</string>
+    <string name="error_provider_not_found">រកមិនឃើញអ្នកផ្តល់សេវា</string>
+    
+    <!-- BookingsActivity -->
+    <string name="filter_all_count">ទាំងអស់ (%1$d)</string>
+    <string name="filter_active_count">សកម្ម (%1$d)</string>
+    <string name="filter_scheduled_count">បានកក់ (%1$d)</string>
+    <string name="filter_completed_count">បានបញ្ចប់ (%1$d)</string>
+    <string name="booking_count_format">%1$d ការកក់សរុប</string>
+    <string name="filter_coming_soon">ជម្រើសត្រងនឹងមកដល់ឆាប់ៗនេះ</string>
+    <string name="phone_not_available">មិនមានលេខទូរស័ព្ទ</string>
+    <string name="dialog_cancel_booking_title">បោះបង់ការកក់</string>
+    <string name="dialog_cancel_booking_message">តើអ្នកប្រាកដជាចង់បោះបង់ការកក់នេះមែនទេ?</string>
+    <string name="dialog_yes_cancel">បាទ/ចាស, បោះបង់</string>
+    <string name="dialog_no">ទេ</string>
+    <string name="msg_canceling_booking">កំពុងបោះបង់ការកក់...</string>
+    <string name="msg_booking_canceled">ការកក់ត្រូវបានបោះបង់ដោយជោគជ័យ</string>
+    <string name="error_cancel_booking">បរាជ័យក្នុងការបោះបង់ការកក់៖ %1$s</string>
+    <string name="error_load_bookings">បរាជ័យក្នុងការផ្ទុកការកក់៖ %1$s</string>
+    
+    <!-- NewBookingActivity -->
+    <string name="urgency_emergency">បន្ទាន់</string>
+    <string name="urgency_same_day">ថ្ងៃនេះ</string>
+    <string name="urgency_schedule_later">កំណត់ពេលក្រោយ</string>
+    <string name="option_take_photo">ថតរូប</string>
+    <string name="option_choose_gallery">ជ្រើសរើសពីវិចិត្រសាល</string>
+    <string name="option_remove_photo">លុបរូបភាព</string>
+    <string name="permission_denied">ត្រូវបានបដិសេធការអនុញ្ញាត</string>
+    <string name="camera_not_available">កាមេរ៉ាមិនមាន</string>
+    <string name="title_select_picture">ជ្រើសរើសរូបភាព</string>
+    <string name="error_loading_image">កំហុសក្នុងការផ្ទុករូបភាព</string>
+    <string name="error_describe_issue">សូមពណ៌នាអំពីបញ្ហា</string>
+    <string name="error_select_urgency">សូមជ្រើសរើសកម្រិតបន្ទាន់</string>
+    <string name="default_service_category">បណ្តាញទឹក</string>
+    <string name="title_service_request">សំណើសេវាកម្ម</string>
+    <string name="default_home">ផ្ទះ</string>
+    <string name="login_required_booking">សូមចូលប្រើប្រាស់ដើម្បីបង្កើតការកក់</string>
+    <string name="default_time_slot">ថ្ងៃស្អែក, ១០:០០ ព្រឹក - ១១:០០ ព្រឹក</string>
+    <string name="msg_creating_booking">កំពុងបង្កើតការកក់...</string>
+    <string name="msg_uploading_images">កំពុងផ្ទុករូបភាព...</string>
+    <string name="msg_booking_created_success">ការកក់ត្រូវបានបង្កើតដោយជោគជ័យ!</string>
+    <string name="error_create_booking">បរាជ័យក្នុងការបង្កើតការកក់</string>
+    <string name="error_firebase_config">បញ្ហាកំណត់រចនាសម្ព័ន្ធ Firebase។ សូមពិនិត្យមើលការតភ្ជាប់អ៊ីនធឺណិតរបស់អ្នក ហើយព្យាយាមម្តងទៀត។</string>
+    <string name="select_service">ជ្រើសរើសសេវាកម្ម</string>
+    <string name="tap_to_choose">ចុចដើម្បីជ្រើសរើស</string>
+    <string name="msg_uploading_progress">កំពុងផ្ទុករូបភាព... %1$d/%2$d</string>
+    <string name="msg_booking_created_image_fail">ការកក់ត្រូវបានបង្កើត ប៉ុន្តែបរាជ័យក្នុងការរក្សាទុកដំណភ្ជាប់រូបភាព</string>
+    <string name="msg_booking_created_some_images_fail">ការកក់ត្រូវបានបង្កើត ប៉ុន្តែរូបភាពខ្លះបរាជ័យក្នុងការផ្ទុកឡើង</string>
+    
+    <!-- ProviderProfileActivity -->
+    <string name="msg_quote_sent">សំណើសុំតម្លៃត្រូវបានផ្ញើ!</string>
+    <string name="share_provider_text">មើលអ្នកផ្តល់សេវានេះ៖ %1$s</string>
+    <string name="error_provider_data_not_found">រកមិនឃើញទិន្នន័យអ្នកផ្តល់សេវា</string>
+    <string name="error_provider_data_incomplete">ទិន្នន័យអ្នកផ្តល់សេថាមិនពេញលេញ</string>
+    <string name="error_loading_provider">កំហុសក្នុងការផ្ទុកអ្នកផ្តល់សេវា៖ %1$s</string>
+    <string name="error_opening_booking">កំហុសក្នុងការបើកការកក់៖ %1$s</string>
+    <string name="cost_format">• %1$s: %2$s</string>
+
+    <!-- BookingCardAdapter -->
+    <string name="default_service_category_suffix"> សេវាកម្ម</string>
+    <string name="default_provider_name">អ្នកផ្តល់សេវា</string>
+    <string name="status_pending">រង់ចាំ</string>
+    <string name="time_just_now">ឥឡូវនេះ</string>
+    <string name="time_recently">ថ្មីៗនេះ</string>
+    <string name="time_day_ago">%1$d ថ្ងៃមុន</string>
+    <string name="time_days_ago">%1$d ថ្ងៃមុន</string>
+    <string name="time_hour_ago">%1$d ម៉ោងមុន</string>
+    <string name="time_hours_ago">%1$d ម៉ោងមុន</string>
+    <string name="time_minute_ago">%1$d នាទីមុន</string>
+    <string name="time_minutes_ago">%1$d នាទីមុន</string>
+    <string name="btn_book_again">កក់ម្តងទៀត</string>
+    <string name="btn_review">វាយតម្លៃ</string>
+    <string name="btn_track_job">តាមដាន</string>
+    <string name="btn_call_now">ហៅឥឡូវនេះ</string>
+    <string name="btn_view_details">មើលលម្អិត</string>
+    <string name="btn_cancel">បោះបង់</string>
+    <string name="default_duration">២ ម៉ោង</string>
+
+    <!-- Messages Activity -->
+    <string name="filter_all_label">ទាំងអស់</string>
+    <string name="filter_unread">មិនទាន់អាន</string>
+    <string name="filter_pinned">បានខ្ទាស់</string>
+    <string name="filter_starred">ដាក់ផ្កាយ</string>
+    <string name="filter_star">ផ្កាយ</string>
+    <!-- filter_all_count is already defined above -->
+    <string name="filter_unread_count">មិនទាន់អាន (%1$d)</string>
+    <string name="filter_pinned_count">បានខ្ទាស់ (%1$d)</string>
+    <string name="msg_unread_count">%1$d សារមិនទាន់អាន</string>
+    <string name="msg_no_unread">គ្មានសារមិនទាន់អាន</string>
+    <string name="msg_selected_count">បានជ្រើសរើស %1$d</string>
+    <string name="btn_select">ជ្រើសរើស</string>
+    <string name="btn_cancel_selection">បោះបង់</string>
+    <string name="dialog_delete_title">លុបការសន្ទនា</string>
+    <string name="dialog_delete_message">តើអ្នកពិតជាចង់លុបការសន្ទនាចំនួន %1$d មែនទេ?</string>
+    <string name="dialog_delete_confirm">លុប</string>
+    <string name="msg_conversations_deleted">ការសន្ទនាត្រូវបានលុប</string>
+    <string name="msg_archive_soon">មុខងារបណ្ណសារនឹងមកដល់ឆាប់ៗនេះ</string>
+    <string name="msg_firebase_permission_error">ការអនុញ្ញាត Firebase មិនត្រូវបានកំណត់ទេ។ សូមពិនិត្យមើលច្បាប់សុវត្ថិភាព។</string>
+    <string name="btn_creating">កំពុងបង្កើត...</string>
+    <string name="msg_creating_test_data">កំពុងបង្កើតការសន្ទនាសាកល្បង...</string>
+    <string name="msg_test_data_created">ការសន្ទនាសាកល្បងត្រូវបានបង្កើត!</string>
+    <string name="btn_test">តេស្ត</string>
+    <string name="error_prefix">កំហុស៖ %1$s</string>
+    <string name="msg_start_conversation">ចាប់ផ្តើមការសន្ទនា...</string>
+
+    <!-- Chat Activity -->
+    <string name="status_online">អនឡាញ</string>
+    <string name="msg_send_failed">បរាជ័យក្នុងការផ្ញើសារ៖ %1$s</string>
+    <string name="msg_send_failed_generic">បរាជ័យក្នុងការផ្ញើសារ</string>
+    <string name="msg_permission_denied">ការអនុញ្ញាតត្រូវបានបដិសេធ។ សូមពិនិត្យមើលច្បាប់សុវត្ថិភាព Firebase ។</string>
+    <string name="msg_creating_index">កំពុងបង្កើតលិបិក្រមទិន្នន័យ... សារនឹងបង្ហាញក្នុងពេលឆាប់ៗនេះ។</string>
+    <string name="time_min_ago">%1$d នាទីមុន</string>
+    <string name="time_hour_ago_short">%1$d ម៉ោងមុន</string>
+    <string name="time_day_ago_short">%1$d ថ្ងៃមុន</string>
+
+    <!-- Messages XML Layout -->
+    <string name="title_messages">សារ</string>
+    <string name="hint_search_messages">ស្វែងរកសារ...</string>
+    <string name="btn_mark_read">គូសថាបានអាន</string>
+    <string name="title_no_messages">រកមិនឃើញសារ</string>
+    <string name="subtitle_no_messages">ចាប់ផ្តើមការសន្ទនាជាមួយអ្នកផ្តល់សេវាកម្ម</string>
+    <string name="btn_browse_services">ស្វែងរកសេវាកម្ម</string>
+    <string name="msg_loading">កំពុងផ្ទុក...</string>
+    <string name="msg_no_internet">គ្មានការតភ្ជាប់អ៊ីនធឺណិត</string>
+
+
+</resources>

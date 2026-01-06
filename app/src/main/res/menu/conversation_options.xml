@@ -17,13 +17,13 @@
     <item
         android:id="@+id/action_pin"
         android:title="Pin"
-        android:icon="@drawable/ic_pin"
+        android:icon="@drawable/pin"
         app:showAsAction="never" />
     
     <item
         android:id="@+id/action_unpin"
         android:title="Unpin"
-        android:icon="@drawable/ic_pin"
+        android:icon="@drawable/pin"
         app:showAsAction="never" />
     
     <item

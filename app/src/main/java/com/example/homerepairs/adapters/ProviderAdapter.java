@@ -21,12 +21,15 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Enhanced Provider Adapter with new Featured Pro design
- * Features: Profile image with verification badge, response time, availability, jobs completed
+ * Features: Profile image with verification badge, response time, availability,
+ * jobs completed
  */
 public class ProviderAdapter extends RecyclerView.Adapter<ProviderAdapter.ProviderViewHolder> {
+    private final java.util.Set<Integer> animatedPositions = new java.util.HashSet<>();
     private List<FeaturedProvider> providers;
     private OnProviderClickListener listener;
     private int cardWidth = -1; // -1 means use default from XML
+    private String searchQuery = ""; // Current search query for highlighting
 
     public interface OnProviderClickListener {
         void onBookProvider(FeaturedProvider provider);
@@ -36,18 +39,30 @@ public class ProviderAdapter extends RecyclerView.Adapter<ProviderAdapter.Provid
         this.providers = providers;
         this.listener = listener;
     }
-    
+
     /**
      * Set the card width programmatically to match recent activity card width
+     * 
      * @param width Width in pixels
      */
     public void setCardWidth(int width) {
         this.cardWidth = width;
         notifyDataSetChanged();
     }
-    
+
     public void updateProviders(List<FeaturedProvider> newProviders) {
         this.providers = newProviders;
+        animatedPositions.clear(); // Clear tracking on data refresh
+        notifyDataSetChanged();
+    }
+
+    /**
+     * Set search query to highlight matching providers
+     * 
+     * @param query Search query (empty string to show all normally)
+     */
+    public void setSearchQuery(String query) {
+        this.searchQuery = query != null ? query.toLowerCase().trim() : "";
         notifyDataSetChanged();
     }
 
@@ -101,6 +116,7 @@ public class ProviderAdapter extends RecyclerView.Adapter<ProviderAdapter.Provid
         private TextView tvPrice;
         private MaterialButton btnBookNow;
         private View cardProvider;
+        private FeaturedProvider currentProvider; // Store current provider for click handling
 
         ProviderViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -121,19 +137,39 @@ public class ProviderAdapter extends RecyclerView.Adapter<ProviderAdapter.Provid
             // Make entire card clickable to view provider profile
             if (cardProvider != null) {
                 cardProvider.setOnClickListener(v -> {
-                    if (listener != null && getAdapterPosition() != RecyclerView.NO_POSITION) {
-                        listener.onBookProvider(providers.get(getAdapterPosition()));
+                    // Re-check match status dynamically to be safe
+                    boolean isMatch = true;
+                    if (searchQuery != null && !searchQuery.isEmpty()) {
+                        String providerName = currentProvider.getName() != null
+                                ? currentProvider.getName().toLowerCase()
+                                : "";
+                        String providerService = currentProvider.getService() != null
+                                ? currentProvider.getService().toLowerCase()
+                                : "";
+                        isMatch = providerName.contains(searchQuery) || providerService.contains(searchQuery);
+                    }
+
+                    if (currentProvider != null) {
+                        // Always navigate since we are not hiding/dimming anymore
+                        if (listener != null) {
+                            android.util.Log.d("ProviderAdapter",
+                                    "✓ Navigating to provider: " + currentProvider.getName());
+                            listener.onBookProvider(currentProvider);
+                        }
                     }
                 });
             }
 
             // Book Now button also triggers the same action
             btnBookNow.setOnClickListener(v -> {
-                if (listener != null && getAdapterPosition() != RecyclerView.NO_POSITION) {
-                    listener.onBookProvider(providers.get(getAdapterPosition()));
+                if (currentProvider != null) {
+                    // Always navigate
+                    if (listener != null) {
+                        listener.onBookProvider(currentProvider);
+                    }
                 }
             });
-            
+
             // Favorite icon click (optional - can add favorite functionality later)
             ivFavorite.setOnClickListener(v -> {
                 // Toggle favorite state (can implement later)
@@ -141,17 +177,57 @@ public class ProviderAdapter extends RecyclerView.Adapter<ProviderAdapter.Provid
         }
 
         void bind(FeaturedProvider provider) {
-            // Load profile image - prefer URL from Firebase, fallback to resource ID
-            if (provider.getProfileImageUrl() != null && !provider.getProfileImageUrl().isEmpty()) {
-                Glide.with(itemView.getContext())
-                    .load(provider.getProfileImageUrl())
-                    .placeholder(R.drawable.ic_profile)
-                    .error(R.drawable.ic_profile)
-                    .into(ivProviderPhoto);
+            // Store current provider for click handling
+            currentProvider = provider;
+
+            // Add smooth slide-down animation for items (only once per position)
+            int pos = getAdapterPosition();
+            if (pos != RecyclerView.NO_POSITION && !animatedPositions.contains(pos)) {
+                animatedPositions.add(pos);
+
+                // CRITICAL: Ensure view is visible but start from below (slide-up like Recent
+                // Activity)
+                itemView.setAlpha(0f);
+                itemView.setTranslationY(100f);
+
+                itemView.animate()
+                        .translationY(0f)
+                        .alpha(1f)
+                        .setDuration(400)
+                        .setStartDelay(pos * 30) // Staggered animation (closer group)
+                        .setInterpolator(new android.view.animation.DecelerateInterpolator(2.0f))
+                        .start();
             } else {
-                ivProviderPhoto.setImageResource(provider.getProfileImageResId());
+                // If already animated or invalid position, ensure it's in final position
+                itemView.setTranslationY(0f);
+                itemView.setAlpha(1f);
             }
 
+            // Determine if this provider matches the search query
+            boolean isMatch = true;
+            if (searchQuery != null && !searchQuery.isEmpty()) {
+                String providerName = provider.getName() != null ? provider.getName().toLowerCase() : "";
+                String providerService = provider.getService() != null ? provider.getService().toLowerCase() : "";
+
+                isMatch = providerName.contains(searchQuery) || providerService.contains(searchQuery);
+            }
+
+            // Keep all items at full opacity - DISABLED dimming as per user request
+            if (cardProvider != null) {
+                cardProvider.setAlpha(1.0f);
+            }
+
+            // Load profile image - prefer URL from Firebase, fallback to no_profile_image
+            if (provider.getProfileImageUrl() != null && !provider.getProfileImageUrl().isEmpty()) {
+                Glide.with(itemView.getContext())
+                        .load(provider.getProfileImageUrl())
+                        .placeholder(R.drawable.no_profile_image)
+                        .error(R.drawable.no_profile_image)
+                        .into(ivProviderPhoto);
+            } else {
+                // Use no_profile_image if no URL
+                ivProviderPhoto.setImageResource(R.drawable.no_profile_image);
+            }
             // Show/hide verification badge
             if (ivVerifiedBadge != null) {
                 ivVerifiedBadge.setVisibility(provider.isVerified() ? View.VISIBLE : View.GONE);
@@ -196,7 +272,8 @@ public class ProviderAdapter extends RecyclerView.Adapter<ProviderAdapter.Provid
                 tvAvailabilityTime.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.warning));
             }
 
-            // Set price: Extract number from price string (e.g., "$55/hr" -> "$55" or "$10-$30/hr" -> "$10-$30")
+            // Set price: Extract number from price string (e.g., "$55/hr" -> "$55" or
+            // "$10-$30/hr" -> "$10-$30")
             String price = provider.getPrice();
             if (price != null && !price.isEmpty()) {
                 // Remove "/hr" or "/hour" if present
