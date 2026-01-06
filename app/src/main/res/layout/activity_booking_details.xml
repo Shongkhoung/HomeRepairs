@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        android:paddingBottom="120dp">
+        android:paddingBottom="200dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -20,104 +20,144 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="24dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
                 android:background="@color/white"
-                android:elevation="4dp">
+                android:elevation="2dp">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="16dp">
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_arrow_back"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Back"
+                    android:tint="@color/text_primary"
+                    android:padding="12dp" />
 
-                    <ImageButton
-                        android:id="@+id/btnBack"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:src="@drawable/ic_back_arrow"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:contentDescription="Back"
-                        android:tint="@color/text_primary" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="New booking"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_primary"
-                        android:gravity="center" />
-                </LinearLayout>
-
-                <!-- Progress Indicators -->
-                <LinearLayout
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:layout_gravity="center_horizontal">
-
-                    <View
-                        android:layout_width="8dp"
-                        android:layout_height="8dp"
-                        android:background="@drawable/circle_green"
-                        android:alpha="0.3"
-                        android:layout_marginEnd="8dp" />
-
-                    <View
-                        android:layout_width="8dp"
-                        android:layout_height="8dp"
-                        android:background="@drawable/circle_green"
-                        android:alpha="0.3"
-                        android:layout_marginEnd="8dp" />
-
-                    <View
-                        android:layout_width="8dp"
-                        android:layout_height="8dp"
-                        android:background="@drawable/circle_green"
-                        android:layout_marginEnd="8dp" />
-
-                    <View
-                        android:layout_width="8dp"
-                        android:layout_height="8dp"
-                        android:background="@drawable/circle_green"
-                        android:alpha="0.3" />
-                </LinearLayout>
+                    android:text="New booking"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginStart="16dp" />
             </LinearLayout>
 
-            <!-- Main Content -->
+            <!-- Progress Dots -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:paddingVertical="16dp"
+                android:background="@color/white">
+
+                <View
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:background="@drawable/progress_dot"
+                    android:alpha="0.3"
+                    android:layout_marginHorizontal="4dp" />
+                <View
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:background="@drawable/progress_dot"
+                    android:alpha="0.3"
+                    android:layout_marginHorizontal="4dp" />
+                <View
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:background="@drawable/progress_dot"
+                    android:layout_marginHorizontal="4dp" />
+                <View
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:background="@drawable/progress_dot"
+                    android:alpha="0.3"
+                    android:layout_marginHorizontal="4dp" />
+            </LinearLayout>
+
+            <!-- Content -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:paddingHorizontal="16dp"
+                android:paddingTop="24dp">
 
-                <!-- Location details -->
+                <!-- Location Details Section -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Location details"
-                    android:textSize="18sp"
+                    android:textSize="24sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="16dp" />
 
-                <EditText
-                    android:id="@+id/etLocationDetails"
+                <!-- Address Input Card -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="48dp"
-                    android:hint="Enter location details"
-                    android:background="@drawable/search_bar_background"
-                    android:padding="12dp"
-                    android:textSize="14sp"
-                    android:textColorHint="@color/text_hint"
+                    android:layout_marginBottom="12dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/border_default"
+                    app:cardBackgroundColor="@color/white">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="16dp">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_map_pin"
+                            android:tint="@color/primary_teal_professional"
+                            android:layout_marginEnd="12dp" />
+
+                        <EditText
+                            android:id="@+id/etLocationDetails"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:hint="Enter your address"
+                            android:text="2854 W 24th St, New York, NY 10011"
+                            android:textSize="16sp"
+                            android:textColor="@color/text_primary"
+                            android:textColorHint="@color/text_hint"
+                            android:background="@android:color/transparent"
+                            android:inputType="textPostalAddress"
+                            android:maxLines="2" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Use Current Location Button -->
+                <Button
+                    android:id="@+id/btnUseCurrentLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="Use current location"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary_teal_professional"
+                    android:background="@drawable/use_current_location_button"
+                    android:drawableStart="@drawable/ic_navigation"
+                    android:drawablePadding="8dp"
+                    android:drawableTint="@color/primary_teal_professional"
+                    android:gravity="center"
                     android:layout_marginBottom="24dp" />
 
-                <!-- Access instructions -->
+                <!-- Access Instructions Section -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -125,59 +165,197 @@
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="16dp" />
 
-                <EditText
-                    android:id="@+id/etGateCode"
+                <!-- Gate Code -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="48dp"
-                    android:hint="Gate code"
-                    android:background="@drawable/search_bar_background"
-                    android:padding="12dp"
-                    android:textSize="14sp"
-                    android:textColorHint="@color/text_hint"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="12dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/border_default"
+                    app:cardBackgroundColor="@color/white">
 
-                <EditText
-                    android:id="@+id/etParkingInfo"
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="#E0F2F1"
+                            android:gravity="center"
+                            android:layout_marginEnd="12dp">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_lock"
+                                android:tint="@color/primary_teal_professional" />
+                        </LinearLayout>
+
+                        <EditText
+                            android:id="@+id/etGateCode"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:hint="Gate code"
+                            android:textSize="16sp"
+                            android:textColor="@color/text_primary"
+                            android:textColorHint="@color/text_hint"
+                            android:background="@android:color/transparent"
+                            android:inputType="text" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Parking Information -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="48dp"
-                    android:hint="Parking information"
-                    android:background="@drawable/search_bar_background"
-                    android:padding="12dp"
-                    android:textSize="14sp"
-                    android:textColorHint="@color/text_hint"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="12dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/border_default"
+                    app:cardBackgroundColor="@color/white">
 
-                <EditText
-                    android:id="@+id/etPetInfo"
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="#E0F2F1"
+                            android:gravity="center"
+                            android:layout_marginEnd="12dp">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_car"
+                                android:tint="@color/primary_teal_professional" />
+                        </LinearLayout>
+
+                        <EditText
+                            android:id="@+id/etParkingInfo"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:hint="Parking information"
+                            android:textSize="16sp"
+                            android:textColor="@color/text_primary"
+                            android:textColorHint="@color/text_hint"
+                            android:background="@android:color/transparent"
+                            android:inputType="text" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Pet Information -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="48dp"
-                    android:hint="Pet information"
-                    android:background="@drawable/search_bar_background"
-                    android:padding="12dp"
-                    android:textSize="14sp"
-                    android:textColorHint="@color/text_hint"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="12dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/border_default"
+                    app:cardBackgroundColor="@color/white">
 
-                <EditText
-                    android:id="@+id/etAdditionalInstructions"
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="#E0F2F1"
+                            android:gravity="center"
+                            android:layout_marginEnd="12dp">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_dog"
+                                android:tint="@color/primary_teal_professional" />
+                        </LinearLayout>
+
+                        <EditText
+                            android:id="@+id/etPetInfo"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:hint="Pet information"
+                            android:textSize="16sp"
+                            android:textColor="@color/text_primary"
+                            android:textColorHint="@color/text_hint"
+                            android:background="@android:color/transparent"
+                            android:inputType="text" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Special Instructions -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="100dp"
-                    android:hint="Additional instructions"
-                    android:background="@drawable/search_bar_background"
-                    android:padding="12dp"
-                    android:textSize="14sp"
-                    android:textColorHint="@color/text_hint"
-                    android:gravity="top|start"
-                    android:inputType="textMultiLine"
-                    android:layout_marginBottom="24dp" />
+                    android:layout_marginBottom="24dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/border_default"
+                    app:cardBackgroundColor="@color/white">
 
-                <!-- Contact preference -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="top"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="#E0F2F1"
+                            android:gravity="center"
+                            android:layout_marginEnd="12dp"
+                            android:layout_marginTop="4dp">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_document"
+                                android:tint="@color/primary_teal_professional" />
+                        </LinearLayout>
+
+                        <EditText
+                            android:id="@+id/etAdditionalInstructions"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:hint="Special instructions (e.g., alarm code, entry details)"
+                            android:textSize="16sp"
+                            android:textColor="@color/text_primary"
+                            android:textColorHint="@color/text_hint"
+                            android:background="@android:color/transparent"
+                            android:inputType="textMultiLine"
+                            android:minLines="4"
+                            android:gravity="top"
+                            android:scrollbars="vertical" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Contact Preference Section -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -185,80 +363,150 @@
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="16dp" />
 
-                <RadioGroup
-                    android:id="@+id/rgContactPreference"
+                <!-- Contact Preference Card -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginBottom="24dp">
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/border_default"
+                    app:cardBackgroundColor="@color/white">
 
-                    <RadioButton
-                        android:id="@+id/rbCallWhenArriving"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Call when arriving"
-                        android:textSize="16sp"
-                        android:textColor="@color/text_primary"
-                        android:paddingVertical="8dp"
-                        android:checked="true" />
+                        android:orientation="vertical">
 
-                    <RadioButton
-                        android:id="@+id/rbRingDoorbell"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Ring doorbell"
-                        android:textSize="16sp"
-                        android:textColor="@color/text_primary"
-                        android:paddingVertical="8dp" />
+                        <!-- Call when arriving -->
+                        <LinearLayout
+                            android:id="@+id/llCallWhenArriving"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:padding="16dp"
+                            android:background="@drawable/payment_method_card_background"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:layout_marginBottom="1dp">
 
-                    <RadioButton
-                        android:id="@+id/rbTextMessage"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Text message"
-                        android:textSize="16sp"
-                        android:textColor="@color/text_primary"
-                        android:paddingVertical="8dp" />
-                </RadioGroup>
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Call when arriving"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/text_primary" />
+
+                            <View
+                                android:id="@+id/radioCall"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:background="@drawable/radio_button_unselected" />
+                        </LinearLayout>
+
+                        <!-- Ring doorbell -->
+                        <LinearLayout
+                            android:id="@+id/llRingDoorbell"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:padding="16dp"
+                            android:background="@drawable/payment_method_card_selected"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:layout_marginBottom="1dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Ring doorbell"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/text_primary" />
+
+                            <View
+                                android:id="@+id/radioDoorbell"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:background="@drawable/radio_button_selected" />
+                        </LinearLayout>
+
+                        <!-- Text message -->
+                        <LinearLayout
+                            android:id="@+id/llTextMessage"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:padding="16dp"
+                            android:background="@drawable/payment_method_card_background"
+                            android:clickable="true"
+                            android:focusable="true">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Text message"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/text_primary" />
+
+                            <View
+                                android:id="@+id/radioText"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:background="@drawable/radio_button_unselected" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
             </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Continue Button and Bottom Navigation -->
+    <!-- Fixed Bottom Button -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:background="@color/white"
         android:elevation="8dp"
-        android:background="@color/white">
+        android:padding="16dp"
+        android:paddingBottom="80dp">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnContinue"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="56dp"
             android:text="Continue"
-            android:textColor="@color/text_white"
-            android:backgroundTint="@color/primary_blue"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:minHeight="48dp"
-            android:layout_margin="16dp" />
-
-        <!-- Bottom Navigation -->
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottomNavigation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            app:elevation="8dp"
-            app:menu="@menu/bottom_navigation"
-            app:itemIconTint="@drawable/bottom_nav_selector"
-            app:itemTextColor="@drawable/bottom_nav_selector" />
+            android:textColor="@color/white"
+            app:cornerRadius="12dp"
+            app:backgroundTint="@color/primary_teal_professional"
+            app:elevation="4dp" />
     </LinearLayout>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:menu="@menu/bottom_navigation"
+        app:itemIconTint="@drawable/bottom_nav_selector"
+        app:itemTextColor="@drawable/bottom_nav_selector"
+        android:background="@color/white"
+        app:elevation="8dp" />
 
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

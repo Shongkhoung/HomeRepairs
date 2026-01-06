@@ -89,14 +89,15 @@ public class LoginActivity extends AppCompatActivity {
             getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.white));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 getWindow().getDecorView().setSystemUiVisibility(
-                        getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                );
+                        getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
             }
         }
 
         // Check intent for mode preference
-        // If launched as launcher activity (first-time app launch), show sign-in mode (Welcome Back)
-        // If redirected from other activities (logout, auth failure), respect the mode extra
+        // If launched as launcher activity (first-time app launch), show sign-in mode
+        // (Welcome Back)
+        // If redirected from other activities (logout, auth failure), respect the mode
+        // extra
         String mode = getIntent().getStringExtra(EXTRA_MODE);
         if (MODE_SIGN_IN.equals(mode)) {
             isSignUpMode = false; // Show sign in mode (e.g., after logout)
@@ -109,8 +110,9 @@ public class LoginActivity extends AppCompatActivity {
 
         initializeViews();
         setupClickListeners();
-        
-        // Check if user is already logged in - redirect to MainActivity if authenticated
+
+        // Check if user is already logged in - redirect to MainActivity if
+        // authenticated
         checkAuthState();
     }
 
@@ -142,11 +144,12 @@ public class LoginActivity extends AppCompatActivity {
         llSocialLogin = findViewById(R.id.llSocialLogin);
 
         auth = FirebaseAuth.getInstance();
-        
+
         // Configure Google Sign-In
         // Note: You need to get the Web Client ID from Firebase Console
         // Firebase Console > Project Settings > Your Apps > Web App > Web Client ID
-        // Then add it to res/values/strings.xml as: <string name="default_web_client_id">YOUR_WEB_CLIENT_ID</string>
+        // Then add it to res/values/strings.xml as: <string
+        // name="default_web_client_id">YOUR_WEB_CLIENT_ID</string>
         try {
             String webClientId = getString(R.string.default_web_client_id);
             android.util.Log.d("LoginActivity", "Using Web Client ID: " + webClientId);
@@ -162,10 +165,10 @@ public class LoginActivity extends AppCompatActivity {
                     "Please add it to res/values/strings.xml. See Firebase Console for Web Client ID.");
             googleSignInClient = null;
         }
-        
+
         // Set up terms text with clickable links
         setupTermsText();
-        
+
         // Initialize to Sign Up mode (default)
         updateUIForMode();
     }
@@ -201,8 +204,8 @@ public class LoginActivity extends AppCompatActivity {
             if (googleSignInClient != null) {
                 signInWithGoogle();
             } else {
-                Toast.makeText(this, "Google Sign-In not configured. Please set up Web Client ID in Firebase Console.", 
-                    Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Google Sign-In not configured. Please set up Web Client ID in Firebase Console.",
+                        Toast.LENGTH_LONG).show();
             }
         });
 
@@ -214,41 +217,43 @@ public class LoginActivity extends AppCompatActivity {
     private void setupTermsText() {
         String fullText = "I agree to the Terms of Service and Privacy Policy";
         SpannableString spannable = new SpannableString(fullText);
-        
+
         // Make "Terms of Service" clickable
         int termsStart = fullText.indexOf("Terms of Service");
         int termsEnd = termsStart + "Terms of Service".length();
-        spannable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, R.color.link_blue)), 
+        spannable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, R.color.link_blue)),
                 termsStart, termsEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         spannable.setSpan(new ClickableSpan() {
             @Override
             public void onClick(View widget) {
                 Toast.makeText(LoginActivity.this, "Terms of Service", Toast.LENGTH_SHORT).show();
             }
+
             @Override
             public void updateDrawState(TextPaint ds) {
                 super.updateDrawState(ds);
                 ds.setUnderlineText(false);
             }
         }, termsStart, termsEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        
+
         // Make "Privacy Policy" clickable
         int privacyStart = fullText.indexOf("Privacy Policy");
         int privacyEnd = privacyStart + "Privacy Policy".length();
-        spannable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, R.color.link_blue)), 
+        spannable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, R.color.link_blue)),
                 privacyStart, privacyEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         spannable.setSpan(new ClickableSpan() {
             @Override
             public void onClick(View widget) {
                 Toast.makeText(LoginActivity.this, "Privacy Policy", Toast.LENGTH_SHORT).show();
             }
+
             @Override
             public void updateDrawState(TextPaint ds) {
                 super.updateDrawState(ds);
                 ds.setUnderlineText(false);
             }
         }, privacyStart, privacyEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        
+
         if (tvTerms != null) {
             tvTerms.setText(spannable);
             tvTerms.setMovementMethod(LinkMovementMethod.getInstance());
@@ -267,46 +272,65 @@ public class LoginActivity extends AppCompatActivity {
             tvSubtitle.setText("Join us and get started");
             btnAction.setText("Create Account");
             tvSwitchMode.setText("Sign In");
-            
+
             // Show Sign Up fields
-            if (llName != null) llName.setVisibility(View.VISIBLE);
-            if (llPhone != null) llPhone.setVisibility(View.VISIBLE);
-            if (llConfirmPassword != null) llConfirmPassword.setVisibility(View.VISIBLE);
-            if (llTerms != null) llTerms.setVisibility(View.VISIBLE);
-            if (llDivider != null) llDivider.setVisibility(View.VISIBLE);
-            if (llSocialLogin != null) llSocialLogin.setVisibility(View.VISIBLE);
-            
+            if (llName != null)
+                llName.setVisibility(View.VISIBLE);
+            if (llPhone != null)
+                llPhone.setVisibility(View.VISIBLE);
+            if (llConfirmPassword != null)
+                llConfirmPassword.setVisibility(View.VISIBLE);
+            if (llTerms != null)
+                llTerms.setVisibility(View.VISIBLE);
+            if (llDivider != null)
+                llDivider.setVisibility(View.VISIBLE);
+            if (llSocialLogin != null)
+                llSocialLogin.setVisibility(View.VISIBLE);
+
             // Hide Sign In fields
-            if (tvForgotPassword != null) tvForgotPassword.setVisibility(View.GONE);
+            if (tvForgotPassword != null)
+                tvForgotPassword.setVisibility(View.GONE);
         } else {
             // Switch to Sign In mode
             tvTitle.setText("Welcome Back");
             tvSubtitle.setText("Sign in to continue");
             btnAction.setText("Sign In");
             tvSwitchMode.setText("Sign Up");
-            
+
             // Hide Sign Up fields
-            if (llName != null) llName.setVisibility(View.GONE);
-            if (llPhone != null) llPhone.setVisibility(View.GONE);
-            if (llConfirmPassword != null) llConfirmPassword.setVisibility(View.GONE);
-            if (llTerms != null) llTerms.setVisibility(View.GONE);
-            if (llDivider != null) llDivider.setVisibility(View.GONE);
-            if (llSocialLogin != null) llSocialLogin.setVisibility(View.GONE);
-            
+            if (llName != null)
+                llName.setVisibility(View.GONE);
+            if (llPhone != null)
+                llPhone.setVisibility(View.GONE);
+            if (llConfirmPassword != null)
+                llConfirmPassword.setVisibility(View.GONE);
+            if (llTerms != null)
+                llTerms.setVisibility(View.GONE);
+            if (llDivider != null)
+                llDivider.setVisibility(View.GONE);
+            if (llSocialLogin != null)
+                llSocialLogin.setVisibility(View.GONE);
+
             // Show Sign In fields
-            if (tvForgotPassword != null) tvForgotPassword.setVisibility(View.VISIBLE);
+            if (tvForgotPassword != null)
+                tvForgotPassword.setVisibility(View.VISIBLE);
         }
-        
+
         // Clear fields
-        if (etEmail != null) etEmail.setText("");
-        if (etPassword != null) etPassword.setText("");
-        if (etName != null) etName.setText("");
-        if (etPhone != null) etPhone.setText("");
-        if (etConfirmPassword != null) etConfirmPassword.setText("");
-        if (cbTerms != null) cbTerms.setChecked(false);
+        if (etEmail != null)
+            etEmail.setText("");
+        if (etPassword != null)
+            etPassword.setText("");
+        if (etName != null)
+            etName.setText("");
+        if (etPhone != null)
+            etPhone.setText("");
+        if (etConfirmPassword != null)
+            etConfirmPassword.setText("");
+        if (cbTerms != null)
+            cbTerms.setChecked(false);
         hideError();
     }
-
 
     private void signIn() {
         String email = etEmail.getText().toString().trim();
@@ -387,10 +411,10 @@ public class LoginActivity extends AppCompatActivity {
                                         showLoading(false);
                                         // Save user name locally
                                         AuthHelper.saveUserName(this, name);
-                                        
+
                                         // Create user profile in Firestore
                                         createUserProfile(user, name, phone);
-                                        
+
                                         navigateToMain();
                                     });
                         }
@@ -490,13 +514,15 @@ public class LoginActivity extends AppCompatActivity {
             showError("Google Sign-In is not configured. Please check your configuration.");
             return;
         }
-        
+
         showLoading(true);
         hideError();
-        
+
         // Sign out from any previously selected Google account to force account picker
-        // This ensures users can choose a different account each time they click "Sign in with Google"
-        // Without this, Google Sign-In would automatically use the last selected account
+        // This ensures users can choose a different account each time they click "Sign
+        // in with Google"
+        // Without this, Google Sign-In would automatically use the last selected
+        // account
         googleSignInClient.signOut()
                 .addOnCompleteListener(this, signOutTask -> {
                     // After signing out from Google Sign-In client, show the account picker
@@ -533,7 +559,7 @@ public class LoginActivity extends AppCompatActivity {
                     errorMessage = "Network error. Please check your internet connection";
                 }
                 showError(errorMessage);
-                android.util.Log.e("LoginActivity", "Google sign in failed: " + e.getStatusCode() + 
+                android.util.Log.e("LoginActivity", "Google sign in failed: " + e.getStatusCode() +
                         " | Web Client ID: " + getString(R.string.default_web_client_id), e);
             }
         }
@@ -552,14 +578,14 @@ public class LoginActivity extends AppCompatActivity {
                             if (user.getDisplayName() != null) {
                                 AuthHelper.saveUserName(this, user.getDisplayName());
                             }
-                            
+
                             // Check if this is a new user (first time signing in)
                             AdditionalUserInfo additionalUserInfo = task.getResult().getAdditionalUserInfo();
                             if (additionalUserInfo != null && additionalUserInfo.isNewUser()) {
                                 // Create user profile in Firestore for new users
                                 createUserProfile(user);
                             }
-                            
+
                             navigateToMain();
                         }
                     } else {
@@ -572,18 +598,20 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
     }
-    
+
     /**
      * Create a user profile document in Firestore for new users (Google Sign-In)
      */
     private void createUserProfile(FirebaseUser user) {
         createUserProfile(user, null, null);
     }
-    
+
     /**
      * Create a user profile document in Firestore for new users
-     * @param user Firebase user object
-     * @param name User's name (for email/password sign-up, null for Google Sign-In)
+     * 
+     * @param user  Firebase user object
+     * @param name  User's name (for email/password sign-up, null for Google
+     *              Sign-In)
      * @param phone User's phone number (optional)
      */
     private void createUserProfile(FirebaseUser user, String name, String phone) {
@@ -591,23 +619,23 @@ public class LoginActivity extends AppCompatActivity {
         Map<String, Object> userProfile = new HashMap<>();
         userProfile.put("userId", user.getUid());
         userProfile.put("email", user.getEmail());
-        
+
         // Use provided name or user's display name
         String userName = name != null ? name : (user.getDisplayName() != null ? user.getDisplayName() : "");
         userProfile.put("name", userName);
-        
+
         // Use user's photo URL if available
         userProfile.put("photoUrl", user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : "");
-        
+
         // Use provided phone or empty string
         userProfile.put("phone", phone != null ? phone : "");
-        
+
         // Location field (can be updated later)
         userProfile.put("location", "");
-        
+
         userProfile.put("createdAt", com.google.firebase.Timestamp.now());
         userProfile.put("updatedAt", com.google.firebase.Timestamp.now());
-        
+
         // Create user document in 'users' collection
         db.collection("users").document(user.getUid())
                 .set(userProfile)
@@ -632,10 +660,12 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         finish();
     }
 
     @Override
+    @android.annotation.SuppressLint("MissingSuperCall")
     public void onBackPressed() {
         // Prevent going back if user is not logged in - force them to login or sign up
         if (!AuthHelper.isAuthenticated()) {
@@ -645,7 +675,7 @@ public class LoginActivity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
-    
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -654,4 +684,3 @@ public class LoginActivity extends AppCompatActivity {
         checkAuthState();
     }
 }
-

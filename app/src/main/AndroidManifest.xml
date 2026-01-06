@@ -42,6 +42,7 @@
             android:name=".MainActivity"
             android:exported="false"
             android:label="@string/app_name"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.HomeRepairs.AppCompat">
         </activity>
         <activity
@@ -122,6 +123,58 @@
             android:label="Check Email"
             android:theme="@style/Theme.HomeRepairs.AppCompat">
         </activity>
+        <activity
+            android:name=".ServiceDateTimeActivity"
+            android:exported="false"
+            android:label="Select Date &amp; Time"
+            android:theme="@style/Theme.HomeRepairs.AppCompat">
+        </activity>
+        
+        <activity
+            android:name=".ViewBookingActivity"
+            android:exported="false"
+            android:label="Booking Details"
+            android:theme="@style/Theme.HomeRepairs.AppCompat">
+        </activity>
+
+        <!-- New Profile Activities -->
+        <activity
+            android:name=".PaymentMethodsActivity"
+            android:exported="false"
+            android:label="Payment Methods"
+            android:theme="@style/Theme.HomeRepairs.AppCompat"/>
+        <activity
+            android:name=".AddressesActivity"
+            android:exported="false"
+            android:label="Addresses"
+            android:theme="@style/Theme.HomeRepairs.AppCompat"/>
+        <activity
+            android:name=".NotificationsActivity"
+            android:exported="false"
+            android:label="Notifications"
+            android:theme="@style/Theme.HomeRepairs.AppCompat"/>
+        <activity
+            android:name=".AppSettingsActivity"
+            android:exported="false"
+            android:label="App Settings"
+            android:theme="@style/Theme.HomeRepairs.AppCompat"/>
+        <activity
+            android:name=".PrivacySecurityActivity"
+            android:exported="false"
+            android:label="@string/title_privacy_security"
+            android:theme="@style/Theme.HomeRepairs.AppCompat"/>
+            
+        <activity
+            android:name=".AddPaymentMethodActivity"
+            android:exported="false"
+            android:label="@string/title_add_payment"
+            android:theme="@style/Theme.HomeRepairs.AppCompat"/>
+            
+        <activity
+            android:name=".AddAddressActivity"
+            android:exported="false"
+            android:label="@string/title_add_address"
+            android:theme="@style/Theme.HomeRepairs.AppCompat"/>
         
         <!-- Firebase Cloud Messaging Service -->
         <service

@@ -36,6 +36,7 @@ public class PlumbingActivity extends AppCompatActivity {
     private boolean isInitializingBottomNav = true;
     private FirebaseProviderService firebaseProviderService;
     private ProgressBar progressBar;
+    private TextView tvNoResults;
     private ListenerRegistration providerListener; // Real-time listener registration
 
     @Override
@@ -47,43 +48,43 @@ public class PlumbingActivity extends AppCompatActivity {
 
         initializeViews();
         android.util.Log.d("PlumbingActivity", "Views initialized");
-        
+
         setupRecyclerView();
         android.util.Log.d("PlumbingActivity", "RecyclerView setup completed");
-        
+
         setupButtons();
         android.util.Log.d("PlumbingActivity", "Buttons setup completed");
-        
+
         setupBottomNavigation();
         android.util.Log.d("PlumbingActivity", "Bottom navigation setup completed");
-        
+
         android.util.Log.d("PlumbingActivity", "=== onCreate END - PlumbingActivity setup complete ===");
     }
-    
+
     @Override
     protected void onStart() {
         super.onStart();
         android.util.Log.d("PlumbingActivity", "=== onStart called ===");
     }
-    
+
     @Override
     protected void onResume() {
         super.onResume();
         android.util.Log.d("PlumbingActivity", "=== onResume called ===");
     }
-    
+
     @Override
     protected void onPause() {
         super.onPause();
         android.util.Log.d("PlumbingActivity", "=== onPause called ===");
     }
-    
+
     @Override
     protected void onStop() {
         super.onStop();
         android.util.Log.d("PlumbingActivity", "=== onStop called ===");
     }
-    
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -116,10 +117,11 @@ public class PlumbingActivity extends AppCompatActivity {
         btnFilter = findViewById(R.id.btnFilter);
         rvProviders = findViewById(R.id.rvProviders);
         progressBar = findViewById(R.id.progressBar);
-        
+        tvNoResults = findViewById(R.id.tvNoResults);
+
         // Initialize Firebase service
         firebaseProviderService = new FirebaseProviderService();
-        
+
         // Check for null views
         if (rvProviders == null) {
             android.util.Log.e("PlumbingActivity", "RecyclerView not found in layout");
@@ -131,16 +133,16 @@ public class PlumbingActivity extends AppCompatActivity {
             android.util.Log.e("PlumbingActivity", "Cannot setup RecyclerView - view is null");
             return;
         }
-        
+
         // Setup layout manager
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         rvProviders.setLayoutManager(layoutManager);
-        
+
         // Ensure RecyclerView doesn't interfere with touch events
         rvProviders.setNestedScrollingEnabled(false);
         rvProviders.setHasFixedSize(false);
-        
+
         // Use smooth item animator with better timing
         // Set add duration to 0 to prevent animation from blocking first click
         androidx.recyclerview.widget.DefaultItemAnimator animator = new androidx.recyclerview.widget.DefaultItemAnimator();
@@ -149,13 +151,13 @@ public class PlumbingActivity extends AppCompatActivity {
         animator.setMoveDuration(200);
         animator.setChangeDuration(200);
         rvProviders.setItemAnimator(animator);
-        
+
         // Initialize adapter with empty list
         adapter = new ProviderListAdapter(new ArrayList<>(), provider -> {
             android.util.Log.d("PlumbingActivity", "=== PROVIDER CLICKED ===");
             android.util.Log.d("PlumbingActivity", "Provider name: " + provider.getName());
             android.util.Log.d("PlumbingActivity", "Provider service: " + provider.getService());
-            
+
             try {
                 Intent intent = new Intent(PlumbingActivity.this, ProviderProfileActivity.class);
                 intent.putExtra("provider_name", provider.getName());
@@ -166,24 +168,26 @@ public class PlumbingActivity extends AppCompatActivity {
                 android.util.Log.d("PlumbingActivity", "ProviderProfileActivity started successfully");
             } catch (Exception e) {
                 android.util.Log.e("PlumbingActivity", "Error starting ProviderProfileActivity", e);
-                android.widget.Toast.makeText(PlumbingActivity.this, "Error: " + e.getMessage(), android.widget.Toast.LENGTH_LONG).show();
+                android.widget.Toast
+                        .makeText(PlumbingActivity.this, "Error: " + e.getMessage(), android.widget.Toast.LENGTH_LONG)
+                        .show();
             }
         });
-        
+
         // Set adapter
         rvProviders.setAdapter(adapter);
-        
+
         // Load providers from Firebase
         loadProvidersFromFirebase();
     }
-    
+
     private void loadProvidersFromFirebase() {
         // Remove existing listener if any
         if (providerListener != null) {
             providerListener.remove();
             providerListener = null;
         }
-        
+
         // Show loading indicator
         if (progressBar != null) {
             progressBar.setVisibility(View.VISIBLE);
@@ -191,56 +195,78 @@ public class PlumbingActivity extends AppCompatActivity {
         if (rvProviders != null) {
             rvProviders.setVisibility(View.GONE);
         }
-        
+
         // Get service category from intent or use default
         String serviceCategory = getIntent().getStringExtra("category_name");
         if (serviceCategory == null || serviceCategory.isEmpty()) {
             serviceCategory = "Plumbing"; // Default
         }
-        
+
         android.util.Log.d("PlumbingActivity", "Setting up real-time listener for category: " + serviceCategory);
-        
-        // Set up real-time listener that automatically updates when data changes in Firebase
+
+        // Set up real-time listener that automatically updates when data changes in
+        // Firebase
         if (firebaseProviderService != null) {
-            providerListener = firebaseProviderService.listenToProviders(serviceCategory, new FirebaseProviderService.ProviderCallback() {
+            // Callback for handling results (shared logic)
+            FirebaseProviderService.ProviderCallback callback = new FirebaseProviderService.ProviderCallback() {
                 @Override
                 public void onSuccess(List<Provider> providers) {
-                    android.util.Log.d("PlumbingActivity", "Real-time update: " + providers.size() + " providers");
-                    
+                    android.util.Log.d("PlumbingActivity", "Providers loaded: " + providers.size());
+
                     if (providers.isEmpty()) {
                         // No providers in Firestore - use mock data and show helpful message
                         android.util.Log.w("PlumbingActivity", "No providers found in Firestore. Using mock data.");
-                        android.widget.Toast.makeText(PlumbingActivity.this, 
-                            "No providers in database. Using sample data. Add providers in Firebase Console.", 
-                            android.widget.Toast.LENGTH_LONG).show();
-                        allProviders = createMockProviders();
+                        // Only show toast if not searching (empty search results shouldn't show this)
+                        if (!"Search Results".equals(getIntent().getStringExtra("category_name"))) {
+                            android.widget.Toast.makeText(PlumbingActivity.this,
+                                    "No providers in database. Using sample data.",
+                                    android.widget.Toast.LENGTH_LONG).show();
+                            allProviders = createMockProviders();
+                        } else {
+                            allProviders = new ArrayList<>();
+                        }
                         updateProviderList(allProviders);
                         return;
                     }
-                    
-                    // Set default image resource ID for providers without image URL
+
+                    // Set default image resource ID
                     for (Provider provider : providers) {
-                        if (provider.getProfileImageResId() == 0) {
-                            provider.setProfileImageResId(R.drawable.ic_profile);
+                        if (provider.getProfileImageResId() == 0
+                                || provider.getProfileImageResId() == R.drawable.profile) {
+                            provider.setProfileImageResId(R.drawable.no_profile_image);
                         }
                     }
-                    
+
                     allProviders = providers;
+
+                    // Always call updateProviderList first to ensure Progress Bar is hidden
                     updateProviderList(providers);
+
+                    // If this is a search result, filter immediately by the query passed in intent
+                    String initialQuery = getIntent().getStringExtra("search_query");
+                    if (initialQuery != null && !initialQuery.isEmpty()) {
+                        if (etSearch != null)
+                            etSearch.setText(initialQuery); // Set text in search box
+                        filterProviders(initialQuery);
+                    }
                 }
-                
+
                 @Override
                 public void onError(String error) {
-                    android.util.Log.e("PlumbingActivity", "Firebase real-time listener error: " + error);
-                    // Fallback to mock data if Firebase fails
+                    android.util.Log.e("PlumbingActivity", "Firebase error: " + error);
                     android.util.Log.d("PlumbingActivity", "Falling back to mock data");
                     allProviders = createMockProviders();
                     updateProviderList(allProviders);
-                    android.widget.Toast.makeText(PlumbingActivity.this, 
-                        "Using offline data. Check your internet connection.", 
-                        android.widget.Toast.LENGTH_SHORT).show();
                 }
-            });
+            };
+
+            if ("Search Results".equals(serviceCategory) || "All".equals(serviceCategory)) {
+                // Fetch ALL providers for search
+                firebaseProviderService.getAllProviders(callback);
+            } else {
+                // Fetch specific category
+                providerListener = firebaseProviderService.listenToProviders(serviceCategory, callback);
+            }
         } else {
             // Fallback to mock data if Firebase service is not available
             android.util.Log.w("PlumbingActivity", "Firebase service not initialized, using mock data");
@@ -248,7 +274,7 @@ public class PlumbingActivity extends AppCompatActivity {
             updateProviderList(allProviders);
         }
     }
-    
+
     private void updateProviderList(List<Provider> providers) {
         runOnUiThread(() -> {
             // Hide loading indicator
@@ -258,7 +284,7 @@ public class PlumbingActivity extends AppCompatActivity {
             if (rvProviders != null) {
                 rvProviders.setVisibility(View.VISIBLE);
             }
-            
+
             if (providers == null || providers.isEmpty()) {
                 android.util.Log.w("PlumbingActivity", "No providers to display");
                 if (adapter != null) {
@@ -266,12 +292,13 @@ public class PlumbingActivity extends AppCompatActivity {
                 }
                 return;
             }
-            
+
             if (adapter != null) {
                 adapter.updateProviders(providers);
-                android.util.Log.d("PlumbingActivity", "RecyclerView updated with " + adapter.getItemCount() + " items");
+                android.util.Log.d("PlumbingActivity",
+                        "RecyclerView updated with " + adapter.getItemCount() + " items");
             }
-            
+
             // Force layout to ensure items are displayed
             if (rvProviders != null) {
                 rvProviders.post(() -> {
@@ -287,15 +314,15 @@ public class PlumbingActivity extends AppCompatActivity {
     private List<Provider> createMockProviders() {
         List<Provider> providers = new ArrayList<>();
         providers.add(new Provider("Expert Plumber", "Plumbing", 4.8, 123,
-                "Available Now", "$60/hr", R.drawable.ic_profile, true, true));
+                "Available Now", "$60/hr", R.drawable.no_profile_image, true, true));
         providers.add(new Provider("Reliable Plumber", "Plumbing", 4.7, 98,
-                "Available Now", "$55/hr", R.drawable.ic_profile, true, true));
+                "Available Now", "$55/hr", R.drawable.no_profile_image, true, true));
         providers.add(new Provider("Professional Plumber", "Plumbing", 4.9, 156,
-                "Next available: 2pm", "$70/hr", R.drawable.ic_profile, true, false));
+                "Next available: 2pm", "$70/hr", R.drawable.no_profile_image, true, false));
         providers.add(new Provider("Skilled Plumber", "Plumbing", 4.6, 87,
-                "Available Now", "$50/hr", R.drawable.ic_profile, true, true));
+                "Available Now", "$50/hr", R.drawable.no_profile_image, true, true));
         providers.add(new Provider("Certified Plumber", "Plumbing", 4.8, 134,
-                "Available Now", "$65/hr", R.drawable.ic_profile, true, true));
+                "Available Now", "$65/hr", R.drawable.no_profile_image, true, true));
         return providers;
     }
 
@@ -367,6 +394,17 @@ public class PlumbingActivity extends AppCompatActivity {
         }
 
         adapter.updateProviders(filtered);
+
+        // Toggle visibility based on results
+        if (filtered.isEmpty()) {
+            rvProviders.setVisibility(View.GONE);
+            if (tvNoResults != null)
+                tvNoResults.setVisibility(View.VISIBLE);
+        } else {
+            rvProviders.setVisibility(View.VISIBLE);
+            if (tvNoResults != null)
+                tvNoResults.setVisibility(View.GONE);
+        }
     }
 
     private double extractPrice(String priceString) {
@@ -380,7 +418,7 @@ public class PlumbingActivity extends AppCompatActivity {
     }
 
     private void showFilterDialog() {
-        String[] filterOptions = {"All", "Available Now", "Highest Rated", "Lowest Price"};
+        String[] filterOptions = { "All", "Available Now", "Highest Rated", "Lowest Price" };
         int selectedIndex = 0;
         for (int i = 0; i < filterOptions.length; i++) {
             if (filterOptions[i].equals(currentFilter)) {
@@ -407,17 +445,17 @@ public class PlumbingActivity extends AppCompatActivity {
             android.util.Log.w("PlumbingActivity", "BottomNavigationView not found");
             return;
         }
-        
+
         bottomNavigation.setOnItemSelectedListener(item -> {
             // Ignore selections during initialization
             if (isInitializingBottomNav) {
                 android.util.Log.d("PlumbingActivity", "Ignoring bottom nav selection during initialization");
                 return false;
             }
-            
+
             int itemId = item.getItemId();
             android.util.Log.d("PlumbingActivity", "Bottom nav item selected: " + itemId);
-            
+
             if (itemId == R.id.nav_home) {
                 android.util.Log.d("PlumbingActivity", "Navigating to MainActivity from bottom nav");
                 Intent intent = new Intent(this, MainActivity.class);
@@ -448,10 +486,9 @@ public class PlumbingActivity extends AppCompatActivity {
             }
             return false;
         });
-        
+
         // Mark initialization as complete - now listener will work
         isInitializingBottomNav = false;
         android.util.Log.d("PlumbingActivity", "Bottom navigation listener setup complete");
     }
 }
-

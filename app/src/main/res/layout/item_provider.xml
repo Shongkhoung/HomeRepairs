@@ -27,7 +27,7 @@
             android:layout_height="24dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
-            android:src="@drawable/rating_star"
+            android:src="@drawable/ic_star_new"
             android:tint="#FFB300"
             android:contentDescription="Favorite"
             android:padding="4dp" />
@@ -45,7 +45,7 @@
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:contentDescription="Provider Photo"
-                android:src="@drawable/ic_profile" />
+                android:src="@drawable/profile" />
 
             <!-- Verification Badge -->
             <ImageView
@@ -53,7 +53,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_gravity="bottom|end"
-                android:src="@drawable/verify"
+                android:src="@drawable/ic_verify_new"
                 android:background="@drawable/circle_white"
                 android:padding="4dp"
                 android:contentDescription="Verified"
@@ -108,7 +108,7 @@
             <ImageView
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:src="@drawable/rating_star"
+                android:src="@drawable/ic_star_new"
                 android:tint="#FFB300"
                 android:layout_marginEnd="4dp"
                 android:contentDescription="Rating star" />

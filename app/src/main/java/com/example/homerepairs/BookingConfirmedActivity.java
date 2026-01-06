@@ -30,15 +30,12 @@ public class BookingConfirmedActivity extends AppCompatActivity {
     private TextView tvServiceCategory;
     private TextView tvServiceName;
     private TextView tvServiceDateTime;
-    private Button btnCall;
-    private Button btnMessage;
-    private Button btnAddToCalendar;
     private Button btnViewBookingDetails;
-    private Button btnBookAnotherService;
     private TextView tvReturnToHome;
 
     private String providerPhoneNumber = "+1234567890"; // Default phone number
     private String bookingReference;
+    private String bookingId;
     private String serviceName;
     private String serviceCategory;
     private String serviceDateTime;
@@ -51,6 +48,7 @@ public class BookingConfirmedActivity extends AppCompatActivity {
         // Get data from intent
         Intent intent = getIntent();
         bookingReference = intent.getStringExtra("bookingReference");
+        bookingId = intent.getStringExtra("booking_id");
         serviceName = intent.getStringExtra("serviceName");
         serviceCategory = intent.getStringExtra("serviceCategory");
         serviceDateTime = intent.getStringExtra("serviceDateTime");
@@ -74,9 +72,8 @@ public class BookingConfirmedActivity extends AppCompatActivity {
 
         initializeViews();
         setupData();
-        setupBackButton();
         setupButtons();
-        setupBottomNavigation();
+
     }
 
     private void initializeViews() {
@@ -84,138 +81,60 @@ public class BookingConfirmedActivity extends AppCompatActivity {
         tvServiceCategory = findViewById(R.id.tvServiceCategory);
         tvServiceName = findViewById(R.id.tvServiceName);
         tvServiceDateTime = findViewById(R.id.tvServiceDateTime);
-        btnCall = findViewById(R.id.btnCall);
-        btnMessage = findViewById(R.id.btnMessage);
-        btnAddToCalendar = findViewById(R.id.btnAddToCalendar);
         btnViewBookingDetails = findViewById(R.id.btnViewBookingDetails);
-        btnBookAnotherService = findViewById(R.id.btnBookAnotherService);
-        tvReturnToHome = findViewById(R.id.tvReturnToHome);
     }
 
     private void setupData() {
-        tvBookingReference.setText("Booking reference: #" + bookingReference);
+        if (bookingReference != null) {
+            tvBookingReference.setText("Booking reference: #" + bookingReference);
+        }
         tvServiceCategory.setText(serviceCategory);
         tvServiceName.setText(serviceName);
         tvServiceDateTime.setText(serviceDateTime);
     }
 
-    private void setupBackButton() {
-        ImageButton btnBack = findViewById(R.id.btnBack);
-        btnBack.setOnClickListener(v -> {
-            animateButtonClick(v);
-            finish();
-        });
-    }
-
     private void setupButtons() {
-        // Call Button
-        btnCall.setOnClickListener(v -> {
-            animateButtonClick(v);
-            makePhoneCall();
-        });
-
-        // Message Button
-        btnMessage.setOnClickListener(v -> {
-            animateButtonClick(v);
-            sendMessage();
-        });
-
-        // Add to Calendar Button
-        btnAddToCalendar.setOnClickListener(v -> {
-            animateButtonClick(v);
-            addToCalendar();
-        });
-
         // View Booking Details Button
         btnViewBookingDetails.setOnClickListener(v -> {
             animateButtonClick(v);
             viewBookingDetails();
         });
 
-        // Book Another Service Button
-        btnBookAnotherService.setOnClickListener(v -> {
-            animateButtonClick(v);
-            bookAnotherService();
-        });
-
-        // Return to Home Link
-        tvReturnToHome.setOnClickListener(v -> {
-            returnToHome();
-        });
-    }
-
-    private void makePhoneCall() {
-        Intent callIntent = new Intent(Intent.ACTION_DIAL);
-        callIntent.setData(Uri.parse("tel:" + providerPhoneNumber));
-        try {
-            startActivity(callIntent);
-        } catch (Exception e) {
-            Toast.makeText(this, "Unable to make call", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void sendMessage() {
-        Intent smsIntent = new Intent(Intent.ACTION_SENDTO);
-        smsIntent.setData(Uri.parse("smsto:" + providerPhoneNumber));
-        smsIntent.putExtra("sms_body", "Hello, I have a booking for " + serviceName + " (Reference: #" + bookingReference + ")");
-        try {
-            startActivity(smsIntent);
-        } catch (Exception e) {
-            Toast.makeText(this, "Unable to send message", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void addToCalendar() {
-        try {
-            Intent calendarIntent = new Intent(Intent.ACTION_INSERT);
-            calendarIntent.setData(CalendarContract.Events.CONTENT_URI);
-
-            // Parse date and time from serviceDateTime
-            // Format: "Tomorrow, 10:00 AM - 11:00 AM"
-            Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.DAY_OF_YEAR, 1); // Tomorrow
-            calendar.set(Calendar.HOUR_OF_DAY, 10);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-
-            long startTime = calendar.getTimeInMillis();
-            calendar.add(Calendar.HOUR, 1); // 1 hour duration
-            long endTime = calendar.getTimeInMillis();
-
-            calendarIntent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startTime);
-            calendarIntent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTime);
-            calendarIntent.putExtra(CalendarContract.Events.TITLE, serviceName);
-            calendarIntent.putExtra(CalendarContract.Events.DESCRIPTION, 
-                "Service: " + serviceName + "\n" +
-                "Category: " + serviceCategory + "\n" +
-                "Booking Reference: #" + bookingReference);
-            calendarIntent.putExtra(CalendarContract.Events.EVENT_LOCATION, "Service Location");
-
-            startActivity(calendarIntent);
-            Toast.makeText(this, "Adding to calendar...", Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            Toast.makeText(this, "Unable to add to calendar", Toast.LENGTH_SHORT).show();
+        // Return to Home Button
+        Button btnReturnToHome = findViewById(R.id.btnReturnToHome);
+        if (btnReturnToHome != null) {
+            btnReturnToHome.setOnClickListener(v -> {
+                animateButtonClick(v);
+                returnToHome();
+            });
         }
     }
 
     private void viewBookingDetails() {
         // Navigate to booking details screen
-        Intent intent = new Intent(this, BookingDetailsActivity.class);
+        Intent intent = new Intent(this, ViewBookingActivity.class); // Updated to ViewBookingActivity
         intent.putExtra("bookingReference", bookingReference);
+        intent.putExtra("booking_id", bookingId);
         intent.putExtra("serviceName", serviceName);
+        intent.putExtra("serviceType", serviceName); // Map for compatibility
         intent.putExtra("serviceCategory", serviceCategory);
         intent.putExtra("serviceDateTime", serviceDateTime);
+
+        // Split date time for compatibility
+        if (serviceDateTime != null && serviceDateTime.contains(",")) {
+            int lastCommaIndex = serviceDateTime.lastIndexOf(",");
+            if (lastCommaIndex != -1) {
+                intent.putExtra("serviceDate", serviceDateTime.substring(0, lastCommaIndex).trim());
+                intent.putExtra("serviceTime", serviceDateTime.substring(lastCommaIndex + 1).trim());
+            } else {
+                intent.putExtra("serviceDate", serviceDateTime);
+            }
+        } else {
+            intent.putExtra("serviceDate", serviceDateTime);
+            intent.putExtra("serviceTime", "");
+        }
         startActivity(intent);
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-    }
-
-    private void bookAnotherService() {
-        // Navigate back to main activity or service selection
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-        finish();
     }
 
     private void returnToHome() {
@@ -224,42 +143,6 @@ public class BookingConfirmedActivity extends AppCompatActivity {
         startActivity(intent);
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
         finish();
-    }
-
-    private void setupBottomNavigation() {
-        BottomNavigationView bottomNavigation = findViewById(R.id.bottomNavigation);
-        bottomNavigation.setOnItemSelectedListener(item -> {
-            int itemId = item.getItemId();
-            if (itemId == R.id.nav_home) {
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-                finish();
-                return true;
-            } else if (itemId == R.id.nav_bookings) {
-                Intent intent = new Intent(this, BookingsActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                finish();
-                return true;
-            } else if (itemId == R.id.nav_messages) {
-                Intent intent = new Intent(this, MessagesActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                finish();
-                return true;
-            } else if (itemId == R.id.nav_profile) {
-                Intent intent = new Intent(this, UserProfileActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                finish();
-                return true;
-            }
-            return false;
-        });
-        bottomNavigation.setSelectedItemId(R.id.nav_bookings);
     }
 
     private void animateButtonClick(View button) {
@@ -300,4 +183,3 @@ public class BookingConfirmedActivity extends AppCompatActivity {
         return String.valueOf(reference);
     }
 }
-

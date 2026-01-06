@@ -13,6 +13,8 @@ import android.net.NetworkRequest;
 import android.os.Build;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -58,7 +60,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
 
@@ -66,16 +68,16 @@ public class MainActivity extends AppCompatActivity {
     private FusedLocationProviderClient fusedLocationClient;
     private ConnectivityManager connectivityManager;
     private ConnectivityManager.NetworkCallback networkCallback;
-    
+
     // Store last known location for refetching when internet is restored
     private double lastKnownLatitude = 11.5564; // Default: Phnom Penh
     private double lastKnownLongitude = 104.9282;
-    
+
     // Handler for periodic weather refresh
     private android.os.Handler weatherRefreshHandler;
     private Runnable weatherRefreshRunnable;
     private static final long WEATHER_REFRESH_INTERVAL = 60000; // 1 minute for real-time sync
-    
+
     // Debounce mechanism to prevent duplicate weather fetches
     private android.os.Handler weatherDebounceHandler;
     private Runnable weatherDebounceRunnable;
@@ -84,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Track network state to prevent excessive weather fetches
     private boolean wasInternetAvailable = false;
-    
+
     // User data
     private FirebaseUserService userService;
     private ListenerRegistration userProfileListener;
@@ -100,11 +102,15 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView rvFeaturedProviders;
     private RecyclerView rvRecentActivity;
     private ProgressBar progressBar;
+    private ViewGroup llMainContent;
     private ImageButton btnNotification;
     private View btnEmergency;
     private View btnScheduleLater;
     private View btnDocument;
     private LottieAnimationView ivEmergencyIcon;
+    // private LinearLayout llNoSearchResults;
+    // private LottieAnimationView ivSearchingAnimation;
+
     private ImageView ivBookingLaterIcon;
     private ImageView ivFavoriteIcon;
     private FrameLayout llInternetLoading;
@@ -126,48 +132,55 @@ public class MainActivity extends AppCompatActivity {
     private ServiceCategoryAdapter categoryAdapter;
     private ProviderAdapter providerAdapter;
     private RecentActivityAdapterEnhanced activityAdapter;
-    
+
     // Category display state
     private boolean showingAllCategories = false;
     private List<ServiceCategory> allCategories = new java.util.ArrayList<>();
-    
+    private List<ServiceCategory> originalCategories = new java.util.ArrayList<>(); // Store original for search
+
+    // Provider display state
+    private List<FeaturedProvider> originalProviders = new java.util.ArrayList<>(); // Store original for search
+
     // Recent Activity display state
     private boolean showingAllActivities = false;
     private List<RecentActivity> allActivities = new java.util.ArrayList<>();
 
+    // Search state
+    private String currentSearchQuery = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         // Check if user is authenticated
         if (!AuthHelper.isAuthenticated()) {
-            // Redirect to login screen in sign in mode (user likely needs to sign in, not create account)
+            // Redirect to login screen in sign in mode (user likely needs to sign in, not
+            // create account)
             Intent intent = new Intent(this, LoginActivity.class);
             intent.putExtra("mode", "sign_in");
             startActivity(intent);
             finish();
             return;
         }
-        
+
         setContentView(R.layout.activity_main);
-        
+
         // Set status bar color to white to match screen background
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.white));
             // Set dark status bar icons (dark icons on light background)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            getWindow().getDecorView().setSystemUiVisibility(
-                    getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            );
+                getWindow().getDecorView().setSystemUiVisibility(
+                        getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
             }
         }
 
         // Initialize Firebase Authentication (anonymous sign-in for testing)
         initializeFirebaseAuth();
-        
+
         // Initialize user service for loading user data
         userService = new FirebaseUserService();
-        
+
         initializeViews();
         setupViewModel();
         setupAdapters();
@@ -176,16 +189,16 @@ public class MainActivity extends AppCompatActivity {
         setupBottomNavigation();
         requestLocationPermission();
         setupNetworkCallback();
-        
+
         // Load user data from Firebase
         loadUserData();
-        
+
         // Wait for layout to be ready before hiding loading overlay
         waitForLayoutReady();
         // Initialize debounce handler
         weatherDebounceHandler = new android.os.Handler(android.os.Looper.getMainLooper());
         setupWeatherRefresh();
-        
+
         // Check network status after a short delay to ensure views are ready
         new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
             checkNetworkStatus();
@@ -203,6 +216,18 @@ public class MainActivity extends AppCompatActivity {
         refreshWeatherIfOnline();
         // Start periodic weather refresh
         startWeatherRefresh();
+
+        // Clear search text and focus when returning to the screen
+        if (etSearch != null) {
+            etSearch.setText("");
+            etSearch.clearFocus();
+            // Hide keyboard if visible
+            android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) getSystemService(
+                    android.content.Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(etSearch.getWindowToken(), 0);
+            }
+        }
     }
 
     @Override
@@ -219,13 +244,13 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         // Clean up network callback
         unregisterNetworkCallback();
-        
+
         // Remove user profile listener
         if (userProfileListener != null) {
             userProfileListener.remove();
             userProfileListener = null;
         }
-        
+
         // Clean up offline delay handler
         if (offlineDelayHandler != null && offlineDelayRunnable != null) {
             offlineDelayHandler.removeCallbacks(offlineDelayRunnable);
@@ -248,6 +273,7 @@ public class MainActivity extends AppCompatActivity {
         rvFeaturedProviders = findViewById(R.id.rvFeaturedProviders);
         rvRecentActivity = findViewById(R.id.rvRecentActivity);
         progressBar = findViewById(R.id.progressBar);
+        llMainContent = findViewById(R.id.llMainContent);
         btnNotification = findViewById(R.id.btnNotification);
         btnEmergency = findViewById(R.id.btnEmergency);
         btnScheduleLater = findViewById(R.id.btnScheduleLater);
@@ -255,6 +281,9 @@ public class MainActivity extends AppCompatActivity {
         ivEmergencyIcon = findViewById(R.id.ivEmergencyIcon);
         ivBookingLaterIcon = findViewById(R.id.ivBookingLaterIcon);
         ivFavoriteIcon = findViewById(R.id.ivFavoriteIcon);
+        ivFavoriteIcon = findViewById(R.id.ivFavoriteIcon);
+        // llNoSearchResults = findViewById(R.id.llNoSearchResults);
+        // ivSearchingAnimation = findViewById(R.id.ivSearchingAnimation);
         llInternetLoading = findViewById(R.id.llInternetLoading);
         tvInternetMessage = findViewById(R.id.tvInternetMessage);
         ivNoConnection = findViewById(R.id.ivNoConnection);
@@ -273,60 +302,63 @@ public class MainActivity extends AppCompatActivity {
         // Set default values (will be updated with real data)
         updateGreeting();
         updateProfileIcon(); // Initialize profile icon
-        tvLocation.setText("Phnom Penh");
-        tvWeather.setText("22°C Sunny");
+        tvLocation.setText(getString(R.string.default_location));
+        tvWeather.setText(getString(R.string.default_weather));
         if (ivWeatherIcon != null) {
-            // Use sunny_weather.json for weather icon (sunny.json is for time-based greeting icon)
+            // Use sunny_weather.json for weather icon (sunny.json is for time-based
+            // greeting icon)
             ivWeatherIcon.setAnimation(R.raw.sunny_weather);
             ivWeatherIcon.playAnimation();
         }
-        
+
         // Initialize button icons
         if (ivEmergencyIcon != null) {
             // Emergency uses Lottie animation
             ivEmergencyIcon.setAnimation(R.raw.amercency);
             ivEmergencyIcon.playAnimation();
         }
-        // Booking Later and Favorite icons are set in XML layout using drawable resources
-        
+        // Booking Later and Favorite icons are set in XML layout using drawable
+        // resources
+
         // Initialize internet loading indicator as hidden
         showInternetLoading(false);
-        
+
     }
 
     /**
      * Get greeting message based on current time of day
+     * 
      * @return Greeting string (Good Morning/Afternoon/Evening)
-     * Time frames:
-     * - Good Morning: 12:00 a.m. to 12:00 p.m. (noon)
-     * - Good Afternoon: 12:00 p.m. to 6:00 p.m.
-     * - Good Evening: 6:00 p.m. until midnight
+     *         Time frames:
+     *         - Good Morning: 12:00 a.m. to 12:00 p.m. (noon)
+     *         - Good Afternoon: 12:00 p.m. to 6:00 p.m.
+     *         - Good Evening: 6:00 p.m. until midnight
      */
     private String getTimeBasedGreeting() {
         java.util.Calendar calendar = java.util.Calendar.getInstance();
         int hourOfDay = calendar.get(java.util.Calendar.HOUR_OF_DAY);
-        
+
         String greeting;
         if (hourOfDay >= 0 && hourOfDay < 12) {
             // 12:00 a.m. to 12:00 p.m. (noon)
-            greeting = "Good Morning";
+            greeting = getString(R.string.greeting_morning);
         } else if (hourOfDay >= 12 && hourOfDay < 18) {
             // 12:00 p.m. to 6:00 p.m.
-            greeting = "Good Afternoon";
+            greeting = getString(R.string.greeting_afternoon);
         } else {
             // 6:00 p.m. until midnight (18:00 to 23:59)
-            greeting = "Good Evening";
+            greeting = getString(R.string.greeting_evening);
         }
-        
+
         // Use real user name if available, otherwise use fallback
         String userName = currentUserName != null ? currentUserName : AuthHelper.getCurrentUserName(this);
         if (userName == null || userName.isEmpty() || userName.equals("You")) {
-            userName = "User"; // Fallback
+            userName = getString(R.string.default_user); // Fallback
         }
-        
-        return greeting + ", " + userName + " 👋";
+
+        return String.format("%s, %s \uD83D\uDC4B", greeting, userName);
     }
-    
+
     /**
      * Load user data from Firestore and set up real-time listener
      */
@@ -337,7 +369,7 @@ public class MainActivity extends AppCompatActivity {
             updateGreeting();
             return;
         }
-        
+
         // Set up real-time listener for user profile
         userProfileListener = userService.listenToUserProfile(userId, new FirebaseUserService.UserProfileCallback() {
             @Override
@@ -345,18 +377,18 @@ public class MainActivity extends AppCompatActivity {
                 // Extract user name and email from profile (same as UserProfileActivity)
                 String name = null;
                 String email = null;
-                
+
                 if (userProfile != null && !userProfile.isEmpty()) {
                     name = userProfile.get("name") != null ? userProfile.get("name").toString() : null;
                     email = userProfile.get("email") != null ? userProfile.get("email").toString() : null;
-                    
+
                     if (name != null && !name.isEmpty()) {
                         currentUserName = name;
                         // Save to SharedPreferences for quick access
                         AuthHelper.saveUserName(MainActivity.this, name);
                     }
                 }
-                
+
                 // Fallback to Firebase Auth if Firestore doesn't have data
                 com.google.firebase.auth.FirebaseUser user = AuthHelper.getCurrentUser();
                 if (user != null) {
@@ -365,38 +397,38 @@ public class MainActivity extends AppCompatActivity {
                             currentUserName = user.getDisplayName();
                         }
                     }
-                    
+
                     if (email == null || email.isEmpty()) {
                         email = user.getEmail();
                     }
                 }
-                
+
                 // Update greeting with real user name
                 updateGreeting();
-                
+
                 // Update profile icon with letter only (no image loading)
                 updateProfileIcon(name, email);
             }
-            
+
             @Override
             public void onError(String error) {
                 android.util.Log.e("MainActivity", "Error loading user profile: " + error);
                 // Fallback to AuthHelper for user name
                 currentUserName = AuthHelper.getCurrentUserName(MainActivity.this);
-                
+
                 // Fallback to Firebase Auth for email
                 com.google.firebase.auth.FirebaseUser user = AuthHelper.getCurrentUser();
                 String email = null;
                 if (user != null) {
                     email = user.getEmail();
                 }
-                
+
                 updateGreeting();
                 updateProfileIcon(currentUserName, email);
             }
         });
     }
-    
+
     /**
      * Update profile icon with initial letter only (no image loading)
      * Uses the same logic as UserProfileActivity to ensure consistency
@@ -411,21 +443,22 @@ public class MainActivity extends AppCompatActivity {
         }
         updateProfileIcon(name, email);
     }
-    
+
     /**
      * Update profile icon with initial letter only (no image loading)
-     * @param name User's name (from Firestore or Firebase Auth)
+     * 
+     * @param name  User's name (from Firestore or Firebase Auth)
      * @param email User's email (for fallback letter)
      */
     private void updateProfileIcon(String name, String email) {
         if (ivProfileIcon == null || tvProfileLetter == null) {
             return;
         }
-        
+
         // Always show letter, never load images (matching profile screen behavior)
         ivProfileIcon.setVisibility(View.GONE);
         tvProfileLetter.setVisibility(View.VISIBLE);
-        
+
         // Get first letter - same priority as profile screen:
         // 1. First letter of name
         // 2. First letter of email
@@ -436,10 +469,10 @@ public class MainActivity extends AppCompatActivity {
         } else if (email != null && !email.isEmpty()) {
             firstLetter = email.substring(0, 1).toUpperCase();
         }
-        
+
         tvProfileLetter.setText(firstLetter);
     }
-    
+
     /**
      * Update greeting text with current user name
      */
@@ -449,9 +482,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     /**
      * Convert Lottie file name to R.raw resource ID
+     * 
      * @param fileName Lottie JSON file name (e.g., "sunny_weather.json")
      * @return Resource ID from R.raw, or 0 if not found
      */
@@ -459,10 +492,10 @@ public class MainActivity extends AppCompatActivity {
         if (fileName == null || fileName.isEmpty()) {
             return 0;
         }
-        
+
         // Remove .json extension if present
         String name = fileName.replace(".json", "");
-        
+
         // Map file names to R.raw resource IDs
         switch (name) {
             case "sunny":
@@ -491,7 +524,10 @@ public class MainActivity extends AppCompatActivity {
         // Observe categories
         viewModel.getCategories().observe(this, categories -> {
             if (categories != null && !categories.isEmpty()) {
+                // Store original categories for search highlighting
+                originalCategories = new java.util.ArrayList<>(categories);
                 allCategories = new java.util.ArrayList<>(categories);
+
                 // Show only first 6 categories initially
                 List<ServiceCategory> initialCategories;
                 if (categories.size() > 6) {
@@ -500,9 +536,10 @@ public class MainActivity extends AppCompatActivity {
                     initialCategories = new java.util.ArrayList<>(categories);
                 }
                 categoryAdapter.updateCategories(initialCategories);
+                categoryAdapter.setSearchQuery(currentSearchQuery); // Apply search highlighting
                 showingAllCategories = false;
                 if (tvViewAllServices != null) {
-                    tvViewAllServices.setText("View all >");
+                    tvViewAllServices.setText(getString(R.string.view_all_arrow));
                 }
             }
         });
@@ -510,7 +547,12 @@ public class MainActivity extends AppCompatActivity {
         // Observe featured providers
         viewModel.getFeaturedProviders().observe(this, providers -> {
             if (providers != null && !providers.isEmpty()) {
+                // Store original providers for search highlighting
+                originalProviders = new java.util.ArrayList<>(providers);
                 providerAdapter.updateProviders(providers);
+                providerAdapter.setSearchQuery(currentSearchQuery); // Apply search highlighting
+                // Also set providers in category adapter for search matching by provider name
+                categoryAdapter.setProviders(originalProviders);
             }
         });
 
@@ -526,7 +568,7 @@ public class MainActivity extends AppCompatActivity {
                     displayActivities = new java.util.ArrayList<>(activities);
                 }
                 activityAdapter.updateActivities(displayActivities);
-                
+
                 // Update "View All" button text
                 updateViewAllActivityButton();
             }
@@ -542,7 +584,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Observe weather icon (Lottie animation)
         viewModel.getWeatherIconFileName().observe(this, fileName -> {
-            android.util.Log.d("MainActivity", "Weather icon observer triggered, fileName: " + fileName + ", ivWeatherIcon null: " + (ivWeatherIcon == null));
+            android.util.Log.d("MainActivity", "Weather icon observer triggered, fileName: " + fileName
+                    + ", ivWeatherIcon null: " + (ivWeatherIcon == null));
             if (fileName != null && !fileName.isEmpty() && ivWeatherIcon != null) {
                 android.util.Log.d("MainActivity", "Setting weather icon to Lottie file: " + fileName);
                 int resId = getLottieResourceId(fileName);
@@ -554,7 +597,8 @@ public class MainActivity extends AppCompatActivity {
                     android.util.Log.e("MainActivity", "Invalid Lottie file name: " + fileName);
                 }
             } else {
-                android.util.Log.w("MainActivity", "Cannot update weather icon - fileName: " + fileName + ", ivWeatherIcon: " + ivWeatherIcon);
+                android.util.Log.w("MainActivity",
+                        "Cannot update weather icon - fileName: " + fileName + ", ivWeatherIcon: " + ivWeatherIcon);
             }
         });
 
@@ -581,7 +625,7 @@ public class MainActivity extends AppCompatActivity {
                     boolean hasNetwork = NetworkUtils.isNetworkAvailable(this);
                     showInternetLoading(!hasNetwork);
                     if (hasNetwork) {
-                        Toast.makeText(this, "Unable to fetch weather data", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.error_weather_fetch), Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -611,7 +655,8 @@ public class MainActivity extends AppCompatActivity {
                 category -> {
                     if (category != null) {
                         android.util.Log.d("MainActivity", "Category clicked: " + category.getName());
-                        Toast.makeText(MainActivity.this, "Opening " + category.getName(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, getString(R.string.opening_category, category.getName()),
+                                Toast.LENGTH_SHORT).show();
                         try {
                             Intent intent = new Intent(MainActivity.this, PlumbingActivity.class);
                             intent.putExtra("category_name", category.getName());
@@ -625,8 +670,7 @@ public class MainActivity extends AppCompatActivity {
                         android.util.Log.e("MainActivity", "Category is null in click listener");
                         Toast.makeText(MainActivity.this, "Error: Category is null", Toast.LENGTH_SHORT).show();
                     }
-                }
-        );
+                });
 
         // Provider adapter
         providerAdapter = new ProviderAdapter(
@@ -636,8 +680,7 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtra("provider_name", provider.getName());
                     startActivity(intent);
                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                }
-        );
+                });
 
         // Activity adapter - now shows providers from Firebase
         activityAdapter = new RecentActivityAdapterEnhanced(
@@ -675,7 +718,8 @@ public class MainActivity extends AppCompatActivity {
                             startActivity(intent);
                             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         } else {
-                            Toast.makeText(MainActivity.this, "Provider not found", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, getString(R.string.error_provider_not_found),
+                                    Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -691,8 +735,7 @@ public class MainActivity extends AppCompatActivity {
                             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         }
                     }
-                }
-        );
+                });
     }
 
     private void setupRecyclerViews() {
@@ -702,16 +745,13 @@ public class MainActivity extends AppCompatActivity {
             rvCategories.setLayoutManager(categoryLayoutManager);
             rvCategories.setAdapter(categoryAdapter);
             rvCategories.setHasFixedSize(true);
-            
-            // Set up smooth animations for item changes
-            DefaultItemAnimator animator = new DefaultItemAnimator();
-            animator.setAddDuration(600);
-            animator.setRemoveDuration(600);
-            animator.setMoveDuration(600);
-            animator.setChangeDuration(600);
-            rvCategories.setItemAnimator(animator);
-            
-            android.util.Log.d("MainActivity", "RecyclerView setup complete, adapter item count: " + categoryAdapter.getItemCount());
+
+            // Disable individual item animator to prevent "random" flight during layout
+            // changes
+            rvCategories.setItemAnimator(null);
+
+            android.util.Log.d("MainActivity",
+                    "RecyclerView setup complete, adapter item count: " + categoryAdapter.getItemCount());
         } else {
             android.util.Log.e("MainActivity", "RecyclerView or adapter is null!");
         }
@@ -722,13 +762,17 @@ public class MainActivity extends AppCompatActivity {
                 this, LinearLayoutManager.HORIZONTAL, false);
         rvFeaturedProviders.setLayoutManager(providerLayoutManager);
         rvFeaturedProviders.setAdapter(providerAdapter);
-        
+        rvFeaturedProviders.setItemAnimator(null);
+
         // Calculate card width to match recent activity card width
-        // Recent activity: RecyclerView width = screen width - 40dp (container padding 20dp each side)
-        //                 Card width = RecyclerView width - 32dp (16dp margin each side) = screen width - 72dp
-        // Featured provider: RecyclerView width = screen width - 40dp (container padding 20dp each side)
-        //                    Card width should match recent activity = screen width - 72dp
-        //                    Card margins = 16dp + 8dp = 24dp
+        // Recent activity: RecyclerView width = screen width - 40dp (container padding
+        // 20dp each side)
+        // Card width = RecyclerView width - 32dp (16dp margin each side) = screen width
+        // - 72dp
+        // Featured provider: RecyclerView width = screen width - 40dp (container
+        // padding 20dp each side)
+        // Card width should match recent activity = screen width - 72dp
+        // Card margins = 16dp + 8dp = 24dp
         rvFeaturedProviders.post(() -> {
             int recyclerViewWidth = rvFeaturedProviders.getWidth();
             float density = getResources().getDisplayMetrics().density;
@@ -736,12 +780,12 @@ public class MainActivity extends AppCompatActivity {
             // Since RecyclerView width = screen width - 40dp, we can calculate:
             // card width = recyclerViewWidth - 32dp (to match recent activity card width)
             int cardWidth = recyclerViewWidth - (int) (32 * density);
-            
+
             // Set the card width on the adapter
             if (providerAdapter != null) {
                 providerAdapter.setCardWidth(cardWidth);
             }
-            
+
             // Add padding to center the last card on screen
             // Account for card margins: 16dp left + 8dp right = 24dp total
             int cardWithMargins = cardWidth + (int) (24 * density);
@@ -767,7 +811,7 @@ public class MainActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             });
         }
-        
+
         btnNotification.setOnClickListener(v -> {
             Toast.makeText(this, "Notifications", Toast.LENGTH_SHORT).show();
         });
@@ -795,42 +839,279 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
+        // Setup search functionality with real-time filtering
+        // Setup Search Actions
+        setupSearch();
+
+        // Seed Firebase Data (One-time)
+        com.example.homerepairs.utils.FirebaseSeeder.seedProviders(this);
+    }
+
+    /**
+     * Setup search functionality to filter categories
+     */
+    private void setupSearch() {
+        if (etSearch == null) {
+            return;
+        }
+
+        // SCROLL OPTIMIZATION: Scroll search bar to top when focused
         etSearch.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
-                // Could open search activity
-                Toast.makeText(this, "Search functionality", Toast.LENGTH_SHORT).show();
+                // Determine the scroll position to bring the search bar to the top
+                // We need to account for any toolbar/header height if necessary
+                android.view.View searchCard = findViewById(R.id.cvSearchBar);
+                androidx.core.widget.NestedScrollView nsvMain = findViewById(R.id.nsvMain);
+
+                if (searchCard != null && nsvMain != null) {
+                    // Post to message queue to ensure layout is measured
+                    nsvMain.post(() -> {
+                        // Get text location
+                        int top = searchCard.getTop();
+                        // Smooth scroll to that position
+                        nsvMain.smoothScrollTo(0, top - 40); // 40px buffer for padding
+                    });
+                }
             }
         });
+
+        // Add text change listener for real-time search
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                currentSearchQuery = s.toString().toLowerCase().trim();
+                filterBySearchQuery(currentSearchQuery);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        // Handle keyboard "Search" or "Enter" action
+        etSearch.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH ||
+                    actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE ||
+                    (event != null && event.getKeyCode() == android.view.KeyEvent.KEYCODE_ENTER
+                            && event.getAction() == android.view.KeyEvent.ACTION_DOWN)) {
+
+                String query = etSearch.getText().toString().trim();
+                if (!query.isEmpty()) {
+                    android.util.Log.d("MainActivity", "Search action triggering navigation for: " + query);
+
+                    // Hide keyboard
+                    android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) getSystemService(
+                            android.content.Context.INPUT_METHOD_SERVICE);
+                    if (imm != null) {
+                        imm.hideSoftInputFromWindow(etSearch.getWindowToken(), 0);
+                    }
+
+                    // Show searching animation as full screen loader
+                    showSearchLoading(true);
+
+                    // Simulate search delay then navigate
+                    new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+                        // Navigate to results screen (reusing PlumbingActivity as generic list)
+                        Intent intent = new Intent(MainActivity.this, PlumbingActivity.class);
+                        intent.putExtra("category_name", "Search Results");
+                        intent.putExtra("search_query", query);
+                        startActivity(intent);
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
+                        // Hide loading after transition (will be hidden by onStop/onResume/layout logic
+                        // anyway)
+                        new android.os.Handler().postDelayed(() -> showSearchLoading(false), 500);
+
+                    }, 2000); // 2 second delay for animation
+
+                    return true;
+                }
+            }
+            return false;
+        });
     }
-    
+
+    /**
+     * Highlight matching categories and providers based on search query
+     * All items remain visible, but matches are highlighted and non-matches are
+     * dimmed
+     */
+    /**
+     * Filter categories and providers based on search query
+     * Non-matching items are removed from the view
+     */
+    private void filterBySearchQuery(String query) {
+        currentSearchQuery = query;
+        android.util.Log.d("MainActivity", "filterBySearchQuery called with query: '" + query + "'");
+
+        if (query.isEmpty()) {
+            // RESTORE DEFAULT VIEW
+            // Categories
+            List<ServiceCategory> categoriesToShow;
+            if (showingAllCategories) {
+                categoriesToShow = new java.util.ArrayList<>(originalCategories);
+            } else {
+                if (originalCategories.size() > 6) {
+                    categoriesToShow = new java.util.ArrayList<>(originalCategories.subList(0, 6));
+                } else {
+                    categoriesToShow = new java.util.ArrayList<>(originalCategories);
+                }
+            }
+            categoryAdapter.updateCategories(categoriesToShow);
+            if (tvViewAllServices != null) {
+                tvViewAllServices.setVisibility(View.VISIBLE);
+                tvViewAllServices.setEnabled(true);
+            }
+
+            // Providers
+            providerAdapter.updateProviders(new java.util.ArrayList<>(originalProviders));
+
+            // Activities
+            List<RecentActivity> activitiesToShow;
+            if (showingAllActivities) {
+                activitiesToShow = new java.util.ArrayList<>(allActivities);
+            } else {
+                if (allActivities.size() > 2) {
+                    activitiesToShow = new java.util.ArrayList<>(allActivities.subList(0, 2));
+                } else {
+                    activitiesToShow = new java.util.ArrayList<>(allActivities);
+                }
+            }
+            activityAdapter.updateActivities(activitiesToShow);
+            if (tvViewAllActivity != null) {
+                updateViewAllActivityButton(); // This handles visibility
+                tvViewAllActivity.setVisibility(View.VISIBLE);
+            }
+
+            // Hide No Results
+            // if (llNoSearchResults != null)
+            // llNoSearchResults.setVisibility(View.GONE);
+
+        } else {
+            // SEARCH MODE
+            String queryLower = query.toLowerCase();
+
+            // 1. Filter Categories (Match name OR providers within category)
+            List<ServiceCategory> filteredCategories = new java.util.ArrayList<>();
+            for (ServiceCategory cat : originalCategories) {
+                boolean match = cat.getName().toLowerCase().contains(queryLower);
+                if (!match) {
+                    // Check providers in this category using originalProviders
+                    for (FeaturedProvider prov : originalProviders) {
+                        if (prov.getService() != null
+                                && prov.getService().equalsIgnoreCase(cat.getName())) {
+                            if (prov.getName().toLowerCase().contains(queryLower)) {
+                                match = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (match) {
+                    filteredCategories.add(cat);
+                }
+            }
+
+            // 2. Filter Providers
+            List<FeaturedProvider> filteredProviders = new java.util.ArrayList<>();
+            for (FeaturedProvider prov : originalProviders) {
+                if (prov.getName().toLowerCase().contains(queryLower) ||
+                        (prov.getService() != null && prov.getService().toLowerCase().contains(queryLower))) {
+                    filteredProviders.add(prov);
+                }
+            }
+
+            // 3. Filter Activities
+            List<RecentActivity> filteredActivities = new java.util.ArrayList<>();
+            for (RecentActivity act : allActivities) {
+                if (act.getTitle() != null && act.getTitle().toLowerCase().contains(queryLower)) {
+                    filteredActivities.add(act);
+                }
+            }
+
+            // boolean hasResults = !filteredCategories.isEmpty() ||
+            // !filteredProviders.isEmpty()
+            // || !filteredActivities.isEmpty();
+
+            // if (!hasResults) {
+            // Show Animation
+            // if (llNoSearchResults != null) {
+            // llNoSearchResults.setVisibility(View.VISIBLE);
+            // // Play animation if not already playing
+            // if (ivSearchingAnimation != null && !ivSearchingAnimation.isAnimating()) {
+            // ivSearchingAnimation.playAnimation();
+            // }
+            // }
+
+            // Update adapters with empty lists
+            // categoryAdapter.updateCategories(new java.util.ArrayList<>());
+            // providerAdapter.updateProviders(new java.util.ArrayList<>());
+            // activityAdapter.updateActivities(new java.util.ArrayList<>());
+
+            // } else {
+            // Show Matches
+            // if (llNoSearchResults != null) {
+            // llNoSearchResults.setVisibility(View.GONE);
+            // }
+
+            categoryAdapter.updateCategories(filteredCategories);
+            providerAdapter.updateProviders(filteredProviders);
+            activityAdapter.updateActivities(filteredActivities);
+            // }
+
+            // Hide "View All" buttons during search
+            if (tvViewAllServices != null) {
+                tvViewAllServices.setVisibility(View.INVISIBLE);
+            }
+            if (tvViewAllActivity != null) {
+                tvViewAllActivity.setVisibility(View.GONE);
+            }
+        }
+
+        // Pass query to adapters for highlighting
+        categoryAdapter.setSearchQuery(query);
+        providerAdapter.setSearchQuery(query);
+        activityAdapter.setSearchQuery(query);
+    }
+
     /**
      * Toggle between showing 6 categories and all categories with smooth animation
      */
     private void toggleCategoriesView() {
-        if (allCategories == null || allCategories.isEmpty()) {
+        if (originalCategories == null || originalCategories.isEmpty()) {
             return;
         }
-        
+
         // Disable clicks during animation
         if (tvViewAllServices != null) {
             tvViewAllServices.setEnabled(false);
         }
-        
+
         if (showingAllCategories) {
+            // Animate layout changes
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                android.transition.TransitionManager.beginDelayedTransition(llMainContent,
+                        new android.transition.ChangeBounds().setDuration(300));
+            }
             // Show only first 6 with smooth animation
             List<ServiceCategory> limitedCategories;
-            if (allCategories.size() > 6) {
-                limitedCategories = new java.util.ArrayList<>(allCategories.subList(0, 6));
+            if (originalCategories.size() > 6) {
+                limitedCategories = new java.util.ArrayList<>(originalCategories.subList(0, 6));
             } else {
-                limitedCategories = new java.util.ArrayList<>(allCategories);
+                limitedCategories = new java.util.ArrayList<>(originalCategories);
             }
-            
-            categoryAdapter.updateCategories(limitedCategories);
+
+            categoryAdapter.updateCategoriesGranular(limitedCategories, false);
+            categoryAdapter.setSearchQuery(currentSearchQuery); // Maintain search highlighting
             showingAllCategories = false;
             if (tvViewAllServices != null) {
-                tvViewAllServices.setText("View all >");
+                tvViewAllServices.setText(getString(R.string.view_all_arrow));
             }
-            
+
             // Re-enable after animation starts (shorter delay for better UX)
             rvCategories.postDelayed(() -> {
                 if (tvViewAllServices != null) {
@@ -838,13 +1119,19 @@ public class MainActivity extends AppCompatActivity {
                 }
             }, 300);
         } else {
+            // Animate layout changes
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                android.transition.TransitionManager.beginDelayedTransition(llMainContent,
+                        new android.transition.ChangeBounds().setDuration(300));
+            }
             // Show all categories with smooth animation
-            categoryAdapter.updateCategories(new java.util.ArrayList<>(allCategories));
+            categoryAdapter.updateCategoriesGranular(new java.util.ArrayList<>(originalCategories), true);
+            categoryAdapter.setSearchQuery(currentSearchQuery); // Maintain search highlighting
             showingAllCategories = true;
             if (tvViewAllServices != null) {
-                tvViewAllServices.setText("Show less >");
+                tvViewAllServices.setText(getString(R.string.view_less_arrow));
             }
-            
+
             // Re-enable after animation starts (shorter delay for better UX)
             rvCategories.postDelayed(() -> {
                 if (tvViewAllServices != null) {
@@ -853,7 +1140,7 @@ public class MainActivity extends AppCompatActivity {
             }, 300);
         }
     }
-    
+
     /**
      * Toggle between showing 2 activities and all activities
      */
@@ -861,13 +1148,18 @@ public class MainActivity extends AppCompatActivity {
         if (allActivities == null || allActivities.isEmpty()) {
             return;
         }
-        
+
         // Disable clicks during update
         if (tvViewAllActivity != null) {
             tvViewAllActivity.setEnabled(false);
         }
-        
+
         if (showingAllActivities) {
+            // Animate layout changes
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                android.transition.TransitionManager.beginDelayedTransition(llMainContent,
+                        new android.transition.ChangeBounds().setDuration(300));
+            }
             // Collapse: Show only first 2 activities
             List<RecentActivity> limitedActivities;
             if (allActivities.size() > 2) {
@@ -875,11 +1167,11 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 limitedActivities = new java.util.ArrayList<>(allActivities);
             }
-            
-            activityAdapter.updateActivities(limitedActivities);
+
+            activityAdapter.updateActivitiesGranular(limitedActivities, false);
             showingAllActivities = false;
             updateViewAllActivityButton();
-            
+
             // Re-enable after update
             rvRecentActivity.postDelayed(() -> {
                 if (tvViewAllActivity != null) {
@@ -887,11 +1179,16 @@ public class MainActivity extends AppCompatActivity {
                 }
             }, 100);
         } else {
+            // Animate layout changes
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                android.transition.TransitionManager.beginDelayedTransition(llMainContent,
+                        new android.transition.ChangeBounds().setDuration(300));
+            }
             // Expand: Show all activities
-            activityAdapter.updateActivities(new java.util.ArrayList<>(allActivities));
+            activityAdapter.updateActivitiesGranular(new java.util.ArrayList<>(allActivities), true);
             showingAllActivities = true;
             updateViewAllActivityButton();
-            
+
             // Re-enable after update
             rvRecentActivity.postDelayed(() -> {
                 if (tvViewAllActivity != null) {
@@ -900,7 +1197,7 @@ public class MainActivity extends AppCompatActivity {
             }, 100);
         }
     }
-    
+
     /**
      * Update "View All" button text for activities based on current state
      */
@@ -908,14 +1205,14 @@ public class MainActivity extends AppCompatActivity {
         if (tvViewAllActivity == null) {
             return;
         }
-        
+
         if (showingAllActivities) {
-            tvViewAllActivity.setText("Show less");
+            tvViewAllActivity.setText(getString(R.string.view_less));
             tvViewAllActivity.setVisibility(View.VISIBLE);
         } else {
             // Only show "View All" if there are more than 2 activities
             if (allActivities != null && allActivities.size() > 2) {
-                tvViewAllActivity.setText("View All");
+                tvViewAllActivity.setText(getString(R.string.view_all_caps));
                 tvViewAllActivity.setVisibility(View.VISIBLE);
             } else {
                 // Hide button if 2 or fewer activities
@@ -941,12 +1238,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupBottomNavigation() {
         BottomNavigationView bottomNavigation = findViewById(R.id.bottomNavigation);
-        
-        // Remove elevation/shadow to eliminate divider - keep the navigation bar background
+
+        // Remove elevation/shadow to eliminate divider - keep the navigation bar
+        // background
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             bottomNavigation.setElevation(0f);
         }
-        
+
         bottomNavigation.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.nav_home) {
@@ -981,13 +1279,14 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Show or hide screen transition loading overlay
+     * 
      * @param show true to show, false to hide
      */
     private void showScreenLoading(boolean show) {
         if (llScreenLoading == null) {
             return;
         }
-        
+
         if (show) {
             llScreenLoading.setVisibility(View.VISIBLE);
             llScreenLoading.setAlpha(0f);
@@ -1021,10 +1320,10 @@ public class MainActivity extends AppCompatActivity {
         if (llScreenLoading == null) {
             return;
         }
-        
+
         // Record start time
         loadingStartTime = System.currentTimeMillis();
-        
+
         // Show loading overlay if it's not already visible
         if (llScreenLoading.getVisibility() != View.VISIBLE) {
             llScreenLoading.setVisibility(View.VISIBLE);
@@ -1043,34 +1342,36 @@ public class MainActivity extends AppCompatActivity {
                 ivScreenLoading.playAnimation();
             }
         }
-        
+
         // Get root view
         View rootView = findViewById(android.R.id.content);
         if (rootView == null) {
             // Fallback: hide after minimum duration
-            new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> hideScreenLoading(), MIN_LOADING_DURATION);
+            new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> hideScreenLoading(),
+                    MIN_LOADING_DURATION);
             return;
         }
-        
+
         // Wait for layout to be measured and laid out
-        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new android.view.ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                // Check if layout is ready (has dimensions)
-                if (rootView.getWidth() > 0 && rootView.getHeight() > 0) {
-                    // Remove listener to avoid multiple calls
-                    rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    
-                    // Calculate remaining time to meet minimum duration
-                    long elapsedTime = System.currentTimeMillis() - loadingStartTime;
-                    long remainingTime = MIN_LOADING_DURATION - elapsedTime;
-                    
-                    // Wait for minimum duration or additional 200ms, whichever is longer
-                    long delayTime = Math.max(remainingTime, 200);
-                    rootView.postDelayed(() -> hideScreenLoading(), delayTime);
-                }
-            }
-        });
+        rootView.getViewTreeObserver()
+                .addOnGlobalLayoutListener(new android.view.ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        // Check if layout is ready (has dimensions)
+                        if (rootView.getWidth() > 0 && rootView.getHeight() > 0) {
+                            // Remove listener to avoid multiple calls
+                            rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                            // Calculate remaining time to meet minimum duration
+                            long elapsedTime = System.currentTimeMillis() - loadingStartTime;
+                            long remainingTime = MIN_LOADING_DURATION - elapsedTime;
+
+                            // Wait for minimum duration or additional 200ms, whichever is longer
+                            long delayTime = Math.max(remainingTime, 200);
+                            rootView.postDelayed(() -> hideScreenLoading(), delayTime);
+                        }
+                    }
+                });
     }
 
     /**
@@ -1080,12 +1381,12 @@ public class MainActivity extends AppCompatActivity {
         if (llScreenLoading == null || llScreenLoading.getVisibility() != View.VISIBLE) {
             return;
         }
-        
+
         // Stop Lottie animation
         if (ivScreenLoading != null) {
             ivScreenLoading.cancelAnimation();
         }
-        
+
         llScreenLoading.animate()
                 .alpha(0f)
                 .setDuration(200)
@@ -1094,10 +1395,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void requestLocationPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
                     LOCATION_PERMISSION_REQUEST_CODE);
         } else {
             getCurrentLocation();
@@ -1106,7 +1407,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -1124,8 +1425,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getCurrentLocation() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             boolean hasNetwork = NetworkUtils.isNetworkAvailable(this);
             showInternetLoading(!hasNetwork);
             fusedLocationClient.getLastLocation()
@@ -1139,7 +1440,7 @@ public class MainActivity extends AppCompatActivity {
                             viewModel.fetchWeather(latitude, longitude, hasNetwork);
                             // Get city name from coordinates using reverse geocoding
                             if (hasNetwork) {
-                            getCityNameFromLocation(latitude, longitude);
+                                getCityNameFromLocation(latitude, longitude);
                             } else {
                                 viewModel.setUserLocation("Current Location");
                             }
@@ -1167,8 +1468,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void requestLocationUpdates() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             boolean hasNetwork = NetworkUtils.isNetworkAvailable(this);
             showInternetLoading(!hasNetwork);
             LocationRequest locationRequest = LocationRequest.create();
@@ -1190,7 +1491,7 @@ public class MainActivity extends AppCompatActivity {
                                 lastKnownLongitude = longitude;
                                 viewModel.fetchWeather(latitude, longitude, hasNetwork);
                                 if (hasNetwork) {
-                                getCityNameFromLocation(latitude, longitude);
+                                    getCityNameFromLocation(latitude, longitude);
                                 } else {
                                     viewModel.setUserLocation("Current Location");
                                 }
@@ -1210,19 +1511,20 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Show or hide internet loading indicator with message
+     * 
      * @param show true to show, false to hide
      */
     private void showInternetLoading(boolean show) {
         if (llInternetLoading == null) {
             return;
         }
-        
+
         // Cancel any pending delay
         if (offlineDelayHandler != null && offlineDelayRunnable != null) {
             offlineDelayHandler.removeCallbacks(offlineDelayRunnable);
             offlineDelayRunnable = null;
         }
-        
+
         if (show) {
             // Create delay runnable for 2 seconds
             offlineDelayRunnable = new Runnable() {
@@ -1231,11 +1533,11 @@ public class MainActivity extends AppCompatActivity {
                     if (llInternetLoading == null) {
                         return;
                     }
-                    
+
                     // Show with smooth fade-in animation after 2 second delay
                     llInternetLoading.setVisibility(View.VISIBLE);
                     llInternetLoading.setAlpha(0f);
-                    
+
                     // Fade in overlay background
                     llInternetLoading.animate()
                             .alpha(1f)
@@ -1243,20 +1545,20 @@ public class MainActivity extends AppCompatActivity {
                             .setStartDelay(100)
                             .setInterpolator(new android.view.animation.DecelerateInterpolator())
                             .start();
-                    
+
                     // Animate loading content with delay
                     if (tvInternetMessage != null && ivNoConnection != null) {
                         tvInternetMessage.setAlpha(0f);
                         ivNoConnection.setAlpha(0f);
                         ivNoConnection.setScaleX(0.8f);
                         ivNoConnection.setScaleY(0.8f);
-                        
+
                         // Start Lottie animation
                         if (ivNoConnection != null) {
                             ivNoConnection.setAnimation(R.raw.no_connection);
                             ivNoConnection.playAnimation();
                         }
-                        
+
                         // Animate text first
                         tvInternetMessage.animate()
                                 .alpha(1f)
@@ -1264,7 +1566,7 @@ public class MainActivity extends AppCompatActivity {
                                 .setStartDelay(300)
                                 .setInterpolator(new android.view.animation.DecelerateInterpolator())
                                 .start();
-                        
+
                         // Animate Lottie animation with scale effect
                         ivNoConnection.animate()
                                 .alpha(1f)
@@ -1277,7 +1579,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             };
-            
+
             // Post delay of 2 seconds (2000 milliseconds)
             offlineDelayHandler.postDelayed(offlineDelayRunnable, 2000);
         } else {
@@ -1292,6 +1594,61 @@ public class MainActivity extends AppCompatActivity {
                         }
                         if (ivNoConnection != null) {
                             ivNoConnection.pauseAnimation();
+                        }
+                    })
+                    .start();
+        }
+    }
+
+    /**
+     * Show or hide search loading overlay with specific animation
+     * 
+     * @param show true to show, false to hide
+     */
+    private void showSearchLoading(boolean show) {
+        if (llScreenLoading == null) {
+            return;
+        }
+
+        if (show) {
+            llScreenLoading.setVisibility(View.VISIBLE);
+            llScreenLoading.setAlpha(0f);
+            llScreenLoading.animate()
+                    .alpha(1f)
+                    .setDuration(300)
+                    .setInterpolator(new android.view.animation.DecelerateInterpolator())
+                    .start();
+            // Start Lottie animation with searching animation
+            if (ivScreenLoading != null) {
+                // Change animation to searching_animation
+                ivScreenLoading.setAnimation(R.raw.searching_animation);
+                ivScreenLoading.setSpeed(1.0f);
+                ivScreenLoading.setRenderMode(com.airbnb.lottie.RenderMode.HARDWARE);
+                ivScreenLoading.enableMergePathsForKitKatAndAbove(true);
+                ivScreenLoading.playAnimation();
+
+                // Update text to "Searching..."
+                TextView tvLoading = llScreenLoading.findViewById(R.id.tvLoading);
+                if (tvLoading == null) {
+                    // Try to find the TextView inside the layout if ID is not available directly
+                    // It seems the TextView doesn't have an ID in the layout XML reference above
+                    // (only text="Loading...")
+                    // I'll need to check the layout to be sure. Based on previous read, it's just a
+                    // TextView.
+                    // Let's assume for now we keep "Loading..." or update the XML to give it an ID.
+                    // For now, let's just update the animation.
+                }
+            }
+        } else {
+            llScreenLoading.animate()
+                    .alpha(0f)
+                    .setDuration(200)
+                    .withEndAction(() -> {
+                        llScreenLoading.setVisibility(View.GONE);
+                        // Reset to default loading animation for other flows
+                        if (ivScreenLoading != null) {
+                            ivScreenLoading.pauseAnimation();
+                            ivScreenLoading.setAnimation(R.raw.loading);
                         }
                     })
                     .start();
@@ -1316,10 +1673,11 @@ public class MainActivity extends AppCompatActivity {
                         // Only fetch if we didn't already have internet (prevent duplicate fetches)
                         if (!wasInternetAvailable) {
                             wasInternetAvailable = true;
-                        // Fetch real weather data when internet is restored (with delay to avoid duplicates)
-                        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
-                            refetchWeatherData();
-                        }, 1000);
+                            // Fetch real weather data when internet is restored (with delay to avoid
+                            // duplicates)
+                            new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+                                refetchWeatherData();
+                            }, 1000);
                         }
                     });
                 }
@@ -1337,12 +1695,14 @@ public class MainActivity extends AppCompatActivity {
                 public void onCapabilitiesChanged(Network network, NetworkCapabilities networkCapabilities) {
                     runOnUiThread(() -> {
                         boolean hasInternet = networkCapabilities != null &&
-                                            networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
-                                            networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
-                        android.util.Log.d("MainActivity", "Network capabilities changed - hasInternet: " + hasInternet);
+                                networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                                networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
+                        android.util.Log.d("MainActivity",
+                                "Network capabilities changed - hasInternet: " + hasInternet);
                         showInternetLoading(!hasInternet);
-                        
-                        // Only fetch weather if internet just became available (transition from offline to online)
+
+                        // Only fetch weather if internet just became available (transition from offline
+                        // to online)
                         // This prevents excessive fetches when capabilities change while already online
                         if (hasInternet && !wasInternetAvailable) {
                             wasInternetAvailable = true;
@@ -1375,7 +1735,8 @@ public class MainActivity extends AppCompatActivity {
      * Unregister network callback
      */
     private void unregisterNetworkCallback() {
-        if (connectivityManager != null && networkCallback != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (connectivityManager != null && networkCallback != null
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             try {
                 connectivityManager.unregisterNetworkCallback(networkCallback);
             } catch (Exception e) {
@@ -1391,7 +1752,7 @@ public class MainActivity extends AppCompatActivity {
         if (llInternetLoading == null) {
             return; // Views not initialized yet
         }
-        
+
         // Initialize network state tracking
         boolean hasNetwork = NetworkUtils.isNetworkAvailable(this);
         wasInternetAvailable = hasNetwork;
@@ -1408,19 +1769,20 @@ public class MainActivity extends AppCompatActivity {
             performWeatherFetch();
             return;
         }
-        
+
         long currentTime = System.currentTimeMillis();
         long timeSinceLastFetch = currentTime - lastWeatherFetchTime;
-        
+
         // If a fetch happened recently, cancel the pending one and schedule a new one
         if (weatherDebounceRunnable != null) {
             weatherDebounceHandler.removeCallbacks(weatherDebounceRunnable);
         }
-        
+
         // Only fetch if enough time has passed since last fetch
         if (lastWeatherFetchTime > 0 && timeSinceLastFetch < WEATHER_DEBOUNCE_DELAY) {
             long remainingDelay = WEATHER_DEBOUNCE_DELAY - timeSinceLastFetch;
-            android.util.Log.d("MainActivity", "Debouncing weather fetch - too soon since last fetch, delaying by " + remainingDelay + "ms");
+            android.util.Log.d("MainActivity",
+                    "Debouncing weather fetch - too soon since last fetch, delaying by " + remainingDelay + "ms");
             weatherDebounceRunnable = () -> {
                 performWeatherFetch();
             };
@@ -1429,13 +1791,14 @@ public class MainActivity extends AppCompatActivity {
             performWeatherFetch();
         }
     }
-    
+
     /**
      * Actually perform the weather fetch
      */
     private void performWeatherFetch() {
         lastWeatherFetchTime = System.currentTimeMillis();
-        android.util.Log.d("MainActivity", "Refetching weather data with location: " + lastKnownLatitude + ", " + lastKnownLongitude);
+        android.util.Log.d("MainActivity",
+                "Refetching weather data with location: " + lastKnownLatitude + ", " + lastKnownLongitude);
         // Fetch real weather data using stored location
         viewModel.fetchWeather(lastKnownLatitude, lastKnownLongitude, true);
         // Update location name if we have valid coordinates
@@ -1450,7 +1813,8 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Initialize Firebase Authentication
      * Signs in anonymously if not already authenticated
-     * Note: If anonymous auth fails, app will use device ID fallback (see AuthHelper.getCurrentUserId)
+     * Note: If anonymous auth fails, app will use device ID fallback (see
+     * AuthHelper.getCurrentUserId)
      */
     private void initializeFirebaseAuth() {
         if (!AuthHelper.isAuthenticated()) {
@@ -1459,11 +1823,11 @@ public class MainActivity extends AppCompatActivity {
                 public void onSuccess() {
                     android.util.Log.d("MainActivity", "Firebase Auth: Anonymous sign-in successful");
                 }
-                
+
                 @Override
                 public void onError(String error) {
                     // Log as warning instead of error since we have a fallback mechanism
-                    android.util.Log.w("MainActivity", "Firebase Auth: Sign-in failed: " + error + 
+                    android.util.Log.w("MainActivity", "Firebase Auth: Sign-in failed: " + error +
                             ". App will continue using device ID for user identification.");
                     // App continues normally with device ID fallback - no user action needed
                 }
@@ -1472,7 +1836,7 @@ public class MainActivity extends AppCompatActivity {
             android.util.Log.d("MainActivity", "Firebase Auth: User already authenticated");
         }
     }
-    
+
     private void setupWeatherRefresh() {
         weatherRefreshHandler = new android.os.Handler(android.os.Looper.getMainLooper());
         weatherRefreshRunnable = new Runnable() {
@@ -1529,18 +1893,18 @@ public class MainActivity extends AppCompatActivity {
             if (addresses != null && !addresses.isEmpty()) {
                 Address address = addresses.get(0);
                 String cityName = null;
-                
+
                 // Check if we're in Phnom Penh area (coordinates roughly within Phnom Penh)
                 // Phnom Penh coordinates: approximately 11.55°N, 104.92°E
-                if (latitude >= 11.40 && latitude <= 11.70 && 
-                    longitude >= 104.75 && longitude <= 105.10) {
+                if (latitude >= 11.40 && latitude <= 11.70 &&
+                        longitude >= 104.75 && longitude <= 105.10) {
                     // We're in Phnom Penh area, use "Phnom Penh" as city name
                     cityName = "Phnom Penh";
                 } else {
                     // Try to get the city name from address
                     // First try locality (city/district)
                     cityName = address.getLocality();
-                    
+
                     // If locality is null or seems like a district, try admin area (province)
                     if (cityName == null || cityName.isEmpty()) {
                         cityName = address.getAdminArea();
@@ -1551,13 +1915,13 @@ public class MainActivity extends AppCompatActivity {
                             cityName = "Phnom Penh";
                         }
                     }
-                    
+
                     // If still null, try sub-admin area or feature name
-                if (cityName == null || cityName.isEmpty()) {
+                    if (cityName == null || cityName.isEmpty()) {
                         cityName = address.getSubAdminArea();
                     }
                 }
-                
+
                 if (cityName != null && !cityName.isEmpty()) {
                     viewModel.setUserLocation(cityName);
                 } else {
@@ -1568,14 +1932,12 @@ public class MainActivity extends AppCompatActivity {
             }
         } catch (IOException e) {
             // If geocoding fails, check if coordinates are in Phnom Penh area
-            if (latitude >= 11.40 && latitude <= 11.70 && 
-                longitude >= 104.75 && longitude <= 105.10) {
+            if (latitude >= 11.40 && latitude <= 11.70 &&
+                    longitude >= 104.75 && longitude <= 105.10) {
                 viewModel.setUserLocation("Phnom Penh");
             } else {
-            viewModel.setUserLocation("Current Location");
+                viewModel.setUserLocation("Current Location");
             }
         }
     }
 }
-
-

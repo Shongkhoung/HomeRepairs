@@ -22,6 +22,7 @@ public class Booking {
     private String phoneNumber; // Contact phone number
     private String propertyName; // e.g., "Home"
     private List<String> photoUrls; // URLs of uploaded photos
+    private String paymentMethod; // Payment method selected (e.g., "wallet", "card", "cash")
     private Date createdAt; // Timestamp when booking was created
     private Date updatedAt; // Timestamp when booking was last updated
     private String additionalNotes; // Any additional notes or instructions
@@ -33,7 +34,7 @@ public class Booking {
 
     // Constructor for creating a new booking
     public Booking(String userId, String providerId, String providerName, String serviceCategory,
-                   String serviceName, String issueDescription, String urgency) {
+            String serviceName, String issueDescription, String urgency) {
         this.userId = userId;
         this.providerId = providerId;
         this.providerName = providerName;
@@ -192,5 +193,12 @@ public class Booking {
     public void setAdditionalNotes(String additionalNotes) {
         this.additionalNotes = additionalNotes;
     }
-}
 
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+}

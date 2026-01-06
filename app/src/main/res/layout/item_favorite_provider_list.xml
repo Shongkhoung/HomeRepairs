@@ -24,7 +24,7 @@
             android:layout_height="24dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
-            android:src="@drawable/heart_filled"
+            android:src="@drawable/ic_heart_new"
             android:tint="#FF4081"
             android:contentDescription="Favorite" />
 
@@ -42,7 +42,7 @@
                 android:id="@+id/ivProviderIcon"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:src="@drawable/ic_profile"
+                android:src="@drawable/profile"
                 android:contentDescription="Provider Icon"
                 android:scaleType="fitCenter" />
 
@@ -165,7 +165,7 @@
                 android:textSize="12sp"
                 android:textColor="@color/text_primary"
                 android:backgroundTint="@color/background_gray"
-                app:icon="@drawable/ic_message"
+                app:icon="@drawable/message"
                 app:iconPadding="6dp"
                 app:iconTint="@color/text_primary"
                 android:paddingHorizontal="16dp"

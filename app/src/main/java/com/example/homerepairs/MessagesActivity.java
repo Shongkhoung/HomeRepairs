@@ -48,7 +48,7 @@ public class MessagesActivity extends AppCompatActivity {
     private MaterialButton btnSelect;
     private MessageTestHelper testHelper;
     private NetworkMonitor networkMonitor;
-    
+
     // UI Elements
     private TextView tvUnreadCount;
     private EditText etSearch;
@@ -60,7 +60,7 @@ public class MessagesActivity extends AppCompatActivity {
     private LinearLayout llSelectionBar;
     private TextView tvSelectedCount;
     private MaterialButton btnMarkRead, btnDeleteSelected;
-    
+
     // State
     private String currentFilter = "All";
     private boolean isSelectionMode = false;
@@ -77,6 +77,7 @@ public class MessagesActivity extends AppCompatActivity {
             intent.putExtra("mode", "sign_in");
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             finish();
             return;
         }
@@ -89,11 +90,11 @@ public class MessagesActivity extends AppCompatActivity {
         setupSelectionMode();
         loadConversations();
         setupBottomNavigation();
-        
+
         // Wait for layout to be ready before hiding loading overlay
         waitForLayoutReady();
     }
-    
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -101,7 +102,7 @@ public class MessagesActivity extends AppCompatActivity {
             networkMonitor.startMonitoring();
         }
     }
-    
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -109,7 +110,7 @@ public class MessagesActivity extends AppCompatActivity {
             networkMonitor.stopMonitoring();
         }
     }
-    
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -139,14 +140,14 @@ public class MessagesActivity extends AppCompatActivity {
         llScreenLoading = findViewById(R.id.llScreenLoading);
         ivScreenLoading = findViewById(R.id.ivScreenLoading);
         testHelper = new MessageTestHelper();
-        
+
         // Setup test data button - only visible in debug builds
         if (btnTestData != null) {
             boolean isDebug = (getApplicationInfo().flags & android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0;
             btnTestData.setVisibility(isDebug ? View.VISIBLE : View.GONE);
             btnTestData.setOnClickListener(v -> createTestData());
         }
-        
+
         // Setup Browse Services button
         MaterialButton btnBrowseServices = findViewById(R.id.btnBrowseServices);
         if (btnBrowseServices != null) {
@@ -158,7 +159,7 @@ public class MessagesActivity extends AppCompatActivity {
             });
         }
     }
-    
+
     private void setupNetworkMonitoring() {
         networkMonitor = new NetworkMonitor(this);
         FrameLayout llInternetLoading = findViewById(R.id.llInternetLoading);
@@ -171,75 +172,76 @@ public class MessagesActivity extends AppCompatActivity {
     private void setupRecyclerView() {
         layoutManager = new LinearLayoutManager(this);
         rvConversations.setLayoutManager(layoutManager);
-        
-        adapter = new ConversationAdapter(new ArrayList<>(), 
-            conversation -> {
-                if (!isSelectionMode) {
-                    // Navigate to chat activity
-                    Intent intent = new Intent(MessagesActivity.this, ChatActivity.class);
-                    intent.putExtra("conversationId", conversation.getId());
-                    intent.putExtra("providerId", conversation.getProviderId());
-                    intent.putExtra("providerName", conversation.getProviderName());
-                    startActivity(intent);
-                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                }
-            },
-            new ConversationAdapter.OnConversationActionListener() {
-                @Override
-                public void onMarkAsRead(List<Conversation> conversations) {
-                    markConversationsAsRead(conversations);
-                }
 
-                @Override
-                public void onMarkAsUnread(List<Conversation> conversations) {
-                    markConversationsAsUnread(conversations);
-                }
+        adapter = new ConversationAdapter(new ArrayList<>(),
+                conversation -> {
+                    if (!isSelectionMode) {
+                        // Navigate to chat activity
+                        Intent intent = new Intent(MessagesActivity.this, ChatActivity.class);
+                        intent.putExtra("conversationId", conversation.getId());
+                        intent.putExtra("providerId", conversation.getProviderId());
+                        intent.putExtra("providerName", conversation.getProviderName());
+                        startActivity(intent);
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    }
+                },
+                new ConversationAdapter.OnConversationActionListener() {
+                    @Override
+                    public void onMarkAsRead(List<Conversation> conversations) {
+                        markConversationsAsRead(conversations);
+                    }
 
-                @Override
-                public void onPin(Conversation conversation) {
-                    pinConversation(conversation, true);
-                }
+                    @Override
+                    public void onMarkAsUnread(List<Conversation> conversations) {
+                        markConversationsAsUnread(conversations);
+                    }
 
-                @Override
-                public void onUnpin(Conversation conversation) {
-                    pinConversation(conversation, false);
-                }
+                    @Override
+                    public void onPin(Conversation conversation) {
+                        pinConversation(conversation, true);
+                    }
 
-                @Override
-                public void onStar(Conversation conversation) {
-                    starConversation(conversation, true);
-                }
+                    @Override
+                    public void onUnpin(Conversation conversation) {
+                        pinConversation(conversation, false);
+                    }
 
-                @Override
-                public void onUnstar(Conversation conversation) {
-                    starConversation(conversation, false);
-                }
+                    @Override
+                    public void onStar(Conversation conversation) {
+                        starConversation(conversation, true);
+                    }
 
-                @Override
-                public void onArchive(Conversation conversation) {
-                    // TODO: Implement archive functionality
-                    android.widget.Toast.makeText(MessagesActivity.this, 
-                        "Archive functionality coming soon", 
-                        android.widget.Toast.LENGTH_SHORT).show();
-                }
+                    @Override
+                    public void onUnstar(Conversation conversation) {
+                        starConversation(conversation, false);
+                    }
 
-                @Override
-                public void onDelete(List<Conversation> conversations) {
-                    deleteConversations(conversations);
-                }
+                    @Override
+                    public void onArchive(Conversation conversation) {
+                        // TODO: Implement archive functionality
+                        android.widget.Toast.makeText(MessagesActivity.this,
+                                getString(R.string.msg_archive_soon),
+                                android.widget.Toast.LENGTH_SHORT).show();
+                    }
 
-                @Override
-                public void onSelectionChanged(int count) {
-                    updateSelectionBar(count);
-                }
-            });
+                    @Override
+                    public void onDelete(List<Conversation> conversations) {
+                        deleteConversations(conversations);
+                    }
+
+                    @Override
+                    public void onSelectionChanged(int count) {
+                        updateSelectionBar(count);
+                    }
+                });
         rvConversations.setAdapter(adapter);
     }
-    
+
     private void setupSearch() {
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -247,10 +249,11 @@ public class MessagesActivity extends AppCompatActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
     }
-    
+
     private void setupFilterChips() {
         chipAll.setOnClickListener(v -> {
             currentFilter = "All";
@@ -258,21 +261,21 @@ public class MessagesActivity extends AppCompatActivity {
             adapter.filterBy("All");
             updateFilterCounts();
         });
-        
+
         chipUnread.setOnClickListener(v -> {
             currentFilter = "Unread";
             updateFilterChips();
             adapter.filterBy("Unread");
             updateFilterCounts();
         });
-        
+
         chipPinned.setOnClickListener(v -> {
             currentFilter = "Pinned";
             updateFilterChips();
             adapter.filterBy("Pinned");
             updateFilterCounts();
         });
-        
+
         chipStarred.setOnClickListener(v -> {
             currentFilter = "Starred";
             updateFilterChips();
@@ -280,20 +283,20 @@ public class MessagesActivity extends AppCompatActivity {
             updateFilterCounts();
         });
     }
-    
+
     private void updateFilterChips() {
         chipAll.setChecked(currentFilter.equals("All"));
         chipUnread.setChecked(currentFilter.equals("Unread"));
         chipPinned.setChecked(currentFilter.equals("Pinned"));
         chipStarred.setChecked(currentFilter.equals("Starred"));
-        
+
         // Update chip backgrounds
         updateChipStyle(chipAll, currentFilter.equals("All"));
         updateChipStyle(chipUnread, currentFilter.equals("Unread"));
         updateChipStyle(chipPinned, currentFilter.equals("Pinned"));
         updateChipStyle(chipStarred, currentFilter.equals("Starred"));
     }
-    
+
     private void updateChipStyle(Chip chip, boolean isSelected) {
         if (isSelected) {
             chip.setChipBackgroundColorResource(R.color.deep_royal_blue);
@@ -303,22 +306,22 @@ public class MessagesActivity extends AppCompatActivity {
             chip.setTextColor(getResources().getColor(R.color.text_primary));
         }
     }
-    
+
     private void setupSelectionMode() {
         btnSelect.setOnClickListener(v -> {
             isSelectionMode = !isSelectionMode;
             adapter.setSelectionMode(isSelectionMode);
-            
+
             if (isSelectionMode) {
-                btnSelect.setText("Cancel");
+                btnSelect.setText(getString(R.string.btn_cancel_selection));
                 llSelectionBar.setVisibility(View.VISIBLE);
             } else {
-                btnSelect.setText("Select");
+                btnSelect.setText(getString(R.string.btn_select));
                 llSelectionBar.setVisibility(View.GONE);
                 adapter.clearSelection();
             }
         });
-        
+
         btnMarkRead.setOnClickListener(v -> {
             List<Conversation> selected = adapter.getSelectedConversations();
             if (!selected.isEmpty()) {
@@ -326,7 +329,7 @@ public class MessagesActivity extends AppCompatActivity {
                 exitSelectionMode();
             }
         });
-        
+
         btnDeleteSelected.setOnClickListener(v -> {
             List<Conversation> selected = adapter.getSelectedConversations();
             if (!selected.isEmpty()) {
@@ -335,17 +338,17 @@ public class MessagesActivity extends AppCompatActivity {
             }
         });
     }
-    
+
     private void exitSelectionMode() {
         isSelectionMode = false;
         adapter.setSelectionMode(false);
-        btnSelect.setText("Select");
+        btnSelect.setText(getString(R.string.btn_select));
         llSelectionBar.setVisibility(View.GONE);
     }
-    
+
     private void updateSelectionBar(int count) {
         if (count > 0) {
-            tvSelectedCount.setText(count + " selected");
+            tvSelectedCount.setText(getString(R.string.msg_selected_count, count));
             llSelectionBar.setVisibility(View.VISIBLE);
         } else {
             llSelectionBar.setVisibility(View.GONE);
@@ -358,69 +361,69 @@ public class MessagesActivity extends AppCompatActivity {
 
     private void loadConversations() {
         llEmptyState.setVisibility(View.GONE);
-        
+
         // Set up real-time listener
-        conversationListener = messageService.listenToConversations(currentUserId, 
-            new FirebaseMessageService.ConversationListCallback() {
-                @Override
-                public void onSuccess(List<Conversation> conversations) {
-                    if (conversations != null && !conversations.isEmpty()) {
-                        adapter.updateConversations(conversations);
-                        rvConversations.setVisibility(View.VISIBLE);
-                        llEmptyState.setVisibility(View.GONE);
-                        updateUnreadCount();
-                        updateFilterCounts();
-                    } else {
+        conversationListener = messageService.listenToConversations(currentUserId,
+                new FirebaseMessageService.ConversationListCallback() {
+                    @Override
+                    public void onSuccess(List<Conversation> conversations) {
+                        if (conversations != null && !conversations.isEmpty()) {
+                            adapter.updateConversations(conversations);
+                            rvConversations.setVisibility(View.VISIBLE);
+                            llEmptyState.setVisibility(View.GONE);
+                            updateUnreadCount();
+                            updateFilterCounts();
+                        } else {
+                            rvConversations.setVisibility(View.GONE);
+                            llEmptyState.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        android.util.Log.e("MessagesActivity", "Error loading conversations: " + error);
+
+                        if (error != null && error.contains("PERMISSION_DENIED")) {
+                            android.widget.Toast.makeText(MessagesActivity.this,
+                                    getString(R.string.msg_firebase_permission_error),
+                                    android.widget.Toast.LENGTH_LONG).show();
+                        }
+
                         rvConversations.setVisibility(View.GONE);
                         llEmptyState.setVisibility(View.VISIBLE);
                     }
-                }
-
-                @Override
-                public void onError(String error) {
-                    android.util.Log.e("MessagesActivity", "Error loading conversations: " + error);
-                    
-                    if (error != null && error.contains("PERMISSION_DENIED")) {
-                        android.widget.Toast.makeText(MessagesActivity.this, 
-                            "Firebase permissions not configured. Please check Security Rules.", 
-                            android.widget.Toast.LENGTH_LONG).show();
-                    }
-                    
-                    rvConversations.setVisibility(View.GONE);
-                    llEmptyState.setVisibility(View.VISIBLE);
-                }
-            });
+                });
     }
-    
+
     private void filterConversations(String query) {
         // This would filter the conversations by search query
         // For now, we'll just reapply the current filter
         adapter.filterBy(currentFilter);
     }
-    
+
     private void updateUnreadCount() {
         int unreadCount = adapter.getUnreadCount();
         if (unreadCount > 0) {
-            tvUnreadCount.setText(unreadCount + " unread messages");
+            tvUnreadCount.setText(getString(R.string.msg_unread_count, unreadCount));
             tvUnreadCount.setVisibility(View.VISIBLE);
         } else {
-            tvUnreadCount.setText("No unread messages");
+            tvUnreadCount.setText(getString(R.string.msg_no_unread));
             tvUnreadCount.setVisibility(View.VISIBLE);
         }
     }
-    
+
     private void updateFilterCounts() {
         int allCount = adapter.getAllCount();
         int unreadCount = adapter.getUnreadCount();
         int pinnedCount = adapter.getPinnedCount();
         int starredCount = adapter.getStarredCount();
-        
-        chipAll.setText("All (" + allCount + ")");
-        chipUnread.setText("Unread (" + unreadCount + ")");
-        chipPinned.setText("Pinned (" + pinnedCount + ")");
-        chipStarred.setText("Star");
+
+        chipAll.setText(getString(R.string.filter_all_count, allCount));
+        chipUnread.setText(getString(R.string.filter_unread_count, unreadCount));
+        chipPinned.setText(getString(R.string.filter_pinned_count, pinnedCount));
+        chipStarred.setText(getString(R.string.filter_star));
     }
-    
+
     private void markConversationsAsRead(List<Conversation> conversations) {
         for (Conversation conv : conversations) {
             conv.setRead(true);
@@ -431,7 +434,7 @@ public class MessagesActivity extends AppCompatActivity {
         updateUnreadCount();
         updateFilterCounts();
     }
-    
+
     private void markConversationsAsUnread(List<Conversation> conversations) {
         for (Conversation conv : conversations) {
             conv.setRead(false);
@@ -442,40 +445,40 @@ public class MessagesActivity extends AppCompatActivity {
         updateUnreadCount();
         updateFilterCounts();
     }
-    
+
     private void pinConversation(Conversation conversation, boolean pin) {
         conversation.setPinned(pin);
         // TODO: Update in Firebase
         adapter.notifyDataSetChanged();
         updateFilterCounts();
     }
-    
+
     private void starConversation(Conversation conversation, boolean star) {
         conversation.setStarred(star);
         // TODO: Update in Firebase
         adapter.notifyDataSetChanged();
         updateFilterCounts();
     }
-    
+
     private void deleteConversations(List<Conversation> conversations) {
         // Show confirmation dialog
         new android.app.AlertDialog.Builder(this)
-            .setTitle("Delete Conversations")
-            .setMessage("Are you sure you want to delete " + conversations.size() + " conversation(s)?")
-            .setPositiveButton("Delete", (dialog, which) -> {
-                // TODO: Delete from Firebase
-                List<Conversation> allConvs = adapter.getAllConversations();
-                for (Conversation conv : conversations) {
-                    allConvs.remove(conv);
-                }
-                adapter.updateConversations(allConvs);
-                updateFilterCounts();
-                android.widget.Toast.makeText(this, 
-                    "Conversations deleted", 
-                    android.widget.Toast.LENGTH_SHORT).show();
-            })
-            .setNegativeButton("Cancel", null)
-            .show();
+                .setTitle(getString(R.string.dialog_delete_title))
+                .setMessage(getString(R.string.dialog_delete_message, conversations.size()))
+                .setPositiveButton(getString(R.string.dialog_delete_confirm), (dialog, which) -> {
+                    // TODO: Delete from Firebase
+                    List<Conversation> allConvs = adapter.getAllConversations();
+                    for (Conversation conv : conversations) {
+                        allConvs.remove(conv);
+                    }
+                    adapter.updateConversations(allConvs);
+                    updateFilterCounts();
+                    android.widget.Toast.makeText(this,
+                            getString(R.string.msg_conversations_deleted),
+                            android.widget.Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton(getString(R.string.btn_cancel_selection), null)
+                .show();
     }
 
     private String getCurrentUserId() {
@@ -488,27 +491,28 @@ public class MessagesActivity extends AppCompatActivity {
 
     private void createTestData() {
         btnTestData.setEnabled(false);
-        btnTestData.setText("Creating...");
-        android.widget.Toast.makeText(this, "Creating test conversations...", android.widget.Toast.LENGTH_SHORT).show();
-        
+        btnTestData.setText(getString(R.string.btn_creating));
+        android.widget.Toast
+                .makeText(this, getString(R.string.msg_creating_test_data), android.widget.Toast.LENGTH_SHORT).show();
+
         testHelper.createTestConversations(currentUserId, getCurrentUserName(),
                 new FirebaseMessageService.ConversationListCallback() {
                     @Override
                     public void onSuccess(List<Conversation> conversations) {
                         btnTestData.setEnabled(true);
-                        btnTestData.setText("TEST");
-                        android.widget.Toast.makeText(MessagesActivity.this, 
-                                "Test conversations created!", 
+                        btnTestData.setText(getString(R.string.btn_test));
+                        android.widget.Toast.makeText(MessagesActivity.this,
+                                getString(R.string.msg_test_data_created),
                                 android.widget.Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void onError(String error) {
                         btnTestData.setEnabled(true);
-                        btnTestData.setText("TEST");
+                        btnTestData.setText(getString(R.string.btn_test));
                         android.util.Log.e("MessagesActivity", "Error creating test data: " + error);
-                        android.widget.Toast.makeText(MessagesActivity.this, 
-                                "Error: " + error, 
+                        android.widget.Toast.makeText(MessagesActivity.this,
+                                getString(R.string.error_prefix, error),
                                 android.widget.Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -516,11 +520,11 @@ public class MessagesActivity extends AppCompatActivity {
 
     private void setupBottomNavigation() {
         BottomNavigationView bottomNavigation = findViewById(R.id.bottomNavigation);
-        
+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             bottomNavigation.setElevation(0f);
         }
-        
+
         bottomNavigation.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.nav_home) {
@@ -555,13 +559,14 @@ public class MessagesActivity extends AppCompatActivity {
 
     /**
      * Show or hide screen transition loading overlay
+     * 
      * @param show true to show, false to hide
      */
     private void showScreenLoading(boolean show) {
         if (llScreenLoading == null) {
             return;
         }
-        
+
         if (show) {
             llScreenLoading.setVisibility(View.VISIBLE);
             llScreenLoading.setAlpha(0f);
@@ -595,10 +600,10 @@ public class MessagesActivity extends AppCompatActivity {
         if (llScreenLoading == null) {
             return;
         }
-        
+
         // Record start time
         loadingStartTime = System.currentTimeMillis();
-        
+
         // Show loading overlay if it's not already visible
         if (llScreenLoading.getVisibility() != View.VISIBLE) {
             llScreenLoading.setVisibility(View.VISIBLE);
@@ -617,34 +622,36 @@ public class MessagesActivity extends AppCompatActivity {
                 ivScreenLoading.playAnimation();
             }
         }
-        
+
         // Get root view
         View rootView = findViewById(android.R.id.content);
         if (rootView == null) {
             // Fallback: hide after minimum duration
-            new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> hideScreenLoading(), MIN_LOADING_DURATION);
+            new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> hideScreenLoading(),
+                    MIN_LOADING_DURATION);
             return;
         }
-        
+
         // Wait for layout to be measured and laid out
-        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new android.view.ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                // Check if layout is ready (has dimensions)
-                if (rootView.getWidth() > 0 && rootView.getHeight() > 0) {
-                    // Remove listener to avoid multiple calls
-                    rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    
-                    // Calculate remaining time to meet minimum duration
-                    long elapsedTime = System.currentTimeMillis() - loadingStartTime;
-                    long remainingTime = MIN_LOADING_DURATION - elapsedTime;
-                    
-                    // Wait for minimum duration or additional 200ms, whichever is longer
-                    long delayTime = Math.max(remainingTime, 200);
-                    rootView.postDelayed(() -> hideScreenLoading(), delayTime);
-                }
-            }
-        });
+        rootView.getViewTreeObserver()
+                .addOnGlobalLayoutListener(new android.view.ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        // Check if layout is ready (has dimensions)
+                        if (rootView.getWidth() > 0 && rootView.getHeight() > 0) {
+                            // Remove listener to avoid multiple calls
+                            rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                            // Calculate remaining time to meet minimum duration
+                            long elapsedTime = System.currentTimeMillis() - loadingStartTime;
+                            long remainingTime = MIN_LOADING_DURATION - elapsedTime;
+
+                            // Wait for minimum duration or additional 200ms, whichever is longer
+                            long delayTime = Math.max(remainingTime, 200);
+                            rootView.postDelayed(() -> hideScreenLoading(), delayTime);
+                        }
+                    }
+                });
     }
 
     /**
@@ -654,12 +661,12 @@ public class MessagesActivity extends AppCompatActivity {
         if (llScreenLoading == null || llScreenLoading.getVisibility() != View.VISIBLE) {
             return;
         }
-        
+
         // Stop Lottie animation
         if (ivScreenLoading != null) {
             ivScreenLoading.cancelAnimation();
         }
-        
+
         llScreenLoading.animate()
                 .alpha(0f)
                 .setDuration(200)

@@ -67,7 +67,7 @@
                     android:id="@+id/ivProviderIcon"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:src="@drawable/ic_profile"
+                    android:src="@drawable/profile"
                     android:contentDescription="Provider Icon"
                     android:scaleType="centerCrop"
                     android:adjustViewBounds="false" />

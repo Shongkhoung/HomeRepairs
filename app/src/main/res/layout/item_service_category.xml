@@ -11,7 +11,7 @@
     app:cardBackgroundColor="#4D55CC"
     android:clickable="true"
     android:focusable="true"
-    android:focusableInTouchMode="true">
+    android:focusableInTouchMode="false">
 
     <LinearLayout
         android:layout_width="match_parent"

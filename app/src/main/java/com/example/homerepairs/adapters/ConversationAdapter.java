@@ -35,37 +35,45 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
     private boolean isSelectionMode = false;
     private Set<String> selectedConversationIds = new HashSet<>();
     private String currentFilter = "All";
-    
+
     public interface OnConversationClickListener {
         void onConversationClick(Conversation conversation);
     }
-    
+
     public interface OnConversationActionListener {
         void onMarkAsRead(List<Conversation> conversations);
+
         void onMarkAsUnread(List<Conversation> conversations);
+
         void onPin(Conversation conversation);
+
         void onUnpin(Conversation conversation);
+
         void onStar(Conversation conversation);
+
         void onUnstar(Conversation conversation);
+
         void onArchive(Conversation conversation);
+
         void onDelete(List<Conversation> conversations);
+
         void onSelectionChanged(int count);
     }
-    
-    public ConversationAdapter(List<Conversation> conversations, 
-                               OnConversationClickListener listener,
-                               OnConversationActionListener actionListener) {
+
+    public ConversationAdapter(List<Conversation> conversations,
+            OnConversationClickListener listener,
+            OnConversationActionListener actionListener) {
         this.allConversations = conversations != null ? new ArrayList<>(conversations) : new ArrayList<>();
         this.filteredConversations = new ArrayList<>(this.allConversations);
         this.listener = listener;
         this.actionListener = actionListener;
     }
-    
+
     public void updateConversations(List<Conversation> newConversations) {
         this.allConversations = newConversations != null ? new ArrayList<>(newConversations) : new ArrayList<>();
         applyFilter(currentFilter);
     }
-    
+
     public void setSelectionMode(boolean enabled) {
         isSelectionMode = enabled;
         if (!enabled) {
@@ -76,15 +84,15 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         }
         notifyDataSetChanged();
     }
-    
+
     public boolean isSelectionMode() {
         return isSelectionMode;
     }
-    
+
     public int getSelectedCount() {
         return selectedConversationIds.size();
     }
-    
+
     public List<Conversation> getSelectedConversations() {
         List<Conversation> selected = new ArrayList<>();
         for (Conversation conv : allConversations) {
@@ -94,7 +102,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         }
         return selected;
     }
-    
+
     public void selectAll() {
         for (Conversation conv : filteredConversations) {
             selectedConversationIds.add(conv.getId());
@@ -104,7 +112,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             actionListener.onSelectionChanged(selectedConversationIds.size());
         }
     }
-    
+
     public void clearSelection() {
         selectedConversationIds.clear();
         notifyDataSetChanged();
@@ -112,15 +120,15 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             actionListener.onSelectionChanged(0);
         }
     }
-    
+
     public void filterBy(String filterType) {
         currentFilter = filterType != null ? filterType : "All";
         applyFilter(currentFilter);
     }
-    
+
     private void applyFilter(String filterType) {
         filteredConversations.clear();
-        
+
         if (filterType == null || filterType.equals("All")) {
             filteredConversations.addAll(allConversations);
         } else {
@@ -144,11 +152,10 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                 }
             }
         }
-        
+
         notifyDataSetChanged();
     }
-    
-    
+
     @NonNull
     @Override
     public ConversationViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -156,7 +163,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                 .inflate(R.layout.item_conversation, parent, false);
         return new ConversationViewHolder(view);
     }
-    
+
     @Override
     public void onBindViewHolder(@NonNull ConversationViewHolder holder, int position) {
         if (filteredConversations == null || position >= filteredConversations.size()) {
@@ -165,20 +172,20 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         Conversation conversation = filteredConversations.get(position);
         holder.bind(conversation);
     }
-    
+
     @Override
     public int getItemCount() {
         return filteredConversations != null ? filteredConversations.size() : 0;
     }
-    
+
     public List<Conversation> getAllConversations() {
         return allConversations != null ? new ArrayList<>(allConversations) : new ArrayList<>();
     }
-    
+
     public int getAllCount() {
         return allConversations != null ? allConversations.size() : 0;
     }
-    
+
     public int getUnreadCount() {
         int count = 0;
         for (Conversation conv : allConversations) {
@@ -188,7 +195,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         }
         return count;
     }
-    
+
     public int getPinnedCount() {
         int count = 0;
         for (Conversation conv : allConversations) {
@@ -198,7 +205,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         }
         return count;
     }
-    
+
     public int getStarredCount() {
         int count = 0;
         for (Conversation conv : allConversations) {
@@ -208,7 +215,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         }
         return count;
     }
-    
+
     class ConversationViewHolder extends RecyclerView.ViewHolder {
         private MaterialCardView cardConversation;
         private MaterialCheckBox checkboxSelect;
@@ -224,7 +231,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         private View viewUnreadIndicator;
         private TextView tvUnreadBadge;
         private ImageButton btnOptions;
-        
+
         ConversationViewHolder(@NonNull View itemView) {
             super(itemView);
             cardConversation = itemView.findViewById(R.id.cardConversation);
@@ -242,18 +249,18 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             tvUnreadBadge = itemView.findViewById(R.id.tvUnreadBadge);
             btnOptions = itemView.findViewById(R.id.btnOptions);
         }
-        
+
         void bind(Conversation conversation) {
             if (conversation == null) {
                 return;
             }
-            
+
             // Selection mode
             if (isSelectionMode) {
                 checkboxSelect.setVisibility(View.VISIBLE);
                 checkboxSelect.setChecked(selectedConversationIds.contains(conversation.getId()));
                 btnOptions.setVisibility(View.GONE);
-                
+
                 checkboxSelect.setOnCheckedChangeListener(null);
                 checkboxSelect.setChecked(selectedConversationIds.contains(conversation.getId()));
                 checkboxSelect.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -266,14 +273,17 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                         actionListener.onSelectionChanged(selectedConversationIds.size());
                     }
                 });
-                
+
                 // Highlight selected items
                 if (selectedConversationIds.contains(conversation.getId())) {
-                    cardConversation.setCardBackgroundColor(itemView.getContext().getResources().getColor(R.color.ripple_light));
+                    cardConversation.setCardBackgroundColor(
+                            itemView.getContext().getResources().getColor(R.color.ripple_light));
                     cardConversation.setStrokeWidth(2);
-                    cardConversation.setStrokeColor(itemView.getContext().getResources().getColor(R.color.bright_periwinkle_blue));
+                    cardConversation.setStrokeColor(
+                            itemView.getContext().getResources().getColor(R.color.bright_periwinkle_blue));
                 } else {
-                    cardConversation.setCardBackgroundColor(itemView.getContext().getResources().getColor(R.color.white));
+                    cardConversation
+                            .setCardBackgroundColor(itemView.getContext().getResources().getColor(R.color.white));
                     cardConversation.setStrokeWidth(0);
                 }
             } else {
@@ -282,34 +292,34 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                 cardConversation.setCardBackgroundColor(itemView.getContext().getResources().getColor(R.color.white));
                 cardConversation.setStrokeWidth(0);
             }
-            
+
             tvProviderName.setText(conversation.getProviderName());
-            
+
             // Last message
             String lastMessage = conversation.getLastMessage();
             if (lastMessage != null && !lastMessage.isEmpty()) {
                 tvLastMessage.setText(lastMessage);
             } else {
-                tvLastMessage.setText("Start conversation...");
+                tvLastMessage.setText(itemView.getContext().getString(R.string.msg_start_conversation));
             }
-            
+
             // Read checkmark
             if (conversation.isRead() && conversation.getUnreadCount() == 0) {
                 ivReadCheckmark.setVisibility(View.VISIBLE);
             } else {
                 ivReadCheckmark.setVisibility(View.GONE);
             }
-            
+
             // Load profile image
             loadProviderImage(conversation.getProviderId(), ivProfileImage);
-            
+
             // Format time
             if (conversation.getLastMessageTime() != null) {
                 tvTime.setText(formatTime(conversation.getLastMessageTime()));
             } else {
                 tvTime.setText("");
             }
-            
+
             // Unread badge
             int unreadCount = conversation.getUnreadCount();
             if (unreadCount > 0) {
@@ -320,7 +330,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                 tvUnreadBadge.setVisibility(View.GONE);
                 viewUnreadIndicator.setVisibility(View.GONE);
             }
-            
+
             // Pinned badge
             if (conversation.isPinned()) {
                 ivPinnedBadge.setVisibility(View.VISIBLE);
@@ -328,7 +338,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             } else {
                 ivPinnedBadge.setVisibility(View.GONE);
             }
-            
+
             // Starred badge and icon
             if (conversation.isStarred()) {
                 ivStarredBadge.setVisibility(conversation.isPinned() ? View.GONE : View.VISIBLE);
@@ -337,10 +347,10 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                 ivStarredBadge.setVisibility(View.GONE);
                 ivStarIcon.setVisibility(View.GONE);
             }
-            
+
             // Online status (mock - you can implement real status later)
             viewOnlineStatus.setVisibility(View.VISIBLE);
-            
+
             // Click listeners
             if (!isSelectionMode) {
                 cardConversation.setOnClickListener(v -> {
@@ -353,15 +363,15 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                     checkboxSelect.setChecked(!checkboxSelect.isChecked());
                 });
             }
-            
+
             // Options menu
             btnOptions.setOnClickListener(v -> showOptionsMenu(conversation, v));
         }
-        
+
         private void showOptionsMenu(Conversation conversation, View anchor) {
             PopupMenu popupMenu = new PopupMenu(anchor.getContext(), anchor);
             popupMenu.getMenuInflater().inflate(R.menu.conversation_options, popupMenu.getMenu());
-            
+
             // Force icons to show in PopupMenu (works on API 29+)
             try {
                 java.lang.reflect.Field[] fields = popupMenu.getClass().getDeclaredFields();
@@ -370,7 +380,8 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                         field.setAccessible(true);
                         Object menuPopupHelper = field.get(popupMenu);
                         Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
-                        java.lang.reflect.Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon", boolean.class);
+                        java.lang.reflect.Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon",
+                                boolean.class);
                         setForceIcons.invoke(menuPopupHelper, true);
                         break;
                     }
@@ -381,13 +392,14 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                     java.lang.reflect.Field mPopup = popupMenu.getClass().getDeclaredField("mPopup");
                     mPopup.setAccessible(true);
                     Object menuPopupHelper = mPopup.get(popupMenu);
-                    java.lang.reflect.Method setForceShowIcon = menuPopupHelper.getClass().getDeclaredMethod("setForceShowIcon", boolean.class);
+                    java.lang.reflect.Method setForceShowIcon = menuPopupHelper.getClass()
+                            .getDeclaredMethod("setForceShowIcon", boolean.class);
                     setForceShowIcon.invoke(menuPopupHelper, true);
                 } catch (Exception ex) {
                     android.util.Log.e("ConversationAdapter", "Error forcing icons to show", ex);
                 }
             }
-            
+
             // Update menu items based on conversation state
             MenuItem markReadItem = popupMenu.getMenu().findItem(R.id.action_mark_read);
             MenuItem markUnreadItem = popupMenu.getMenu().findItem(R.id.action_mark_unread);
@@ -395,8 +407,9 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             MenuItem unpinItem = popupMenu.getMenu().findItem(R.id.action_unpin);
             MenuItem starItem = popupMenu.getMenu().findItem(R.id.action_star);
             MenuItem unstarItem = popupMenu.getMenu().findItem(R.id.action_unstar);
-            
-            // Show "Mark as Read" if there are unread messages, otherwise show "Mark as Unread"
+
+            // Show "Mark as Read" if there are unread messages, otherwise show "Mark as
+            // Unread"
             if (conversation.getUnreadCount() > 0) {
                 markReadItem.setVisible(true);
                 markUnreadItem.setVisible(false);
@@ -404,7 +417,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                 markReadItem.setVisible(false);
                 markUnreadItem.setVisible(true);
             }
-            
+
             if (conversation.isPinned()) {
                 pinItem.setVisible(false);
                 unpinItem.setVisible(true);
@@ -412,7 +425,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                 pinItem.setVisible(true);
                 unpinItem.setVisible(false);
             }
-            
+
             if (conversation.isStarred()) {
                 starItem.setVisible(false);
                 unstarItem.setVisible(true);
@@ -420,17 +433,17 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                 starItem.setVisible(true);
                 unstarItem.setVisible(false);
             }
-            
+
             // Style delete item with red text and icon color
             MenuItem deleteItem = popupMenu.getMenu().findItem(R.id.action_delete);
             if (deleteItem != null) {
                 // Set red text color
                 android.text.SpannableString deleteText = new android.text.SpannableString(deleteItem.getTitle());
                 int errorColor = anchor.getContext().getResources().getColor(R.color.error);
-                deleteText.setSpan(new android.text.style.ForegroundColorSpan(errorColor), 
-                    0, deleteText.length(), 0);
+                deleteText.setSpan(new android.text.style.ForegroundColorSpan(errorColor),
+                        0, deleteText.length(), 0);
                 deleteItem.setTitle(deleteText);
-                
+
                 // Set red icon tint
                 if (deleteItem.getIcon() != null) {
                     android.graphics.drawable.Drawable deleteIcon = deleteItem.getIcon();
@@ -439,10 +452,11 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                     deleteItem.setIcon(deleteIcon);
                 }
             }
-            
+
             popupMenu.setOnMenuItemClickListener(item -> {
-                if (actionListener == null) return false;
-                
+                if (actionListener == null)
+                    return false;
+
                 int itemId = item.getItemId();
                 if (itemId == R.id.action_mark_read) {
                     actionListener.onMarkAsRead(java.util.Collections.singletonList(conversation));
@@ -463,16 +477,16 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                 }
                 return true;
             });
-            
+
             popupMenu.show();
         }
-        
+
         private void loadProviderImage(String providerId, ImageView imageView) {
             if (providerId == null || imageView == null) {
-                imageView.setImageResource(R.drawable.ic_profile);
+                imageView.setImageResource(R.drawable.no_profile_image);
                 return;
             }
-            
+
             FirebaseProviderService providerService = new FirebaseProviderService();
             providerService.getProviderById(providerId, new FirebaseProviderService.ProviderCallback() {
                 @Override
@@ -481,52 +495,59 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                         com.example.homerepairs.models.Provider provider = providers.get(0);
                         if (provider != null) {
                             String imageUrl = provider.getProfileImageUrl();
-                            
+
                             if (imageUrl != null && !imageUrl.isEmpty()) {
                                 Glide.with(imageView.getContext())
                                         .load(imageUrl)
-                                        .placeholder(R.drawable.ic_profile)
-                                        .error(R.drawable.ic_profile)
+                                        .placeholder(R.drawable.no_profile_image)
+                                        .error(R.drawable.no_profile_image)
                                         .circleCrop()
                                         .into(imageView);
                             } else {
-                                imageView.setImageResource(R.drawable.ic_profile);
+                                // Fallback to no_profile_image if no URL
+                                Glide.with(imageView.getContext())
+                                        .load(R.drawable.no_profile_image)
+                                        .circleCrop()
+                                        .into(imageView);
                             }
                         } else {
-                            imageView.setImageResource(R.drawable.ic_profile);
+                            imageView.setImageResource(R.drawable.no_profile_image);
                         }
                     } else {
-                        imageView.setImageResource(R.drawable.ic_profile);
+                        imageView.setImageResource(R.drawable.no_profile_image);
                     }
                 }
-                
+
                 @Override
                 public void onError(String error) {
                     android.util.Log.e("ConversationAdapter", "Error loading provider image: " + error);
-                    imageView.setImageResource(R.drawable.ic_profile);
+                    imageView.setImageResource(R.drawable.no_profile_image);
                 }
             });
         }
-        
+
         private String formatTime(Date date) {
             if (date == null) {
                 return "";
             }
-            
+
             Date now = new Date();
             long diffInMillis = now.getTime() - date.getTime();
             long diffInMinutes = diffInMillis / (1000 * 60);
             long diffInHours = diffInMinutes / 60;
             long diffInDays = diffInHours / 24;
-            
+
+            android.content.Context context = itemView.getContext();
+
             if (diffInMinutes < 1) {
-                return "Just now";
+                return "Just now"; // Keep "Just now" or add a resource if strictly needed, but common apps often
+                                   // keep it or "Now"
             } else if (diffInMinutes < 60) {
-                return diffInMinutes + "m ago";
+                return context.getString(R.string.time_min_ago, diffInMinutes);
             } else if (diffInHours < 24) {
-                return diffInHours + "h ago";
+                return context.getString(R.string.time_hour_ago_short, diffInHours);
             } else if (diffInDays < 7) {
-                return diffInDays + "d ago";
+                return context.getString(R.string.time_day_ago_short, diffInDays);
             } else {
                 SimpleDateFormat sdf = new SimpleDateFormat("MMM dd", Locale.getDefault());
                 return sdf.format(date);

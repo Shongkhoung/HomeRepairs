@@ -41,8 +41,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.white));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 getWindow().getDecorView().setSystemUiVisibility(
-                        getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                );
+                        getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
             }
         }
 
@@ -144,13 +143,15 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
     private void showLoading(boolean show) {
         if (show) {
-            if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
+            if (progressBar != null)
+                progressBar.setVisibility(View.VISIBLE);
             if (btnSendResetLink != null) {
                 btnSendResetLink.setEnabled(false);
                 btnSendResetLink.setAlpha(0.6f);
             }
         } else {
-            if (progressBar != null) progressBar.setVisibility(View.GONE);
+            if (progressBar != null)
+                progressBar.setVisibility(View.GONE);
             if (btnSendResetLink != null) {
                 btnSendResetLink.setEnabled(true);
                 btnSendResetLink.setAlpha(1.0f);
@@ -176,6 +177,6 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         navigateToLogin();
+        super.onBackPressed();
     }
 }
-

@@ -39,10 +39,10 @@ public class ChatActivity extends AppCompatActivity {
     private TextView tvProviderStatus;
     private ProgressBar progressBar;
     private View llEmptyState;
-    
+
     private FirebaseMessageService messageService;
     private ListenerRegistration messageListener;
-    
+
     private String conversationId;
     private String providerId;
     private String providerName;
@@ -60,7 +60,7 @@ public class ChatActivity extends AppCompatActivity {
         conversationId = getIntent().getStringExtra("conversationId");
         providerId = getIntent().getStringExtra("providerId");
         providerName = getIntent().getStringExtra("providerName");
-        
+
         currentUserId = getCurrentUserId();
         if (currentUserId == null) {
             // User not authenticated, redirect to login in sign in mode
@@ -88,21 +88,21 @@ public class ChatActivity extends AppCompatActivity {
         tvProviderStatus = findViewById(R.id.tvProviderStatus);
         progressBar = findViewById(R.id.progressBar);
         llEmptyState = findViewById(R.id.llEmptyState);
-        
+
         ImageButton btnBack = findViewById(R.id.btnBack);
         btnBack.setOnClickListener(v -> finish());
-        
+
         if (providerName != null) {
             tvProviderName.setText(providerName);
         }
-        tvProviderStatus.setText("Online");
+        tvProviderStatus.setText(getString(R.string.status_online));
     }
 
     private void setupRecyclerView() {
         layoutManager = new LinearLayoutManager(this);
         layoutManager.setStackFromEnd(true); // Start from bottom
         rvMessages.setLayoutManager(layoutManager);
-        
+
         adapter = new MessageAdapter(new ArrayList<>(), currentUserId);
         rvMessages.setAdapter(adapter);
     }
@@ -116,7 +116,8 @@ public class ChatActivity extends AppCompatActivity {
         // Enable/disable send button based on input
         etMessageInput.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -125,11 +126,12 @@ public class ChatActivity extends AppCompatActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
 
         btnSend.setOnClickListener(v -> sendMessage());
-        
+
         // Send on Enter key
         etMessageInput.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEND) {
@@ -159,8 +161,8 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void createConversationAndSendMessage(String messageText) {
-        messageService.getOrCreateConversation(currentUserId, currentUserName, 
-                providerId, providerName, 
+        messageService.getOrCreateConversation(currentUserId, currentUserName,
+                providerId, providerName,
                 new FirebaseMessageService.ConversationCallback() {
                     @Override
                     public void onSuccess(com.example.homerepairs.models.Conversation conversation) {
@@ -172,8 +174,8 @@ public class ChatActivity extends AppCompatActivity {
                     public void onError(String error) {
                         android.util.Log.e("ChatActivity", "Error creating conversation: " + error);
                         btnSend.setEnabled(true);
-                        android.widget.Toast.makeText(ChatActivity.this, 
-                                "Failed to send message: " + error, 
+                        android.widget.Toast.makeText(ChatActivity.this,
+                                getString(R.string.msg_send_failed, error),
                                 android.widget.Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -192,7 +194,7 @@ public class ChatActivity extends AppCompatActivity {
                                 rvMessages.smoothScrollToPosition(adapter.getItemCount() - 1);
                             }
                         });
-                        
+
                         // Simulate provider response after 2 seconds (for testing)
                         simulateProviderResponse();
                     }
@@ -201,17 +203,17 @@ public class ChatActivity extends AppCompatActivity {
                     public void onError(String error) {
                         android.util.Log.e("ChatActivity", "Error sending message: " + error);
                         btnSend.setEnabled(true);
-                        
+
                         // Show user-friendly error message
-                        String errorMessage = "Failed to send message";
+                        String errorMessage = getString(R.string.msg_send_failed_generic);
                         if (error != null && error.contains("PERMISSION_DENIED")) {
-                            errorMessage = "Permission denied. Please check Firebase Security Rules.";
+                            errorMessage = getString(R.string.msg_permission_denied);
                         } else if (error != null) {
-                            errorMessage = "Error: " + error;
+                            errorMessage = getString(R.string.error_prefix, error);
                         }
-                        
-                        android.widget.Toast.makeText(ChatActivity.this, 
-                                errorMessage, 
+
+                        android.widget.Toast.makeText(ChatActivity.this,
+                                errorMessage,
                                 android.widget.Toast.LENGTH_LONG).show();
                     }
                 });
@@ -237,18 +239,21 @@ public class ChatActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(List<Message> messages) {
                         progressBar.setVisibility(View.GONE);
-                        android.util.Log.d("ChatActivity", "Messages received: " + (messages != null ? messages.size() : 0));
-                        
+                        android.util.Log.d("ChatActivity",
+                                "Messages received: " + (messages != null ? messages.size() : 0));
+
                         if (messages != null && !messages.isEmpty()) {
-                            android.util.Log.d("ChatActivity", "Updating adapter with " + messages.size() + " messages");
+                            android.util.Log.d("ChatActivity",
+                                    "Updating adapter with " + messages.size() + " messages");
                             adapter.updateMessages(messages);
                             rvMessages.setVisibility(View.VISIBLE);
                             llEmptyState.setVisibility(View.GONE);
-                            
+
                             // Scroll to bottom when new messages arrive
                             rvMessages.post(() -> {
                                 if (adapter.getItemCount() > 0) {
-                                    android.util.Log.d("ChatActivity", "Scrolling to position: " + (adapter.getItemCount() - 1));
+                                    android.util.Log.d("ChatActivity",
+                                            "Scrolling to position: " + (adapter.getItemCount() - 1));
                                     rvMessages.smoothScrollToPosition(adapter.getItemCount() - 1);
                                 }
                             });
@@ -266,25 +271,26 @@ public class ChatActivity extends AppCompatActivity {
                     public void onError(String error) {
                         progressBar.setVisibility(View.GONE);
                         android.util.Log.e("ChatActivity", "Error loading messages: " + error);
-                        
-                        // For index errors, don't hide the RecyclerView - messages might still come through
+
+                        // For index errors, don't hide the RecyclerView - messages might still come
+                        // through
                         // and the index will be created automatically
                         if (error != null && error.contains("FAILED_PRECONDITION") && error.contains("index")) {
-                            android.widget.Toast.makeText(ChatActivity.this, 
-                                "Creating database index... Messages will appear soon.", 
-                                android.widget.Toast.LENGTH_LONG).show();
+                            android.widget.Toast.makeText(ChatActivity.this,
+                                    getString(R.string.msg_creating_index),
+                                    android.widget.Toast.LENGTH_LONG).show();
                             // Keep RecyclerView visible - messages may still load after index is created
                             // Don't hide it yet
                             return;
                         }
-                        
+
                         // Show user-friendly error message for permission errors
                         if (error != null && error.contains("PERMISSION_DENIED")) {
-                            android.widget.Toast.makeText(ChatActivity.this, 
-                                "Firebase permissions not configured. Please check Security Rules.", 
-                                android.widget.Toast.LENGTH_LONG).show();
+                            android.widget.Toast.makeText(ChatActivity.this,
+                                    getString(R.string.msg_firebase_permission_error),
+                                    android.widget.Toast.LENGTH_LONG).show();
                         }
-                        
+
                         // Only hide RecyclerView for other errors
                         // Check if we already have messages displayed
                         if (adapter.getItemCount() == 0) {
@@ -321,10 +327,10 @@ public class ChatActivity extends AppCompatActivity {
         if (conversationId == null || conversationId.isEmpty() || providerId == null) {
             return;
         }
-        
+
         // Wait 2 seconds then send a simulated response
         new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
-            testHelper.addProviderResponse(conversationId, providerId, providerName, 
+            testHelper.addProviderResponse(conversationId, providerId, providerName,
                     currentUserId, currentUserName);
         }, 2000);
     }
@@ -340,7 +346,7 @@ public class ChatActivity extends AppCompatActivity {
             networkMonitor.cleanup();
         }
     }
-    
+
     private void setupNetworkMonitoring() {
         networkMonitor = new NetworkMonitor(this);
         FrameLayout llInternetLoading = findViewById(R.id.llInternetLoading);

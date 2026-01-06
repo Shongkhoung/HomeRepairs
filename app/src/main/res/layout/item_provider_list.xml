@@ -87,7 +87,7 @@
                         android:id="@+id/ivVerifiedIcon"
                         android:layout_width="12dp"
                         android:layout_height="12dp"
-                        android:src="@drawable/verify"
+                        android:src="@drawable/ic_verify_new"
                         android:tint="@color/verified_green"
                         android:contentDescription="Verified Icon" />
 
