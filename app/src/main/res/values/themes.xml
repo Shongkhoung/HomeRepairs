@@ -1,14 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.HomeRepairs" parent="android:Theme.Material.Light.NoActionBar" />
-    
-    <style name="Theme.HomeRepairs.AppCompat" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <style name="Theme.HomeRepairs" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Primary brand colors -->
         <item name="colorPrimary">@color/bright_periwinkle_blue</item>
-        <item name="colorPrimaryDark">@color/white</item>
-        <item name="colorAccent">@color/medium_lavender</item>
+        <item name="colorPrimaryVariant">@color/medium_lavender</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Accent color -->
+        <item name="colorSecondary">@color/medium_lavender</item>
+        <item name="colorSecondaryVariant">@color/medium_lavender</item>
+        <item name="colorOnSecondary">@color/white</item>
+
+        <!-- Status bar -->
         <item name="android:statusBarColor">@color/white</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:fontFamily">@font/kantumruy_pro</item>
+
+        <!-- Default ripple / material behavior -->
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
+
 </resources>

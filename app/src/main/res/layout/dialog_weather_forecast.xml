@@ -25,7 +25,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Weather Forecast"
+                android:text="@string/weather_forecast"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary" />
@@ -40,7 +40,8 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
-                android:tint="@color/text_secondary" />
+                app:tint="@color/text_secondary"
+                android:contentDescription="@string/close_forecast"/>
         </LinearLayout>
 
         <!-- Current Weather Summary -->
@@ -71,7 +72,7 @@
                     android:id="@+id/tvForecastLocation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Phnom Penh, Cambodia"
+                    android:text="@string/phnom_penh_cambodia"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
@@ -81,7 +82,7 @@
                     android:id="@+id/tvForecastCurrent"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="22° - Sunny"
+                    android:text="@string/_22_sunny"
                     android:textSize="14sp"
                     android:textColor="@color/text_secondary" />
             </LinearLayout>
@@ -91,7 +92,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="3-Day Forecast"
+            android:text="@string/_3_day_forecast"
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@color/text_primary"
@@ -109,7 +110,7 @@
             <TextView
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
-                android:text="Today"
+                android:text="@string/today"
                 android:textSize="14sp"
                 android:textColor="@color/text_primary"
                 android:textStyle="bold" />
@@ -129,7 +130,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Sunny"
+                    android:text="@string/sunny"
                     android:textSize="13sp"
                     android:textColor="@color/text_secondary" />
             </LinearLayout>
@@ -155,7 +156,7 @@
             <TextView
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
-                android:text="Tomorrow"
+                android:text="@string/tomorrow"
                 android:textSize="14sp"
                 android:textColor="@color/text_primary"
                 android:textStyle="bold" />
@@ -175,7 +176,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Partly Cloudy"
+                    android:text="@string/partly_cloudy"
                     android:textSize="13sp"
                     android:textColor="@color/text_secondary" />
             </LinearLayout>
@@ -201,7 +202,7 @@
             <TextView
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
-                android:text="Day 3"
+                android:text="@string/day_3"
                 android:textSize="14sp"
                 android:textColor="@color/text_primary"
                 android:textStyle="bold" />
@@ -221,7 +222,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Sunny"
+                    android:text="@string/sunny"
                     android:textSize="13sp"
                     android:textColor="@color/text_secondary" />
             </LinearLayout>
@@ -257,7 +258,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Refresh Weather"
+                    android:text="@string/refresh_weather"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_white" />

@@ -4,11 +4,11 @@
     android:id="@+id/cardBooking"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="20dp"
-    android:layout_marginTop="12dp"
-    android:layout_marginBottom="20dp"
-    app:cardCornerRadius="24dp"
-    app:cardElevation="6dp"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="16dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="4dp"
     app:cardBackgroundColor="@color/white"
     android:foreground="?attr/selectableItemBackground"
     android:clickable="true"
@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:padding="14dp">
 
         <!-- Top Row: Icon, Service Info, Status -->
         <LinearLayout
@@ -26,14 +26,14 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="12dp">
 
             <!-- Service Icon -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardServiceIcon"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                app:cardCornerRadius="16dp"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
                 app:cardBackgroundColor="@color/deep_royal_blue"
                 app:strokeWidth="0dp">
@@ -44,9 +44,9 @@
                     android:layout_height="match_parent"
                     android:src="@drawable/plumbing"
                     android:scaleType="centerInside"
-                    android:padding="12dp"
-                    android:tint="@color/text_white"
-                    android:contentDescription="Service Icon" />
+                    android:padding="10dp"
+                    app:tint="@color/text_white"
+                    android:contentDescription="@string/service_icon" />
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Service Info Column -->
@@ -55,27 +55,27 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="8dp">
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp">
 
                 <TextView
                     android:id="@+id/tvServiceName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Plumbing Service"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
                     android:maxLines="1"
                     android:ellipsize="end"
-                    android:layout_marginBottom="2dp" />
+                    android:layout_marginBottom="4dp" />
 
                 <TextView
                     android:id="@+id/tvProviderName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Panha Williams"
-                    android:textSize="15sp"
+                    android:text="@string/panha_williams"
+                    android:textSize="14sp"
                     android:textColor="@color/text_secondary"
                     android:maxLines="1"
                     android:ellipsize="end" />
@@ -86,15 +86,15 @@
                 android:id="@+id/chipStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Completed"
-                android:textSize="12sp"
+                android:text="@string/completed"
+                android:textSize="11sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_white"
                 app:chipBackgroundColor="@color/success"
                 app:chipCornerRadius="16dp"
-                app:chipMinHeight="32dp"
-                app:chipStartPadding="14dp"
-                app:chipEndPadding="14dp"
+                app:chipMinHeight="26dp"
+                app:chipStartPadding="12dp"
+                app:chipEndPadding="12dp"
                 android:minWidth="0dp" />
         </LinearLayout>
 
@@ -104,40 +104,39 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="10dp">
 
             <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
                 android:src="@drawable/ic_clock"
-                android:tint="@color/text_secondary"
-                android:layout_marginEnd="8dp"
-                android:contentDescription="Time" />
+                app:tint="@color/text_secondary"
+                android:layout_marginEnd="6dp"
+                android:contentDescription="@string/time" />
 
             <TextView
                 android:id="@+id/tvTimeAgo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="5 days ago"
-                android:textSize="13sp"
+                android:text="@string/_5_days_ago"
+                android:textSize="12sp"
                 android:textColor="@color/text_secondary"
-                android:layout_marginEnd="20dp" />
+                android:layout_marginEnd="16dp" />
 
             <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
                 android:src="@drawable/ic_star"
-                android:tint="@color/rating_gold"
-                android:layout_marginEnd="8dp"
-                android:contentDescription="Rating" />
+                app:tint="@color/rating_gold"
+                android:layout_marginEnd="6dp"
+                android:contentDescription="@string/rating" />
 
             <TextView
                 android:id="@+id/tvRating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="4.9"
-                android:textSize="13sp"
-                android:textStyle="bold"
+                android:textSize="12sp"
                 android:textColor="@color/text_secondary" />
         </LinearLayout>
 
@@ -146,7 +145,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="24dp">
+            android:layout_marginBottom="14dp">
 
             <!-- Total Cost -->
             <LinearLayout
@@ -158,8 +157,8 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Total Cost"
-                    android:textSize="12sp"
+                    android:text="@string/total_cost"
+                    android:textSize="11sp"
                     android:textColor="@color/text_secondary"
                     android:layout_marginBottom="4dp" />
 
@@ -183,8 +182,8 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Duration"
-                    android:textSize="12sp"
+                    android:text="@string/duration"
+                    android:textSize="11sp"
                     android:textColor="@color/text_secondary"
                     android:layout_marginBottom="4dp" />
 
@@ -193,8 +192,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="2 hours"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
+                    android:textSize="16sp"
                     android:textColor="@color/text_primary" />
             </LinearLayout>
         </LinearLayout>
@@ -203,63 +201,57 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-            <!-- Primary Action Button (View Details) -->
+            <!-- Primary Action Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnPrimaryAction"
                 android:layout_width="0dp"
-                android:layout_height="60dp"
+                android:layout_height="48dp"
                 android:layout_weight="1"
-                android:text="View Details"
-                android:textSize="13sp"
+                android:text="@string/book_again"
+                android:textSize="11sp"
                 android:textStyle="bold"
-                android:textAllCaps="false"
-                android:gravity="center"
-                android:letterSpacing="0"
-                app:cornerRadius="12dp"
+                android:textAllCaps="true"
+                android:minHeight="48dp"
+                android:maxLines="1"
+                android:ellipsize="none"
+                android:singleLine="true"
+                app:cornerRadius="10dp"
                 app:backgroundTint="@color/deep_royal_blue"
                 android:textColor="@color/text_white"
-                app:icon="@drawable/ic_document"
+                app:icon="@drawable/ic_calendar"
                 app:iconTint="@color/text_white"
                 app:iconGravity="textStart"
                 app:iconPadding="4dp"
-                app:iconSize="18dp"
-                android:layout_marginEnd="12dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp"/>
+                app:iconSize="16dp"
+                android:layout_marginEnd="8dp" />
 
-            <!-- Secondary Action Button (Cancel) -->
+            <!-- Secondary Action Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSecondaryAction"
                 android:layout_width="0dp"
-                android:layout_height="60dp"
+                android:layout_height="48dp"
                 android:layout_weight="1"
-                android:text="Cancel"
-                android:textSize="13sp"
+                android:text="@string/review"
+                android:textSize="11sp"
                 android:textStyle="bold"
-                android:textAllCaps="false"
-                android:gravity="center"
-                android:letterSpacing="0"
-                app:cornerRadius="12dp"
-                app:backgroundTint="#F5F5F5"
+                android:textAllCaps="true"
+                android:minHeight="48dp"
+                android:maxLines="1"
+                android:ellipsize="none"
+                android:singleLine="true"
+                app:cornerRadius="10dp"
+                app:backgroundTint="@color/background_gray"
                 android:textColor="@color/text_primary"
-                app:icon="@drawable/ic_arrow_back"
+                app:icon="@drawable/message"
                 app:iconTint="@color/text_primary"
                 app:iconGravity="textStart"
                 app:iconPadding="4dp"
-                app:iconSize="18dp"
-                app:strokeColor="#E0E0E0"
-                app:strokeWidth="0dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp"/>
+                app:iconSize="16dp" />
         </LinearLayout>
     </LinearLayout>
-
 
 </com.google.android.material.card.MaterialCardView>
 

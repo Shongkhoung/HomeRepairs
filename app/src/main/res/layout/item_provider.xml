@@ -27,9 +27,9 @@
             android:layout_height="24dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
-            android:src="@drawable/ic_star_new"
-            android:tint="#FFB300"
-            android:contentDescription="Favorite"
+            android:src="@drawable/rating_star"
+            app:tint="#FFB300"
+            android:contentDescription="@string/favorite"
             android:padding="4dp" />
 
         <!-- Profile Image with Verification Badge -->
@@ -44,8 +44,8 @@
                 android:id="@+id/ivProviderPhoto"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
-                android:contentDescription="Provider Photo"
-                android:src="@drawable/profile" />
+                android:contentDescription="@string/provider_profile"
+                android:src="@drawable/ic_profile" />
 
             <!-- Verification Badge -->
             <ImageView
@@ -53,10 +53,10 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_gravity="bottom|end"
-                android:src="@drawable/ic_verify_new"
+                android:src="@drawable/verify"
                 android:background="@drawable/circle_white"
                 android:padding="4dp"
-                android:contentDescription="Verified"
+                android:contentDescription="@string/verified"
                 android:visibility="gone" />
         </FrameLayout>
 
@@ -86,7 +86,7 @@
                 android:id="@+id/tvServiceType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Master Handyman"
+                android:text="@string/master_handyman"
                 android:textSize="12sp"
                 android:textColor="@color/text_secondary"
                 android:layout_marginTop="1dp"
@@ -108,10 +108,10 @@
             <ImageView
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:src="@drawable/ic_star_new"
-                android:tint="#FFB300"
+                android:src="@drawable/rating_star"
+                app:tint="#FFB300"
                 android:layout_marginEnd="4dp"
-                android:contentDescription="Rating star" />
+                android:contentDescription="@string/rating_star" />
 
             <TextView
                 android:id="@+id/tvRating"
@@ -133,7 +133,7 @@
                 android:id="@+id/tvJobsCompleted"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="328 jobs"
+                android:text="@string/_328_jobs"
                 android:textSize="13sp"
                 android:textColor="@color/text_secondary" />
         </LinearLayout>
@@ -165,14 +165,14 @@
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:src="@drawable/ic_clock"
-                    android:tint="@color/text_secondary"
+                    app:tint="@color/text_secondary"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginBottom="3dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Response"
+                    android:text="@string/response"
                     android:textSize="10sp"
                     android:textColor="@color/text_secondary"
                     android:layout_gravity="center_horizontal" />
@@ -181,7 +181,7 @@
                     android:id="@+id/tvResponseTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="~10 min"
+                    android:text="@string/_10_min"
                     android:textSize="12sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
@@ -214,7 +214,7 @@
                     android:id="@+id/tvAvailability"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Available"
+                    android:text="@string/available"
                     android:textSize="10sp"
                     android:textColor="@color/available_green"
                     android:layout_gravity="center_horizontal" />
@@ -223,7 +223,7 @@
                     android:id="@+id/tvAvailabilityTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Right now"
+                    android:text="@string/right_now"
                     android:textSize="12sp"
                     android:textStyle="bold"
                     android:textColor="@color/available_green"
@@ -250,7 +250,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Hourly rate"
+                    android:text="@string/hourly_rate"
                     android:textSize="10sp"
                     android:textColor="@color/text_secondary" />
 
@@ -270,7 +270,7 @@
                 android:id="@+id/btnBookNow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="BOOK NOW"
+                android:text="@string/book_now"
                 android:textSize="11sp"
                 android:textStyle="bold"
                 android:minHeight="40dp"

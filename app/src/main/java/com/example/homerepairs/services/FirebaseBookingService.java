@@ -18,6 +18,7 @@ public class FirebaseBookingService {
     private static final String COLLECTION_BOOKINGS = "bookings";
     private FirebaseFirestore db;
 
+    // Callback interfaces for booking operations
     public interface BookingCallback {
         void onSuccess(Booking booking);
 
@@ -76,7 +77,7 @@ public class FirebaseBookingService {
                     .add(booking)
                     .addOnSuccessListener(documentReference -> {
                         Log.d(TAG, "Booking created successfully with ID: " + documentReference.getId());
-                        booking.setId(documentReference.getId());
+                        booking.setId(documentReference.getId());  // Set the Firestore document ID
                         callback.onSuccess(booking);
                     })
                     .addOnFailureListener(e -> {

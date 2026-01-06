@@ -25,11 +25,11 @@ public class CheckEmailActivity extends AppCompatActivity {
     private TextView tvBackToSignIn;
     private ProgressBar progressBar;
     private ImageButton btnBack;
-    private ImageView ivCheckIcon;
+    private TextView ivCheckIcon;
 
     private FirebaseAuth auth;
     private String emailAddress;
-
+    
     // Resend timer variables
     private android.os.CountDownTimer resendTimer;
     private static final int RESEND_COOLDOWN_SECONDS = 60;
@@ -45,7 +45,8 @@ public class CheckEmailActivity extends AppCompatActivity {
             getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.white));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 getWindow().getDecorView().setSystemUiVisibility(
-                        getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                        getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                );
             }
         }
 
@@ -59,16 +60,16 @@ public class CheckEmailActivity extends AppCompatActivity {
                 tvEmailAddress.setText(emailAddress);
             }
         }
-
+        
         // Update button text to "Resend Email" instead of "Enter Reset Code"
         if (btnEnterResetCode != null) {
             btnEnterResetCode.setText("Resend Email");
         }
-
+        
         // Start countdown timer for resend button
         startResendTimer();
     }
-
+    
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -81,7 +82,7 @@ public class CheckEmailActivity extends AppCompatActivity {
     private void initializeViews() {
         tvEmailAddress = findViewById(R.id.tvEmailAddress);
         btnEnterResetCode = findViewById(R.id.btnEnterResetCode);
-        tvResendEmail = findViewById(R.id.tvResendEmail);
+//        tvResendEmail = findViewById(R.id.tvResendEmail);
         tvBackToSignIn = findViewById(R.id.tvBackToSignIn);
         progressBar = findViewById(R.id.progressBar);
         btnBack = findViewById(R.id.btnBack);
@@ -137,7 +138,7 @@ public class CheckEmailActivity extends AppCompatActivity {
                     }
                 });
     }
-
+    
     /**
      * Start countdown timer for resend button (60 seconds)
      */
@@ -146,20 +147,20 @@ public class CheckEmailActivity extends AppCompatActivity {
         if (resendTimer != null) {
             resendTimer.cancel();
         }
-
+        
         canResend = false;
-
+        
         // Disable resend button initially
         if (btnEnterResetCode != null) {
             btnEnterResetCode.setEnabled(false);
             btnEnterResetCode.setAlpha(0.6f);
         }
-
+        
         // Hide the text view resend link since button handles it now
         if (tvResendEmail != null) {
             tvResendEmail.setVisibility(View.GONE);
         }
-
+        
         // Create countdown timer
         resendTimer = new android.os.CountDownTimer(RESEND_COOLDOWN_SECONDS * 1000, 1000) {
             @Override
@@ -180,36 +181,30 @@ public class CheckEmailActivity extends AppCompatActivity {
                 }
             }
         };
-
+        
         resendTimer.start();
     }
 
     private void showLoading(boolean show) {
         if (show) {
-            if (progressBar != null)
-                progressBar.setVisibility(View.VISIBLE);
+            if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
             if (btnEnterResetCode != null) {
                 btnEnterResetCode.setEnabled(false);
                 btnEnterResetCode.setAlpha(0.6f);
             }
         } else {
-            if (progressBar != null)
-                progressBar.setVisibility(View.GONE);
+            if (progressBar != null) progressBar.setVisibility(View.GONE);
             // Button state is controlled by countdown timer, not here
         }
     }
 
     private void navigateToLogin() {
-        Intent intent = new Intent(this, LoginActivity.class);
+        Intent intent = new Intent(this, SignInActivity.class);
         intent.putExtra("mode", "sign_in"); // Navigate to sign-in mode (Welcome Back)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
     }
 
-    @Override
-    public void onBackPressed() {
-        navigateToLogin();
-        super.onBackPressed();
-    }
 }
+

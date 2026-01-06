@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp"
+    tools:context="com.example.homerepairs.GetStartActivity">
+
+    <!-- Lottie: use wrap_content so it scales naturally; optionally autoplay/loop -->
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottieAnimation"
+        android:layout_width="500dp"
+        android:layout_height="350dp"
+        android:layout_marginBottom="20dp"
+        app:lottie_rawRes="@raw/lottie"
+        android:layout_marginRight="50dp"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        />
+
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/homerepairs_connects_you_with_trusted_verified_professionals_for_all_your_home_service_needs_fast_reliable_and_hassle_free"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        android:layout_marginBottom="24dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:weightSum="2"
+        >
+
+        <!-- Card 1 -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_card"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="12dp"
+            android:layout_marginEnd="8dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_shield" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Verified Professionals"
+                android:textSize="14sp"
+                android:paddingStart="8dp"/>
+        </LinearLayout>
+
+        <!-- Card 2 -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_card"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="12dp"
+            android:layout_marginStart="8dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_fastbooking" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="One-Tap         Booking"
+                android:textSize="14sp"
+                android:paddingStart="8dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Large card -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35sp"
+        android:background="@drawable/bg_card"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="16dp">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_dola" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Transparent Pricing"
+            android:textSize="14sp"
+            android:paddingStart="8dp"/>
+    </LinearLayout>
+
+    <!-- Make button width match parent but add internal padding instead of big start/end margins -->
+    <TextView
+        android:id="@+id/getStartButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_corner"
+        android:text="@string/get_start"
+        android:layout_marginTop="50dp"
+        android:paddingTop="16dp"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:paddingBottom="16dp"
+
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/SignIn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_edittext"
+        android:text="@string/sign_in"
+        android:paddingTop="16dp"
+        android:layout_marginTop="20sp"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:paddingBottom="16dp"
+
+        android:layout_marginBottom="20sp"
+        android:textColor="@color/black" />
+
+
+</LinearLayout>

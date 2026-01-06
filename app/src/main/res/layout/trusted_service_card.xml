@@ -34,8 +34,8 @@
                     android:layout_height="28dp"
                     android:layout_gravity="center"
                     android:src="@drawable/ic_house"
-                    android:tint="@color/primary_blue"
-                    android:contentDescription="House Icon" />
+                    app:tint="@color/primary_blue"
+                    android:contentDescription="@string/house_icon" />
             </FrameLayout>
 
             <!-- Title and Subtitle -->
@@ -48,7 +48,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Trusted Service"
+                    android:text="@string/trusted_service"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
@@ -57,7 +57,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Verified &amp; Insured"
+                    android:text="@string/verified_amp_insured"
                     android:textSize="13sp"
                     android:textColor="@color/text_secondary" />
             </LinearLayout>
@@ -82,15 +82,15 @@
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:src="@drawable/ic_checkmark"
-                    android:tint="@color/success_green"
+                    app:tint="@color/success_green"
                     android:layout_marginEnd="10dp"
-                    android:contentDescription="Checkmark" />
+                    android:contentDescription="@string/checkmark" />
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Background checked providers"
+                    android:text="@string/background_checked_providers"
                     android:textSize="14sp"
                     android:textColor="@color/text_primary" />
             </LinearLayout>
@@ -107,15 +107,15 @@
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:src="@drawable/ic_checkmark"
-                    android:tint="@color/success_green"
+                    app:tint="@color/success_green"
                     android:layout_marginEnd="10dp"
-                    android:contentDescription="Checkmark" />
+                    android:contentDescription="@string/checkmark" />
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="$1M liability coverage"
+                    android:text="@string/_1m_liability_coverage"
                     android:textSize="14sp"
                     android:textColor="@color/text_primary" />
             </LinearLayout>
@@ -131,15 +131,15 @@
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:src="@drawable/ic_checkmark"
-                    android:tint="@color/success_green"
+                    app:tint="@color/success_green"
                     android:layout_marginEnd="10dp"
-                    android:contentDescription="Checkmark" />
+                    android:contentDescription="@string/checkmark" />
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Satisfaction guaranteed"
+                    android:text="@string/satisfaction_guaranteed"
                     android:textSize="14sp"
                     android:textColor="@color/text_primary" />
             </LinearLayout>
@@ -150,7 +150,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="Get Protected Service"
+            android:text="@string/get_protected_service"
             android:textSize="14sp"
             android:textStyle="bold"
             android:textColor="@color/text_white"

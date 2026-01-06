@@ -35,7 +35,7 @@
                     android:layout_height="match_parent"
                     android:src="@drawable/profile"
                     android:scaleType="centerCrop"
-                    android:contentDescription="Profile" />
+                    android:contentDescription="@string/profile" />
             </com.google.android.material.card.MaterialCardView>
 
             <LinearLayout
@@ -49,7 +49,7 @@
                     android:id="@+id/tvReviewerName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Sophia Bennett"
+                    android:text="@string/sophia_bennett"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary" />
@@ -58,7 +58,7 @@
                     android:id="@+id/tvTimeAgo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="2 months ago"
+                    android:text="@string/_2_months_ago"
                     android:textSize="12sp"
                     android:textColor="@color/text_secondary"
                     android:layout_marginTop="2dp" />
@@ -75,35 +75,35 @@
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:src="@drawable/ic_star"
-                    android:tint="@color/rating_gold" />
+                    app:tint="@color/rating_gold" />
 
                 <ImageView
                     android:id="@+id/star2"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:src="@drawable/ic_star"
-                    android:tint="@color/rating_gold" />
+                    app:tint="@color/rating_gold" />
 
                 <ImageView
                     android:id="@+id/star3"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:src="@drawable/ic_star"
-                    android:tint="@color/rating_gold" />
+                    app:tint="@color/rating_gold" />
 
                 <ImageView
                     android:id="@+id/star4"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:src="@drawable/ic_star"
-                    android:tint="@color/rating_gold" />
+                    app:tint="@color/rating_gold" />
 
                 <ImageView
                     android:id="@+id/star5"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:src="@drawable/ic_star"
-                    android:tint="@color/rating_gold" />
+                    app:tint="@color/rating_gold" />
             </LinearLayout>
         </LinearLayout>
 
@@ -112,7 +112,7 @@
             android:id="@+id/tvComment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Ethan was fantastic! He fixed our leaky faucet quickly and efficiently."
+            android:text="@string/ethan_was_fantastic_he_fixed_our_leaky_faucet_quickly_and_efficiently"
             android:textSize="14sp"
             android:textColor="@color/text_secondary"
             android:lineSpacingExtra="4dp"
@@ -129,7 +129,7 @@
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:src="@drawable/ic_check"
-                android:tint="@color/text_secondary" />
+                app:tint="@color/text_secondary" />
 
             <TextView
                 android:id="@+id/tvThumbsUp"
@@ -146,7 +146,7 @@
                 android:layout_height="16dp"
                 android:src="@drawable/ic_back_arrow"
                 android:rotation="180"
-                android:tint="@color/text_secondary" />
+                app:tint="@color/text_secondary" />
 
             <TextView
                 android:id="@+id/tvThumbsDown"

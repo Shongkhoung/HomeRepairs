@@ -36,10 +36,10 @@
                 android:layout_height="40dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_faucet"
-                android:contentDescription="Portfolio Icon"
+                android:contentDescription="@string/portfolio_icon"
                 android:scaleType="fitCenter"
                 android:adjustViewBounds="true"
-                android:tint="@color/deep_royal_blue" />
+                app:tint="@color/deep_royal_blue" />
         </FrameLayout>
 
         <!-- Title and Description -->
@@ -54,7 +54,7 @@
                 android:id="@+id/tvPortfolioTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Kitchen Sink Installation"
+                android:text="@string/kitchen_sink_installation"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary" />
@@ -63,7 +63,7 @@
                 android:id="@+id/tvPortfolioDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Installed new sink with modern fixtures"
+                android:text="@string/installed_new_sink_with_modern_fixtures"
                 android:textSize="14sp"
                 android:textColor="@color/text_secondary"
                 android:layout_marginTop="4dp" />

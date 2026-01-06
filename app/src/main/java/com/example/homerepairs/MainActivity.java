@@ -1,5 +1,6 @@
 package com.example.homerepairs;
 
+
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,8 +14,6 @@ import android.net.NetworkRequest;
 import android.os.Build;
 import android.content.Context;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -28,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -47,6 +47,7 @@ import com.example.homerepairs.utils.AuthHelper;
 import com.example.homerepairs.utils.NetworkUtils;
 import com.example.homerepairs.viewmodel.HomeViewModel;
 import com.example.homerepairs.services.FirebaseUserService;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -60,7 +61,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends AppCompatActivity {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
 
@@ -102,15 +103,11 @@ public class MainActivity extends BaseActivity {
     private RecyclerView rvFeaturedProviders;
     private RecyclerView rvRecentActivity;
     private ProgressBar progressBar;
-    private ViewGroup llMainContent;
     private ImageButton btnNotification;
     private View btnEmergency;
     private View btnScheduleLater;
     private View btnDocument;
     private LottieAnimationView ivEmergencyIcon;
-    // private LinearLayout llNoSearchResults;
-    // private LottieAnimationView ivSearchingAnimation;
-
     private ImageView ivBookingLaterIcon;
     private ImageView ivFavoriteIcon;
     private FrameLayout llInternetLoading;
@@ -136,27 +133,21 @@ public class MainActivity extends BaseActivity {
     // Category display state
     private boolean showingAllCategories = false;
     private List<ServiceCategory> allCategories = new java.util.ArrayList<>();
-    private List<ServiceCategory> originalCategories = new java.util.ArrayList<>(); // Store original for search
-
-    // Provider display state
-    private List<FeaturedProvider> originalProviders = new java.util.ArrayList<>(); // Store original for search
 
     // Recent Activity display state
     private boolean showingAllActivities = false;
     private List<RecentActivity> allActivities = new java.util.ArrayList<>();
 
-    // Search state
-    private String currentSearchQuery = "";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        boolean skipLogin = getIntent().getBooleanExtra("skip_login", false);
 
         // Check if user is authenticated
         if (!AuthHelper.isAuthenticated()) {
-            // Redirect to login screen in sign in mode (user likely needs to sign in, not
-            // create account)
-            Intent intent = new Intent(this, LoginActivity.class);
+            // Redirect to login screen in sign in mode (user likely needs to sign in, not create account)
+            Intent intent = new Intent(this, SignInActivity.class);
             intent.putExtra("mode", "sign_in");
             startActivity(intent);
             finish();
@@ -170,8 +161,9 @@ public class MainActivity extends BaseActivity {
             getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.white));
             // Set dark status bar icons (dark icons on light background)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                getWindow().getDecorView().setSystemUiVisibility(
-                        getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            getWindow().getDecorView().setSystemUiVisibility(
+                    getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            );
             }
         }
 
@@ -205,6 +197,10 @@ public class MainActivity extends BaseActivity {
         }, 500);
     }
 
+
+
+
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -216,18 +212,6 @@ public class MainActivity extends BaseActivity {
         refreshWeatherIfOnline();
         // Start periodic weather refresh
         startWeatherRefresh();
-
-        // Clear search text and focus when returning to the screen
-        if (etSearch != null) {
-            etSearch.setText("");
-            etSearch.clearFocus();
-            // Hide keyboard if visible
-            android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) getSystemService(
-                    android.content.Context.INPUT_METHOD_SERVICE);
-            if (imm != null) {
-                imm.hideSoftInputFromWindow(etSearch.getWindowToken(), 0);
-            }
-        }
     }
 
     @Override
@@ -273,7 +257,6 @@ public class MainActivity extends BaseActivity {
         rvFeaturedProviders = findViewById(R.id.rvFeaturedProviders);
         rvRecentActivity = findViewById(R.id.rvRecentActivity);
         progressBar = findViewById(R.id.progressBar);
-        llMainContent = findViewById(R.id.llMainContent);
         btnNotification = findViewById(R.id.btnNotification);
         btnEmergency = findViewById(R.id.btnEmergency);
         btnScheduleLater = findViewById(R.id.btnScheduleLater);
@@ -281,9 +264,6 @@ public class MainActivity extends BaseActivity {
         ivEmergencyIcon = findViewById(R.id.ivEmergencyIcon);
         ivBookingLaterIcon = findViewById(R.id.ivBookingLaterIcon);
         ivFavoriteIcon = findViewById(R.id.ivFavoriteIcon);
-        ivFavoriteIcon = findViewById(R.id.ivFavoriteIcon);
-        // llNoSearchResults = findViewById(R.id.llNoSearchResults);
-        // ivSearchingAnimation = findViewById(R.id.ivSearchingAnimation);
         llInternetLoading = findViewById(R.id.llInternetLoading);
         tvInternetMessage = findViewById(R.id.tvInternetMessage);
         ivNoConnection = findViewById(R.id.ivNoConnection);
@@ -302,11 +282,10 @@ public class MainActivity extends BaseActivity {
         // Set default values (will be updated with real data)
         updateGreeting();
         updateProfileIcon(); // Initialize profile icon
-        tvLocation.setText(getString(R.string.default_location));
-        tvWeather.setText(getString(R.string.default_weather));
+        tvLocation.setText("Phnom Penh");
+        tvWeather.setText("22°C Sunny");
         if (ivWeatherIcon != null) {
-            // Use sunny_weather.json for weather icon (sunny.json is for time-based
-            // greeting icon)
+            // Use sunny_weather.json for weather icon (sunny.json is for time-based greeting icon)
             ivWeatherIcon.setAnimation(R.raw.sunny_weather);
             ivWeatherIcon.playAnimation();
         }
@@ -317,8 +296,7 @@ public class MainActivity extends BaseActivity {
             ivEmergencyIcon.setAnimation(R.raw.amercency);
             ivEmergencyIcon.playAnimation();
         }
-        // Booking Later and Favorite icons are set in XML layout using drawable
-        // resources
+        // Booking Later and Favorite icons are set in XML layout using drawable resources
 
         // Initialize internet loading indicator as hidden
         showInternetLoading(false);
@@ -327,12 +305,11 @@ public class MainActivity extends BaseActivity {
 
     /**
      * Get greeting message based on current time of day
-     * 
      * @return Greeting string (Good Morning/Afternoon/Evening)
-     *         Time frames:
-     *         - Good Morning: 12:00 a.m. to 12:00 p.m. (noon)
-     *         - Good Afternoon: 12:00 p.m. to 6:00 p.m.
-     *         - Good Evening: 6:00 p.m. until midnight
+     * Time frames:
+     * - Good Morning: 12:00 a.m. to 12:00 p.m. (noon)
+     * - Good Afternoon: 12:00 p.m. to 6:00 p.m.
+     * - Good Evening: 6:00 p.m. until midnight
      */
     private String getTimeBasedGreeting() {
         java.util.Calendar calendar = java.util.Calendar.getInstance();
@@ -341,23 +318,47 @@ public class MainActivity extends BaseActivity {
         String greeting;
         if (hourOfDay >= 0 && hourOfDay < 12) {
             // 12:00 a.m. to 12:00 p.m. (noon)
-            greeting = getString(R.string.greeting_morning);
+            greeting = "Good Morning";
         } else if (hourOfDay >= 12 && hourOfDay < 18) {
             // 12:00 p.m. to 6:00 p.m.
-            greeting = getString(R.string.greeting_afternoon);
+            greeting = "Good Afternoon";
         } else {
             // 6:00 p.m. until midnight (18:00 to 23:59)
-            greeting = getString(R.string.greeting_evening);
+            greeting = "Good Evening";
         }
 
         // Use real user name if available, otherwise use fallback
         String userName = currentUserName != null ? currentUserName : AuthHelper.getCurrentUserName(this);
         if (userName == null || userName.isEmpty() || userName.equals("You")) {
-            userName = getString(R.string.default_user); // Fallback
+            userName = "User"; // Fallback
         }
 
-        return String.format("%s, %s \uD83D\uDC4B", greeting, userName);
+        return greeting + ", " + userName + " 👋";
     }
+
+    private void showSignOutConfirmation() {
+        new AlertDialog.Builder(this)
+                .setTitle("Sign Out")
+                .setMessage("Are you sure you want to sign out?")
+                .setPositiveButton("Sign Out", (dialog, which) -> performSignOut())
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+    FirebaseAuth auth;
+    private void performSignOut() {
+        try {
+
+            auth.signOut();
+            Toast.makeText(this, "Signed out successfully", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "Could not sign out. Try again.", Toast.LENGTH_LONG).show();
+        }
+
+        Intent intent = new Intent(this, SignInActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
 
     /**
      * Load user data from Firestore and set up real-time listener
@@ -446,8 +447,7 @@ public class MainActivity extends BaseActivity {
 
     /**
      * Update profile icon with initial letter only (no image loading)
-     * 
-     * @param name  User's name (from Firestore or Firebase Auth)
+     * @param name User's name (from Firestore or Firebase Auth)
      * @param email User's email (for fallback letter)
      */
     private void updateProfileIcon(String name, String email) {
@@ -473,21 +473,14 @@ public class MainActivity extends BaseActivity {
         tvProfileLetter.setText(firstLetter);
     }
 
-    /**
-     * Update greeting text with current user name
-     */
+
     private void updateGreeting() {
         if (tvGreeting != null) {
             tvGreeting.setText(getTimeBasedGreeting());
         }
     }
 
-    /**
-     * Convert Lottie file name to R.raw resource ID
-     * 
-     * @param fileName Lottie JSON file name (e.g., "sunny_weather.json")
-     * @return Resource ID from R.raw, or 0 if not found
-     */
+
     private int getLottieResourceId(String fileName) {
         if (fileName == null || fileName.isEmpty()) {
             return 0;
@@ -524,10 +517,7 @@ public class MainActivity extends BaseActivity {
         // Observe categories
         viewModel.getCategories().observe(this, categories -> {
             if (categories != null && !categories.isEmpty()) {
-                // Store original categories for search highlighting
-                originalCategories = new java.util.ArrayList<>(categories);
                 allCategories = new java.util.ArrayList<>(categories);
-
                 // Show only first 6 categories initially
                 List<ServiceCategory> initialCategories;
                 if (categories.size() > 6) {
@@ -536,10 +526,9 @@ public class MainActivity extends BaseActivity {
                     initialCategories = new java.util.ArrayList<>(categories);
                 }
                 categoryAdapter.updateCategories(initialCategories);
-                categoryAdapter.setSearchQuery(currentSearchQuery); // Apply search highlighting
                 showingAllCategories = false;
                 if (tvViewAllServices != null) {
-                    tvViewAllServices.setText(getString(R.string.view_all_arrow));
+                    tvViewAllServices.setText("View all >");
                 }
             }
         });
@@ -547,12 +536,7 @@ public class MainActivity extends BaseActivity {
         // Observe featured providers
         viewModel.getFeaturedProviders().observe(this, providers -> {
             if (providers != null && !providers.isEmpty()) {
-                // Store original providers for search highlighting
-                originalProviders = new java.util.ArrayList<>(providers);
                 providerAdapter.updateProviders(providers);
-                providerAdapter.setSearchQuery(currentSearchQuery); // Apply search highlighting
-                // Also set providers in category adapter for search matching by provider name
-                categoryAdapter.setProviders(originalProviders);
             }
         });
 
@@ -584,8 +568,7 @@ public class MainActivity extends BaseActivity {
 
         // Observe weather icon (Lottie animation)
         viewModel.getWeatherIconFileName().observe(this, fileName -> {
-            android.util.Log.d("MainActivity", "Weather icon observer triggered, fileName: " + fileName
-                    + ", ivWeatherIcon null: " + (ivWeatherIcon == null));
+            android.util.Log.d("MainActivity", "Weather icon observer triggered, fileName: " + fileName + ", ivWeatherIcon null: " + (ivWeatherIcon == null));
             if (fileName != null && !fileName.isEmpty() && ivWeatherIcon != null) {
                 android.util.Log.d("MainActivity", "Setting weather icon to Lottie file: " + fileName);
                 int resId = getLottieResourceId(fileName);
@@ -597,8 +580,7 @@ public class MainActivity extends BaseActivity {
                     android.util.Log.e("MainActivity", "Invalid Lottie file name: " + fileName);
                 }
             } else {
-                android.util.Log.w("MainActivity",
-                        "Cannot update weather icon - fileName: " + fileName + ", ivWeatherIcon: " + ivWeatherIcon);
+                android.util.Log.w("MainActivity", "Cannot update weather icon - fileName: " + fileName + ", ivWeatherIcon: " + ivWeatherIcon);
             }
         });
 
@@ -625,7 +607,7 @@ public class MainActivity extends BaseActivity {
                     boolean hasNetwork = NetworkUtils.isNetworkAvailable(this);
                     showInternetLoading(!hasNetwork);
                     if (hasNetwork) {
-                        Toast.makeText(this, getString(R.string.error_weather_fetch), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Unable to fetch weather data", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -655,8 +637,7 @@ public class MainActivity extends BaseActivity {
                 category -> {
                     if (category != null) {
                         android.util.Log.d("MainActivity", "Category clicked: " + category.getName());
-                        Toast.makeText(MainActivity.this, getString(R.string.opening_category, category.getName()),
-                                Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Opening " + category.getName(), Toast.LENGTH_SHORT).show();
                         try {
                             Intent intent = new Intent(MainActivity.this, PlumbingActivity.class);
                             intent.putExtra("category_name", category.getName());
@@ -670,7 +651,8 @@ public class MainActivity extends BaseActivity {
                         android.util.Log.e("MainActivity", "Category is null in click listener");
                         Toast.makeText(MainActivity.this, "Error: Category is null", Toast.LENGTH_SHORT).show();
                     }
-                });
+                }
+        );
 
         // Provider adapter
         providerAdapter = new ProviderAdapter(
@@ -680,7 +662,8 @@ public class MainActivity extends BaseActivity {
                     intent.putExtra("provider_name", provider.getName());
                     startActivity(intent);
                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                });
+                }
+        );
 
         // Activity adapter - now shows providers from Firebase
         activityAdapter = new RecentActivityAdapterEnhanced(
@@ -718,8 +701,7 @@ public class MainActivity extends BaseActivity {
                             startActivity(intent);
                             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         } else {
-                            Toast.makeText(MainActivity.this, getString(R.string.error_provider_not_found),
-                                    Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "Provider not found", Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -735,7 +717,8 @@ public class MainActivity extends BaseActivity {
                             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         }
                     }
-                });
+                }
+        );
     }
 
     private void setupRecyclerViews() {
@@ -746,12 +729,15 @@ public class MainActivity extends BaseActivity {
             rvCategories.setAdapter(categoryAdapter);
             rvCategories.setHasFixedSize(true);
 
-            // Disable individual item animator to prevent "random" flight during layout
-            // changes
-            rvCategories.setItemAnimator(null);
+            // Set up smooth animations for item changes
+            DefaultItemAnimator animator = new DefaultItemAnimator();
+            animator.setAddDuration(600);
+            animator.setRemoveDuration(600);
+            animator.setMoveDuration(600);
+            animator.setChangeDuration(600);
+            rvCategories.setItemAnimator(animator);
 
-            android.util.Log.d("MainActivity",
-                    "RecyclerView setup complete, adapter item count: " + categoryAdapter.getItemCount());
+            android.util.Log.d("MainActivity", "RecyclerView setup complete, adapter item count: " + categoryAdapter.getItemCount());
         } else {
             android.util.Log.e("MainActivity", "RecyclerView or adapter is null!");
         }
@@ -762,23 +748,10 @@ public class MainActivity extends BaseActivity {
                 this, LinearLayoutManager.HORIZONTAL, false);
         rvFeaturedProviders.setLayoutManager(providerLayoutManager);
         rvFeaturedProviders.setAdapter(providerAdapter);
-        rvFeaturedProviders.setItemAnimator(null);
 
-        // Calculate card width to match recent activity card width
-        // Recent activity: RecyclerView width = screen width - 40dp (container padding
-        // 20dp each side)
-        // Card width = RecyclerView width - 32dp (16dp margin each side) = screen width
-        // - 72dp
-        // Featured provider: RecyclerView width = screen width - 40dp (container
-        // padding 20dp each side)
-        // Card width should match recent activity = screen width - 72dp
-        // Card margins = 16dp + 8dp = 24dp
         rvFeaturedProviders.post(() -> {
             int recyclerViewWidth = rvFeaturedProviders.getWidth();
             float density = getResources().getDisplayMetrics().density;
-            // Recent activity card width = screen width - 72dp
-            // Since RecyclerView width = screen width - 40dp, we can calculate:
-            // card width = recyclerViewWidth - 32dp (to match recent activity card width)
             int cardWidth = recyclerViewWidth - (int) (32 * density);
 
             // Set the card width on the adapter
@@ -786,8 +759,7 @@ public class MainActivity extends BaseActivity {
                 providerAdapter.setCardWidth(cardWidth);
             }
 
-            // Add padding to center the last card on screen
-            // Account for card margins: 16dp left + 8dp right = 24dp total
+
             int cardWithMargins = cardWidth + (int) (24 * density);
             int paddingEnd = (recyclerViewWidth - cardWithMargins) / 2;
             if (paddingEnd > 0) {
@@ -796,14 +768,14 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-        // Recent activity - Vertical layout
+
         LinearLayoutManager activityLayoutManager = new LinearLayoutManager(this);
         rvRecentActivity.setLayoutManager(activityLayoutManager);
         rvRecentActivity.setAdapter(activityAdapter);
     }
 
     private void setupButtons() {
-        // Profile icon click - navigate to Profile screen
+
         if (cardProfileIcon != null) {
             cardProfileIcon.setOnClickListener(v -> {
                 Intent intent = new Intent(this, UserProfileActivity.class);
@@ -825,264 +797,27 @@ public class MainActivity extends BaseActivity {
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
 
-        // View all services click handler
         if (tvViewAllServices != null) {
             tvViewAllServices.setOnClickListener(v -> {
                 toggleCategoriesView();
             });
         }
 
-        // View all activity click handler - toggle expand/collapse
         if (tvViewAllActivity != null) {
             tvViewAllActivity.setOnClickListener(v -> {
                 toggleActivitiesView();
             });
         }
-
-        // Setup search functionality with real-time filtering
-        // Setup Search Actions
-        setupSearch();
-
-        // Seed Firebase Data (One-time)
-        com.example.homerepairs.utils.FirebaseSeeder.seedProviders(this);
-    }
-
-    /**
-     * Setup search functionality to filter categories
-     */
-    private void setupSearch() {
-        if (etSearch == null) {
-            return;
-        }
-
-        // SCROLL OPTIMIZATION: Scroll search bar to top when focused
         etSearch.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
-                // Determine the scroll position to bring the search bar to the top
-                // We need to account for any toolbar/header height if necessary
-                android.view.View searchCard = findViewById(R.id.cvSearchBar);
-                androidx.core.widget.NestedScrollView nsvMain = findViewById(R.id.nsvMain);
-
-                if (searchCard != null && nsvMain != null) {
-                    // Post to message queue to ensure layout is measured
-                    nsvMain.post(() -> {
-                        // Get text location
-                        int top = searchCard.getTop();
-                        // Smooth scroll to that position
-                        nsvMain.smoothScrollTo(0, top - 40); // 40px buffer for padding
-                    });
-                }
+                // Could open search activity
+                Toast.makeText(this, "Search functionality", Toast.LENGTH_SHORT).show();
             }
-        });
-
-        // Add text change listener for real-time search
-        etSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                currentSearchQuery = s.toString().toLowerCase().trim();
-                filterBySearchQuery(currentSearchQuery);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
-
-        // Handle keyboard "Search" or "Enter" action
-        etSearch.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH ||
-                    actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE ||
-                    (event != null && event.getKeyCode() == android.view.KeyEvent.KEYCODE_ENTER
-                            && event.getAction() == android.view.KeyEvent.ACTION_DOWN)) {
-
-                String query = etSearch.getText().toString().trim();
-                if (!query.isEmpty()) {
-                    android.util.Log.d("MainActivity", "Search action triggering navigation for: " + query);
-
-                    // Hide keyboard
-                    android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) getSystemService(
-                            android.content.Context.INPUT_METHOD_SERVICE);
-                    if (imm != null) {
-                        imm.hideSoftInputFromWindow(etSearch.getWindowToken(), 0);
-                    }
-
-                    // Show searching animation as full screen loader
-                    showSearchLoading(true);
-
-                    // Simulate search delay then navigate
-                    new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
-                        // Navigate to results screen (reusing PlumbingActivity as generic list)
-                        Intent intent = new Intent(MainActivity.this, PlumbingActivity.class);
-                        intent.putExtra("category_name", "Search Results");
-                        intent.putExtra("search_query", query);
-                        startActivity(intent);
-                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-
-                        // Hide loading after transition (will be hidden by onStop/onResume/layout logic
-                        // anyway)
-                        new android.os.Handler().postDelayed(() -> showSearchLoading(false), 500);
-
-                    }, 2000); // 2 second delay for animation
-
-                    return true;
-                }
-            }
-            return false;
         });
     }
 
-    /**
-     * Highlight matching categories and providers based on search query
-     * All items remain visible, but matches are highlighted and non-matches are
-     * dimmed
-     */
-    /**
-     * Filter categories and providers based on search query
-     * Non-matching items are removed from the view
-     */
-    private void filterBySearchQuery(String query) {
-        currentSearchQuery = query;
-        android.util.Log.d("MainActivity", "filterBySearchQuery called with query: '" + query + "'");
-
-        if (query.isEmpty()) {
-            // RESTORE DEFAULT VIEW
-            // Categories
-            List<ServiceCategory> categoriesToShow;
-            if (showingAllCategories) {
-                categoriesToShow = new java.util.ArrayList<>(originalCategories);
-            } else {
-                if (originalCategories.size() > 6) {
-                    categoriesToShow = new java.util.ArrayList<>(originalCategories.subList(0, 6));
-                } else {
-                    categoriesToShow = new java.util.ArrayList<>(originalCategories);
-                }
-            }
-            categoryAdapter.updateCategories(categoriesToShow);
-            if (tvViewAllServices != null) {
-                tvViewAllServices.setVisibility(View.VISIBLE);
-                tvViewAllServices.setEnabled(true);
-            }
-
-            // Providers
-            providerAdapter.updateProviders(new java.util.ArrayList<>(originalProviders));
-
-            // Activities
-            List<RecentActivity> activitiesToShow;
-            if (showingAllActivities) {
-                activitiesToShow = new java.util.ArrayList<>(allActivities);
-            } else {
-                if (allActivities.size() > 2) {
-                    activitiesToShow = new java.util.ArrayList<>(allActivities.subList(0, 2));
-                } else {
-                    activitiesToShow = new java.util.ArrayList<>(allActivities);
-                }
-            }
-            activityAdapter.updateActivities(activitiesToShow);
-            if (tvViewAllActivity != null) {
-                updateViewAllActivityButton(); // This handles visibility
-                tvViewAllActivity.setVisibility(View.VISIBLE);
-            }
-
-            // Hide No Results
-            // if (llNoSearchResults != null)
-            // llNoSearchResults.setVisibility(View.GONE);
-
-        } else {
-            // SEARCH MODE
-            String queryLower = query.toLowerCase();
-
-            // 1. Filter Categories (Match name OR providers within category)
-            List<ServiceCategory> filteredCategories = new java.util.ArrayList<>();
-            for (ServiceCategory cat : originalCategories) {
-                boolean match = cat.getName().toLowerCase().contains(queryLower);
-                if (!match) {
-                    // Check providers in this category using originalProviders
-                    for (FeaturedProvider prov : originalProviders) {
-                        if (prov.getService() != null
-                                && prov.getService().equalsIgnoreCase(cat.getName())) {
-                            if (prov.getName().toLowerCase().contains(queryLower)) {
-                                match = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (match) {
-                    filteredCategories.add(cat);
-                }
-            }
-
-            // 2. Filter Providers
-            List<FeaturedProvider> filteredProviders = new java.util.ArrayList<>();
-            for (FeaturedProvider prov : originalProviders) {
-                if (prov.getName().toLowerCase().contains(queryLower) ||
-                        (prov.getService() != null && prov.getService().toLowerCase().contains(queryLower))) {
-                    filteredProviders.add(prov);
-                }
-            }
-
-            // 3. Filter Activities
-            List<RecentActivity> filteredActivities = new java.util.ArrayList<>();
-            for (RecentActivity act : allActivities) {
-                if (act.getTitle() != null && act.getTitle().toLowerCase().contains(queryLower)) {
-                    filteredActivities.add(act);
-                }
-            }
-
-            // boolean hasResults = !filteredCategories.isEmpty() ||
-            // !filteredProviders.isEmpty()
-            // || !filteredActivities.isEmpty();
-
-            // if (!hasResults) {
-            // Show Animation
-            // if (llNoSearchResults != null) {
-            // llNoSearchResults.setVisibility(View.VISIBLE);
-            // // Play animation if not already playing
-            // if (ivSearchingAnimation != null && !ivSearchingAnimation.isAnimating()) {
-            // ivSearchingAnimation.playAnimation();
-            // }
-            // }
-
-            // Update adapters with empty lists
-            // categoryAdapter.updateCategories(new java.util.ArrayList<>());
-            // providerAdapter.updateProviders(new java.util.ArrayList<>());
-            // activityAdapter.updateActivities(new java.util.ArrayList<>());
-
-            // } else {
-            // Show Matches
-            // if (llNoSearchResults != null) {
-            // llNoSearchResults.setVisibility(View.GONE);
-            // }
-
-            categoryAdapter.updateCategories(filteredCategories);
-            providerAdapter.updateProviders(filteredProviders);
-            activityAdapter.updateActivities(filteredActivities);
-            // }
-
-            // Hide "View All" buttons during search
-            if (tvViewAllServices != null) {
-                tvViewAllServices.setVisibility(View.INVISIBLE);
-            }
-            if (tvViewAllActivity != null) {
-                tvViewAllActivity.setVisibility(View.GONE);
-            }
-        }
-
-        // Pass query to adapters for highlighting
-        categoryAdapter.setSearchQuery(query);
-        providerAdapter.setSearchQuery(query);
-        activityAdapter.setSearchQuery(query);
-    }
-
-    /**
-     * Toggle between showing 6 categories and all categories with smooth animation
-     */
     private void toggleCategoriesView() {
-        if (originalCategories == null || originalCategories.isEmpty()) {
+        if (allCategories == null || allCategories.isEmpty()) {
             return;
         }
 
@@ -1092,24 +827,18 @@ public class MainActivity extends BaseActivity {
         }
 
         if (showingAllCategories) {
-            // Animate layout changes
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                android.transition.TransitionManager.beginDelayedTransition(llMainContent,
-                        new android.transition.ChangeBounds().setDuration(300));
-            }
             // Show only first 6 with smooth animation
             List<ServiceCategory> limitedCategories;
-            if (originalCategories.size() > 6) {
-                limitedCategories = new java.util.ArrayList<>(originalCategories.subList(0, 6));
+            if (allCategories.size() > 6) {
+                limitedCategories = new java.util.ArrayList<>(allCategories.subList(0, 6));
             } else {
-                limitedCategories = new java.util.ArrayList<>(originalCategories);
+                limitedCategories = new java.util.ArrayList<>(allCategories);
             }
 
-            categoryAdapter.updateCategoriesGranular(limitedCategories, false);
-            categoryAdapter.setSearchQuery(currentSearchQuery); // Maintain search highlighting
+            categoryAdapter.updateCategories(limitedCategories);
             showingAllCategories = false;
             if (tvViewAllServices != null) {
-                tvViewAllServices.setText(getString(R.string.view_all_arrow));
+                tvViewAllServices.setText("View all >");
             }
 
             // Re-enable after animation starts (shorter delay for better UX)
@@ -1119,17 +848,11 @@ public class MainActivity extends BaseActivity {
                 }
             }, 300);
         } else {
-            // Animate layout changes
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                android.transition.TransitionManager.beginDelayedTransition(llMainContent,
-                        new android.transition.ChangeBounds().setDuration(300));
-            }
             // Show all categories with smooth animation
-            categoryAdapter.updateCategoriesGranular(new java.util.ArrayList<>(originalCategories), true);
-            categoryAdapter.setSearchQuery(currentSearchQuery); // Maintain search highlighting
+            categoryAdapter.updateCategories(new java.util.ArrayList<>(allCategories));
             showingAllCategories = true;
             if (tvViewAllServices != null) {
-                tvViewAllServices.setText(getString(R.string.view_less_arrow));
+                tvViewAllServices.setText("Show less >");
             }
 
             // Re-enable after animation starts (shorter delay for better UX)
@@ -1140,10 +863,6 @@ public class MainActivity extends BaseActivity {
             }, 300);
         }
     }
-
-    /**
-     * Toggle between showing 2 activities and all activities
-     */
     private void toggleActivitiesView() {
         if (allActivities == null || allActivities.isEmpty()) {
             return;
@@ -1155,11 +874,6 @@ public class MainActivity extends BaseActivity {
         }
 
         if (showingAllActivities) {
-            // Animate layout changes
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                android.transition.TransitionManager.beginDelayedTransition(llMainContent,
-                        new android.transition.ChangeBounds().setDuration(300));
-            }
             // Collapse: Show only first 2 activities
             List<RecentActivity> limitedActivities;
             if (allActivities.size() > 2) {
@@ -1168,7 +882,7 @@ public class MainActivity extends BaseActivity {
                 limitedActivities = new java.util.ArrayList<>(allActivities);
             }
 
-            activityAdapter.updateActivitiesGranular(limitedActivities, false);
+            activityAdapter.updateActivities(limitedActivities);
             showingAllActivities = false;
             updateViewAllActivityButton();
 
@@ -1179,13 +893,8 @@ public class MainActivity extends BaseActivity {
                 }
             }, 100);
         } else {
-            // Animate layout changes
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                android.transition.TransitionManager.beginDelayedTransition(llMainContent,
-                        new android.transition.ChangeBounds().setDuration(300));
-            }
             // Expand: Show all activities
-            activityAdapter.updateActivitiesGranular(new java.util.ArrayList<>(allActivities), true);
+            activityAdapter.updateActivities(new java.util.ArrayList<>(allActivities));
             showingAllActivities = true;
             updateViewAllActivityButton();
 
@@ -1198,21 +907,18 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    /**
-     * Update "View All" button text for activities based on current state
-     */
     private void updateViewAllActivityButton() {
         if (tvViewAllActivity == null) {
             return;
         }
 
         if (showingAllActivities) {
-            tvViewAllActivity.setText(getString(R.string.view_less));
+            tvViewAllActivity.setText("Show less");
             tvViewAllActivity.setVisibility(View.VISIBLE);
         } else {
             // Only show "View All" if there are more than 2 activities
             if (allActivities != null && allActivities.size() > 2) {
-                tvViewAllActivity.setText(getString(R.string.view_all_caps));
+                tvViewAllActivity.setText("View All");
                 tvViewAllActivity.setVisibility(View.VISIBLE);
             } else {
                 // Hide button if 2 or fewer activities
@@ -1220,10 +926,6 @@ public class MainActivity extends BaseActivity {
             }
         }
     }
-
-    /**
-     * Helper method to navigate to booking screen with urgency level
-     */
     private void navigateToBooking(String urgency) {
         try {
             Intent intent = new Intent(MainActivity.this, NewBookingActivity.class);
@@ -1239,8 +941,7 @@ public class MainActivity extends BaseActivity {
     private void setupBottomNavigation() {
         BottomNavigationView bottomNavigation = findViewById(R.id.bottomNavigation);
 
-        // Remove elevation/shadow to eliminate divider - keep the navigation bar
-        // background
+        // Remove elevation/shadow to eliminate divider - keep the navigation bar background
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             bottomNavigation.setElevation(0f);
         }
@@ -1277,11 +978,6 @@ public class MainActivity extends BaseActivity {
         bottomNavigation.setSelectedItemId(R.id.nav_home);
     }
 
-    /**
-     * Show or hide screen transition loading overlay
-     * 
-     * @param show true to show, false to hide
-     */
     private void showScreenLoading(boolean show) {
         if (llScreenLoading == null) {
             return;
@@ -1312,10 +1008,6 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    /**
-     * Wait for layout to be fully rendered before hiding loading overlay
-     * Ensures loading shows for minimum duration
-     */
     private void waitForLayoutReady() {
         if (llScreenLoading == null) {
             return;
@@ -1347,36 +1039,30 @@ public class MainActivity extends BaseActivity {
         View rootView = findViewById(android.R.id.content);
         if (rootView == null) {
             // Fallback: hide after minimum duration
-            new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> hideScreenLoading(),
-                    MIN_LOADING_DURATION);
+            new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> hideScreenLoading(), MIN_LOADING_DURATION);
             return;
         }
 
         // Wait for layout to be measured and laid out
-        rootView.getViewTreeObserver()
-                .addOnGlobalLayoutListener(new android.view.ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        // Check if layout is ready (has dimensions)
-                        if (rootView.getWidth() > 0 && rootView.getHeight() > 0) {
-                            // Remove listener to avoid multiple calls
-                            rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new android.view.ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                // Check if layout is ready (has dimensions)
+                if (rootView.getWidth() > 0 && rootView.getHeight() > 0) {
+                    // Remove listener to avoid multiple calls
+                    rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
-                            // Calculate remaining time to meet minimum duration
-                            long elapsedTime = System.currentTimeMillis() - loadingStartTime;
-                            long remainingTime = MIN_LOADING_DURATION - elapsedTime;
+                    // Calculate remaining time to meet minimum duration
+                    long elapsedTime = System.currentTimeMillis() - loadingStartTime;
+                    long remainingTime = MIN_LOADING_DURATION - elapsedTime;
 
-                            // Wait for minimum duration or additional 200ms, whichever is longer
-                            long delayTime = Math.max(remainingTime, 200);
-                            rootView.postDelayed(() -> hideScreenLoading(), delayTime);
-                        }
-                    }
-                });
+                    // Wait for minimum duration or additional 200ms, whichever is longer
+                    long delayTime = Math.max(remainingTime, 200);
+                    rootView.postDelayed(() -> hideScreenLoading(), delayTime);
+                }
+            }
+        });
     }
-
-    /**
-     * Hide screen loading overlay with animation
-     */
     private void hideScreenLoading() {
         if (llScreenLoading == null || llScreenLoading.getVisibility() != View.VISIBLE) {
             return;
@@ -1395,10 +1081,10 @@ public class MainActivity extends BaseActivity {
     }
 
     private void requestLocationPermission() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
-                    new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     LOCATION_PERMISSION_REQUEST_CODE);
         } else {
             getCurrentLocation();
@@ -1407,7 +1093,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-            @NonNull int[] grantResults) {
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -1423,10 +1109,9 @@ public class MainActivity extends BaseActivity {
             }
         }
     }
-
     private void getCurrentLocation() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
             boolean hasNetwork = NetworkUtils.isNetworkAvailable(this);
             showInternetLoading(!hasNetwork);
             fusedLocationClient.getLastLocation()
@@ -1440,7 +1125,7 @@ public class MainActivity extends BaseActivity {
                             viewModel.fetchWeather(latitude, longitude, hasNetwork);
                             // Get city name from coordinates using reverse geocoding
                             if (hasNetwork) {
-                                getCityNameFromLocation(latitude, longitude);
+                            getCityNameFromLocation(latitude, longitude);
                             } else {
                                 viewModel.setUserLocation("Current Location");
                             }
@@ -1468,8 +1153,8 @@ public class MainActivity extends BaseActivity {
     }
 
     private void requestLocationUpdates() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
             boolean hasNetwork = NetworkUtils.isNetworkAvailable(this);
             showInternetLoading(!hasNetwork);
             LocationRequest locationRequest = LocationRequest.create();
@@ -1491,7 +1176,7 @@ public class MainActivity extends BaseActivity {
                                 lastKnownLongitude = longitude;
                                 viewModel.fetchWeather(latitude, longitude, hasNetwork);
                                 if (hasNetwork) {
-                                    getCityNameFromLocation(latitude, longitude);
+                                getCityNameFromLocation(latitude, longitude);
                                 } else {
                                     viewModel.setUserLocation("Current Location");
                                 }
@@ -1509,11 +1194,6 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    /**
-     * Show or hide internet loading indicator with message
-     * 
-     * @param show true to show, false to hide
-     */
     private void showInternetLoading(boolean show) {
         if (llInternetLoading == null) {
             return;
@@ -1600,64 +1280,6 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    /**
-     * Show or hide search loading overlay with specific animation
-     * 
-     * @param show true to show, false to hide
-     */
-    private void showSearchLoading(boolean show) {
-        if (llScreenLoading == null) {
-            return;
-        }
-
-        if (show) {
-            llScreenLoading.setVisibility(View.VISIBLE);
-            llScreenLoading.setAlpha(0f);
-            llScreenLoading.animate()
-                    .alpha(1f)
-                    .setDuration(300)
-                    .setInterpolator(new android.view.animation.DecelerateInterpolator())
-                    .start();
-            // Start Lottie animation with searching animation
-            if (ivScreenLoading != null) {
-                // Change animation to searching_animation
-                ivScreenLoading.setAnimation(R.raw.searching_animation);
-                ivScreenLoading.setSpeed(1.0f);
-                ivScreenLoading.setRenderMode(com.airbnb.lottie.RenderMode.HARDWARE);
-                ivScreenLoading.enableMergePathsForKitKatAndAbove(true);
-                ivScreenLoading.playAnimation();
-
-                // Update text to "Searching..."
-                TextView tvLoading = llScreenLoading.findViewById(R.id.tvLoading);
-                if (tvLoading == null) {
-                    // Try to find the TextView inside the layout if ID is not available directly
-                    // It seems the TextView doesn't have an ID in the layout XML reference above
-                    // (only text="Loading...")
-                    // I'll need to check the layout to be sure. Based on previous read, it's just a
-                    // TextView.
-                    // Let's assume for now we keep "Loading..." or update the XML to give it an ID.
-                    // For now, let's just update the animation.
-                }
-            }
-        } else {
-            llScreenLoading.animate()
-                    .alpha(0f)
-                    .setDuration(200)
-                    .withEndAction(() -> {
-                        llScreenLoading.setVisibility(View.GONE);
-                        // Reset to default loading animation for other flows
-                        if (ivScreenLoading != null) {
-                            ivScreenLoading.pauseAnimation();
-                            ivScreenLoading.setAnimation(R.raw.loading);
-                        }
-                    })
-                    .start();
-        }
-    }
-
-    /**
-     * Setup network callback to monitor network state changes in real-time
-     */
     private void setupNetworkCallback() {
         if (connectivityManager == null) {
             return;
@@ -1673,11 +1295,10 @@ public class MainActivity extends BaseActivity {
                         // Only fetch if we didn't already have internet (prevent duplicate fetches)
                         if (!wasInternetAvailable) {
                             wasInternetAvailable = true;
-                            // Fetch real weather data when internet is restored (with delay to avoid
-                            // duplicates)
-                            new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
-                                refetchWeatherData();
-                            }, 1000);
+                        // Fetch real weather data when internet is restored (with delay to avoid duplicates)
+                        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+                            refetchWeatherData();
+                        }, 1000);
                         }
                     });
                 }
@@ -1695,14 +1316,12 @@ public class MainActivity extends BaseActivity {
                 public void onCapabilitiesChanged(Network network, NetworkCapabilities networkCapabilities) {
                     runOnUiThread(() -> {
                         boolean hasInternet = networkCapabilities != null &&
-                                networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
-                                networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
-                        android.util.Log.d("MainActivity",
-                                "Network capabilities changed - hasInternet: " + hasInternet);
+                                            networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                                            networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
+                        android.util.Log.d("MainActivity", "Network capabilities changed - hasInternet: " + hasInternet);
                         showInternetLoading(!hasInternet);
 
-                        // Only fetch weather if internet just became available (transition from offline
-                        // to online)
+                        // Only fetch weather if internet just became available (transition from offline to online)
                         // This prevents excessive fetches when capabilities change while already online
                         if (hasInternet && !wasInternetAvailable) {
                             wasInternetAvailable = true;
@@ -1731,12 +1350,8 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    /**
-     * Unregister network callback
-     */
     private void unregisterNetworkCallback() {
-        if (connectivityManager != null && networkCallback != null
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (connectivityManager != null && networkCallback != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             try {
                 connectivityManager.unregisterNetworkCallback(networkCallback);
             } catch (Exception e) {
@@ -1745,9 +1360,6 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    /**
-     * Check network status in real-time and update loading indicator
-     */
     private void checkNetworkStatus() {
         if (llInternetLoading == null) {
             return; // Views not initialized yet
@@ -1760,9 +1372,6 @@ public class MainActivity extends BaseActivity {
         showInternetLoading(!hasNetwork);
     }
 
-    /**
-     * Refetch weather data when internet is restored (with debouncing)
-     */
     private void refetchWeatherData() {
         if (weatherDebounceHandler == null) {
             // Handler not initialized yet, perform fetch immediately
@@ -1781,8 +1390,7 @@ public class MainActivity extends BaseActivity {
         // Only fetch if enough time has passed since last fetch
         if (lastWeatherFetchTime > 0 && timeSinceLastFetch < WEATHER_DEBOUNCE_DELAY) {
             long remainingDelay = WEATHER_DEBOUNCE_DELAY - timeSinceLastFetch;
-            android.util.Log.d("MainActivity",
-                    "Debouncing weather fetch - too soon since last fetch, delaying by " + remainingDelay + "ms");
+            android.util.Log.d("MainActivity", "Debouncing weather fetch - too soon since last fetch, delaying by " + remainingDelay + "ms");
             weatherDebounceRunnable = () -> {
                 performWeatherFetch();
             };
@@ -1792,13 +1400,9 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    /**
-     * Actually perform the weather fetch
-     */
     private void performWeatherFetch() {
         lastWeatherFetchTime = System.currentTimeMillis();
-        android.util.Log.d("MainActivity",
-                "Refetching weather data with location: " + lastKnownLatitude + ", " + lastKnownLongitude);
+        android.util.Log.d("MainActivity", "Refetching weather data with location: " + lastKnownLatitude + ", " + lastKnownLongitude);
         // Fetch real weather data using stored location
         viewModel.fetchWeather(lastKnownLatitude, lastKnownLongitude, true);
         // Update location name if we have valid coordinates
@@ -1807,15 +1411,6 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    /**
-     * Setup periodic weather refresh to keep data in sync
-     */
-    /**
-     * Initialize Firebase Authentication
-     * Signs in anonymously if not already authenticated
-     * Note: If anonymous auth fails, app will use device ID fallback (see
-     * AuthHelper.getCurrentUserId)
-     */
     private void initializeFirebaseAuth() {
         if (!AuthHelper.isAuthenticated()) {
             AuthHelper.signInAnonymously(new AuthHelper.OnAuthCompleteListener() {
@@ -1851,9 +1446,6 @@ public class MainActivity extends BaseActivity {
         };
     }
 
-    /**
-     * Start periodic weather refresh
-     */
     private void startWeatherRefresh() {
         if (weatherRefreshHandler != null && weatherRefreshRunnable != null) {
             weatherRefreshHandler.removeCallbacks(weatherRefreshRunnable);
@@ -1861,18 +1453,12 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    /**
-     * Stop periodic weather refresh
-     */
     private void stopWeatherRefresh() {
         if (weatherRefreshHandler != null && weatherRefreshRunnable != null) {
             weatherRefreshHandler.removeCallbacks(weatherRefreshRunnable);
         }
     }
 
-    /**
-     * Refresh weather data if online (with debouncing)
-     */
     private void refreshWeatherIfOnline() {
         if (NetworkUtils.isNetworkAvailable(this) && lastKnownLatitude != 0 && lastKnownLongitude != 0) {
             long currentTime = System.currentTimeMillis();
@@ -1897,7 +1483,7 @@ public class MainActivity extends BaseActivity {
                 // Check if we're in Phnom Penh area (coordinates roughly within Phnom Penh)
                 // Phnom Penh coordinates: approximately 11.55°N, 104.92°E
                 if (latitude >= 11.40 && latitude <= 11.70 &&
-                        longitude >= 104.75 && longitude <= 105.10) {
+                    longitude >= 104.75 && longitude <= 105.10) {
                     // We're in Phnom Penh area, use "Phnom Penh" as city name
                     cityName = "Phnom Penh";
                 } else {
@@ -1917,7 +1503,7 @@ public class MainActivity extends BaseActivity {
                     }
 
                     // If still null, try sub-admin area or feature name
-                    if (cityName == null || cityName.isEmpty()) {
+                if (cityName == null || cityName.isEmpty()) {
                         cityName = address.getSubAdminArea();
                     }
                 }
@@ -1933,11 +1519,13 @@ public class MainActivity extends BaseActivity {
         } catch (IOException e) {
             // If geocoding fails, check if coordinates are in Phnom Penh area
             if (latitude >= 11.40 && latitude <= 11.70 &&
-                    longitude >= 104.75 && longitude <= 105.10) {
+                longitude >= 104.75 && longitude <= 105.10) {
                 viewModel.setUserLocation("Phnom Penh");
             } else {
-                viewModel.setUserLocation("Current Location");
+            viewModel.setUserLocation("Current Location");
             }
         }
     }
 }
+
+

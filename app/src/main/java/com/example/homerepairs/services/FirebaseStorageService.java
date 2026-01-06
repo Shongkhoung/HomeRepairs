@@ -16,15 +16,19 @@ import java.util.List;
 import java.util.UUID;
 
 public class FirebaseStorageService {
+
     private static final String TAG = "FirebaseStorageService";
     private static final String BOOKING_PHOTOS_PATH = "booking_photos";
+    private static final String PROFILE_PHOTOS_PATH = "profile_photos"; // Added a constant for profile photos
     private FirebaseStorage storage;
 
+    // Callback for a single image upload (Bitmap or Uri)
     public interface ImageUploadCallback {
         void onSuccess(String imageUrl);
         void onError(String error);
     }
 
+    // Callback for multiple image uploads
     public interface MultipleImageUploadCallback {
         void onSuccess(List<String> imageUrls);
         void onError(String error);
@@ -60,7 +64,7 @@ public class FirebaseStorageService {
             // Generate unique filename
             String filename = UUID.randomUUID().toString() + ".jpg";
             String path = BOOKING_PHOTOS_PATH + "/" + bookingId + "/" + filename;
-            
+
             StorageReference storageRef = storage.getReference().child(path);
 
             // Convert Bitmap to byte array
@@ -70,32 +74,21 @@ public class FirebaseStorageService {
 
             // Upload the image
             UploadTask uploadTask = storageRef.putBytes(imageData);
-            
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    // Get download URL
-                    storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri downloadUri) {
+
+            uploadTask.addOnSuccessListener(taskSnapshot -> {
+                storageRef.getDownloadUrl()
+                        .addOnSuccessListener(downloadUri -> {
                             String imageUrl = downloadUri.toString();
                             Log.d(TAG, "Image uploaded successfully: " + imageUrl);
                             callback.onSuccess(imageUrl);
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(Exception e) {
+                        })
+                        .addOnFailureListener(e -> {
                             Log.e(TAG, "Error getting download URL", e);
                             callback.onError("Failed to get image URL: " + e.getMessage());
-                        }
-                    });
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(Exception e) {
-                    Log.e(TAG, "Error uploading image", e);
-                    callback.onError("Failed to upload image: " + (e.getMessage() != null ? e.getMessage() : "Unknown error"));
-                }
+                        });
+            }).addOnFailureListener(e -> {
+                Log.e(TAG, "Error uploading image", e);
+                callback.onError("Failed to upload image: " + (e.getMessage() != null ? e.getMessage() : "Unknown error"));
             });
         } catch (Exception e) {
             Log.e(TAG, "Exception while uploading image", e);
@@ -122,37 +115,26 @@ public class FirebaseStorageService {
             // Generate unique filename
             String filename = UUID.randomUUID().toString() + ".jpg";
             String path = BOOKING_PHOTOS_PATH + "/" + bookingId + "/" + filename;
-            
+
             StorageReference storageRef = storage.getReference().child(path);
 
             // Upload the image
             UploadTask uploadTask = storageRef.putFile(imageUri);
-            
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    // Get download URL
-                    storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri downloadUri) {
+
+            uploadTask.addOnSuccessListener(taskSnapshot -> {
+                storageRef.getDownloadUrl()
+                        .addOnSuccessListener(downloadUri -> {
                             String imageUrl = downloadUri.toString();
                             Log.d(TAG, "Image uploaded successfully: " + imageUrl);
                             callback.onSuccess(imageUrl);
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(Exception e) {
+                        })
+                        .addOnFailureListener(e -> {
                             Log.e(TAG, "Error getting download URL", e);
                             callback.onError("Failed to get image URL: " + e.getMessage());
-                        }
-                    });
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(Exception e) {
-                    Log.e(TAG, "Error uploading image", e);
-                    callback.onError("Failed to upload image: " + (e.getMessage() != null ? e.getMessage() : "Unknown error"));
-                }
+                        });
+            }).addOnFailureListener(e -> {
+                Log.e(TAG, "Error uploading image", e);
+                callback.onError("Failed to upload image: " + (e.getMessage() != null ? e.getMessage() : "Unknown error"));
             });
         } catch (Exception e) {
             Log.e(TAG, "Exception while uploading image", e);
@@ -176,7 +158,7 @@ public class FirebaseStorageService {
         for (int i = 0; i < bitmaps.size(); i++) {
             final int index = i;
             Bitmap bitmap = bitmaps.get(i);
-            
+
             if (bitmap != null) {
                 uploadImage(bitmap, bookingId, new ImageUploadCallback() {
                     @Override
@@ -184,7 +166,7 @@ public class FirebaseStorageService {
                         uploadedUrls.add(imageUrl);
                         uploadedCount[0]++;
                         callback.onProgress(uploadedCount[0], totalCount);
-                        
+
                         if (uploadedCount[0] == totalCount) {
                             callback.onSuccess(uploadedUrls);
                         }
@@ -195,7 +177,7 @@ public class FirebaseStorageService {
                         Log.e(TAG, "Error uploading image " + index + ": " + error);
                         uploadedCount[0]++;
                         callback.onProgress(uploadedCount[0], totalCount);
-                        
+
                         // Continue with other images even if one fails
                         if (uploadedCount[0] == totalCount) {
                             if (uploadedUrls.isEmpty()) {
@@ -210,7 +192,7 @@ public class FirebaseStorageService {
             } else {
                 uploadedCount[0]++;
                 callback.onProgress(uploadedCount[0], totalCount);
-                
+
                 if (uploadedCount[0] == totalCount) {
                     if (uploadedUrls.isEmpty()) {
                         callback.onError("No valid images to upload");
@@ -240,53 +222,27 @@ public class FirebaseStorageService {
         try {
             // Generate unique filename
             String filename = "profile_" + userId + "_" + UUID.randomUUID().toString() + ".jpg";
-            String path = "profile_photos/" + userId + "/" + filename;
-            
+            String path = PROFILE_PHOTOS_PATH + "/" + userId + "/" + filename;
+
             StorageReference storageRef = storage.getReference().child(path);
 
             // Upload the image
             UploadTask uploadTask = storageRef.putFile(imageUri);
-            
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    // Get download URL
-                    storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri downloadUri) {
+
+            uploadTask.addOnSuccessListener(taskSnapshot -> {
+                storageRef.getDownloadUrl()
+                        .addOnSuccessListener(downloadUri -> {
                             String imageUrl = downloadUri.toString();
                             Log.d(TAG, "Profile photo uploaded successfully: " + imageUrl);
                             callback.onSuccess(imageUrl);
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(Exception e) {
+                        })
+                        .addOnFailureListener(e -> {
                             Log.e(TAG, "Error getting download URL", e);
                             callback.onError("Failed to get image URL: " + e.getMessage());
-                        }
-                    });
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(Exception e) {
-                    Log.e(TAG, "Error uploading profile photo", e);
-                    String errorMessage = "Failed to upload profile photo";
-                    if (e instanceof com.google.firebase.storage.StorageException) {
-                        com.google.firebase.storage.StorageException storageException = (com.google.firebase.storage.StorageException) e;
-                        int errorCode = storageException.getErrorCode();
-                        if (errorCode == com.google.firebase.storage.StorageException.ERROR_OBJECT_NOT_FOUND) {
-                            errorMessage = "Firebase Storage is not set up. Please enable Storage in Firebase Console and deploy storage rules.";
-                        } else if (errorCode == -13020 || errorCode == -13021) {
-                            // -13020: ERROR_UNAUTHORIZED, -13021: ERROR_QUOTA_EXCEEDED
-                            errorMessage = "Permission denied. Please check Firebase Storage security rules.";
-                        } else {
-                            errorMessage = "Upload failed: " + storageException.getMessage();
-                        }
-                    } else {
-                        errorMessage = "Upload failed: " + (e.getMessage() != null ? e.getMessage() : "Unknown error");
-                    }
-                    callback.onError(errorMessage);
-                }
+                        });
+            }).addOnFailureListener(e -> {
+                Log.e(TAG, "Error uploading profile photo", e);
+                callback.onError("Failed to upload profile photo: " + (e.getMessage() != null ? e.getMessage() : "Unknown error"));
             });
         } catch (Exception e) {
             Log.e(TAG, "Exception while uploading profile photo", e);
@@ -318,4 +274,3 @@ public class FirebaseStorageService {
         }
     }
 }
-

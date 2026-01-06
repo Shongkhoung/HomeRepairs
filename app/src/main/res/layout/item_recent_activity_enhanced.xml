@@ -32,8 +32,9 @@
                 android:id="@+id/ivActivityIcon"
                 android:layout_width="56dp"
                 android:layout_height="56dp"
+                android:background="@drawable/ic_profile"
                 android:layout_gravity="center"
-                android:contentDescription="Profile Image"
+                android:contentDescription="@string/profile_image"
                 android:scaleType="centerCrop" />
         </FrameLayout>
 
@@ -51,7 +52,7 @@
                 android:id="@+id/tvActivityTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Leaky Faucet Fixed"
+                android:text="@string/leaky_faucet_fixed"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary"
@@ -64,7 +65,7 @@
                 android:id="@+id/tvProviderName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Ethan Carter"
+                android:text="@string/ethan_carter"
                 android:textSize="14sp"
                 android:textColor="@color/text_secondary"
                 android:maxLines="1"
@@ -76,7 +77,7 @@
                 android:id="@+id/tvActivityDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2 hours ago"
+                android:text="@string/_2_hours_ago"
                 android:textSize="12sp"
                 android:textColor="@color/text_tertiary"
                 android:maxLines="1" />
@@ -87,7 +88,7 @@
             android:id="@+id/chipStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Completed"
+            android:text="@string/completed"
             android:textSize="12sp"
             android:textColor="@color/text_white"
             app:chipBackgroundColor="@color/success"

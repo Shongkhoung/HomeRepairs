@@ -1,37 +1,51 @@
 package com.example.homerepairs;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.Menu;
+import android.provider.MediaStore;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import java.io.IOException;
+import java.io.FileNotFoundException;
+import com.example.homerepairs.services.FirebaseStorageService;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import android.widget.FrameLayout;
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.homerepairs.utils.AuthHelper;
 import com.example.homerepairs.services.FirebaseUserService;
-import com.example.homerepairs.services.FirebaseStorageService;
+import com.google.android.material.card.MaterialCardView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.Timestamp;
 import com.bumptech.glide.Glide;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import android.net.Uri;
 import android.content.pm.PackageManager;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
+
 import android.Manifest;
 import android.widget.ImageView;
+import android.widget.Toast;
+
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Map;
 
-public class UserProfileActivity extends BaseActivity {
+public class UserProfileActivity extends AppCompatActivity {
 
     private FrameLayout llScreenLoading;
     private LottieAnimationView ivScreenLoading;
@@ -47,6 +61,15 @@ public class UserProfileActivity extends BaseActivity {
     private String currentUserEmail;
     private String currentUserPhone;
     private String currentUserLocation;
+    private static final int CAMERA_REQUEST_CODE = 101;
+    private static final int PICK_IMAGE_REQUEST = 102;
+    private Uri imageUri;
+
+    private ImageView ivProfileImage;
+    private TextView tvAvatarLetter;
+
+    private MaterialCardView cardAvatar;
+    private Bitmap selectedBitmap;
     private String currentUserPhotoUrl;
 
     // Request codes
@@ -57,12 +80,53 @@ public class UserProfileActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
+        ivProfileImage = findViewById(R.id.ivProfileImage);
+        tvAvatarLetter = findViewById(R.id.tvAvatarLetter);
+        cardAvatar = findViewById(R.id.cardAvatar);
+
+
+        View btnPrivacy = findViewById(R.id.btnPrivacy);
+
+        btnPrivacy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate to PrivacyActivity
+                Intent intent = new Intent(UserProfileActivity.this, PrivacyAndSecurityActivity.class);
+                startActivity(intent);
+                ;
+            }
+        });
+
+        View btnTerms = findViewById(R.id.btnTerms);
+
+        btnTerms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate to PrivacyActivity
+                Intent intent = new Intent(UserProfileActivity.this, TermsConditionsActivity.class);
+                startActivity(intent);
+                ;
+            }
+        });
+
+        View btnHelpcenter = findViewById(R.id.btnHelpCenter);
+
+        btnHelpcenter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate to PrivacyActivity
+                Intent intent = new Intent(UserProfileActivity.this, HelpCenterActivity.class);
+                startActivity(intent);
+                ;
+            }
+        });
+
 
         // Check if user is authenticated
         String userId = AuthHelper.getCurrentUserId(this);
         if (userId == null) {
             // User not authenticated, redirect to login
-            Intent intent = new Intent(this, LoginActivity.class);
+            Intent intent = new Intent(this, SignInActivity.class);
             intent.putExtra("mode", "sign_in");
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
@@ -76,7 +140,8 @@ public class UserProfileActivity extends BaseActivity {
             // Set dark status bar icons (dark icons on light background)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 getWindow().getDecorView().setSystemUiVisibility(
-                        getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                        getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                );
             }
         }
 
@@ -91,6 +156,81 @@ public class UserProfileActivity extends BaseActivity {
         // Wait for layout to be ready before hiding loading overlay
         waitForLayoutReady();
     }
+    // Upload the selected profile photo to Firebase Storage
+    private void uploadProfilePhotoToFirebase(Uri imageUri) {
+        // Display loading message or progress
+        Toast.makeText(this, "Uploading profile photo...", Toast.LENGTH_SHORT).show();
+
+        // Get the current user's ID (you can replace this with the actual user ID)
+        String userId = AuthHelper.getCurrentUserId(this);
+
+        if (userId != null) {
+            // Reference to Firebase Storage
+            StorageReference storageReference = FirebaseStorage.getInstance().getReference()
+                    .child("profile_photos/" + userId + ".jpg");
+
+            // Upload the image to Firebase Storage
+            storageReference.putFile(imageUri)
+                    .addOnSuccessListener(taskSnapshot -> {
+                        // Get the image URL from Firebase Storage
+                        storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+                            String imageUrl = uri.toString();
+                            // Save the image URL to Firestore and Firebase Auth
+                            saveProfileImageUrlToFirestore(imageUrl);
+                            updateProfilePhotoInAuth(imageUrl);
+                        });
+                    })
+                    .addOnFailureListener(e -> {
+                        // Handle failure
+                        Toast.makeText(UserProfileActivity.this, "Failed to upload profile photo: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        } else {
+            Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // Save the image URL to Firestore
+    private void saveProfileImageUrlToFirestore(String imageUrl) {
+        String userId = AuthHelper.getCurrentUserId(this);
+        if (userId != null) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference userRef = db.collection("users").document(userId);
+
+            // Update Firestore with the new profile image URL
+            userRef.update("photoUrl", imageUrl)
+                    .addOnSuccessListener(aVoid -> {
+                        // Image URL has been updated successfully
+                        Toast.makeText(UserProfileActivity.this, "Profile photo updated successfully!", Toast.LENGTH_SHORT).show();
+                        loadUserData();  // Reload the profile data to reflect the new image
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(UserProfileActivity.this, "Failed to update profile photo in Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        }
+    }
+
+    // Update the user's profile photo in Firebase Authentication
+    private void updateProfilePhotoInAuth(String imageUrl) {
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser != null) {
+            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                    .setPhotoUri(Uri.parse(imageUrl))  // Set the new photo URL
+                    .build();
+
+            firebaseUser.updateProfile(profileUpdates)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            // Profile photo updated successfully in Firebase Auth
+                            Toast.makeText(UserProfileActivity.this, "Profile photo updated in Firebase Auth!", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(UserProfileActivity.this, "Failed to update profile photo in Firebase Auth", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+    }
+
+
+    // Handle permission request result (for camera)
 
     @Override
     protected void onDestroy() {
@@ -110,7 +250,7 @@ public class UserProfileActivity extends BaseActivity {
 
     private void setupClickListeners() {
         // Edit button
-        View btnEdit = findViewById(R.id.btnEdit);
+        ImageButton btnEdit = findViewById(R.id.btnEdit);
         if (btnEdit != null) {
             btnEdit.setOnClickListener(v -> {
                 // Open personal information edit
@@ -119,42 +259,46 @@ public class UserProfileActivity extends BaseActivity {
         }
 
         // Camera icon on avatar
-        // Changed from cardAvatar to ivAvatar (the MaterialCardView ID)
-        View ivAvatar = findViewById(R.id.ivAvatar);
-        if (ivAvatar != null) {
-            ivAvatar.setOnClickListener(v -> {
+        View cardAvatar = findViewById(R.id.cardAvatar);
+        if (cardAvatar != null) {
+            cardAvatar.setOnClickListener(v -> {
                 openImagePicker();
             });
         }
 
-        // Removed avatarContainer listener as it's redundant or ID is missing
+        // Also make the avatar itself clickable
+        View avatarContainer = findViewById(R.id.avatarContainer);
+        if (avatarContainer != null) {
+            avatarContainer.setOnClickListener(v -> {
+                openImagePicker();
+            });
+        }
 
         // Menu items
-
+        findViewById(R.id.btnPersonalInfo).setOnClickListener(v -> openPersonalInfo());
         findViewById(R.id.btnPaymentMethods).setOnClickListener(v -> {
-            startActivity(new Intent(this, PaymentMethodsActivity.class));
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            android.widget.Toast.makeText(this, "Payment Methods - Coming soon",
+                    android.widget.Toast.LENGTH_SHORT).show();
         });
         findViewById(R.id.btnAddresses).setOnClickListener(v -> {
-            startActivity(new Intent(this, AddressesActivity.class));
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            android.widget.Toast.makeText(this, "Addresses - Coming soon",
+                    android.widget.Toast.LENGTH_SHORT).show();
         });
         findViewById(R.id.btnNotifications).setOnClickListener(v -> {
-            startActivity(new Intent(this, NotificationsActivity.class));
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            android.widget.Toast.makeText(this, "Notifications - Coming soon",
+                    android.widget.Toast.LENGTH_SHORT).show();
         });
         findViewById(R.id.btnAppSettings).setOnClickListener(v -> {
-            startActivity(new Intent(this, AppSettingsActivity.class));
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-        });
-        findViewById(R.id.btnPrivacy).setOnClickListener(v -> {
-            startActivity(new Intent(this, PrivacySecurityActivity.class));
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            android.widget.Toast.makeText(this, "App Settings - Coming soon",
+                    android.widget.Toast.LENGTH_SHORT).show();
         });
 
-        // Removed listeners for: btnHelpCenter, btnTerms, btnInviteFriends as they are
-        // not in the new layout
 
+
+        findViewById(R.id.btnInviteFriends).setOnClickListener(v -> {
+            android.widget.Toast.makeText(this, "Invite Friends - Coming soon",
+                    android.widget.Toast.LENGTH_SHORT).show();
+        });
         findViewById(R.id.btnLogout).setOnClickListener(v -> handleLogout());
     }
 
@@ -164,17 +308,24 @@ public class UserProfileActivity extends BaseActivity {
         dialog.setContentView(R.layout.dialog_edit_profile);
         dialog.getWindow().setLayout(
                 android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-                android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+                android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+        );
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
         // Get dialog views
-        com.google.android.material.textfield.TextInputEditText etFullName = dialog.findViewById(R.id.etFullName);
-        com.google.android.material.textfield.TextInputEditText etEmail = dialog.findViewById(R.id.etEmail);
-        com.google.android.material.textfield.TextInputEditText etPhone = dialog.findViewById(R.id.etPhone);
-        com.google.android.material.textfield.TextInputEditText etLocation = dialog.findViewById(R.id.etLocation);
+        com.google.android.material.textfield.TextInputEditText etFullName =
+                dialog.findViewById(R.id.etFullName);
+        com.google.android.material.textfield.TextInputEditText etEmail =
+                dialog.findViewById(R.id.etEmail);
+        com.google.android.material.textfield.TextInputEditText etPhone =
+                dialog.findViewById(R.id.etPhone);
+        com.google.android.material.textfield.TextInputEditText etLocation =
+                dialog.findViewById(R.id.etLocation);
         ImageButton btnClose = dialog.findViewById(R.id.btnClose);
-        com.google.android.material.button.MaterialButton btnCancel = dialog.findViewById(R.id.btnCancel);
-        com.google.android.material.button.MaterialButton btnSave = dialog.findViewById(R.id.btnSave);
+        com.google.android.material.button.MaterialButton btnCancel =
+                dialog.findViewById(R.id.btnCancel);
+        com.google.android.material.button.MaterialButton btnSave =
+                dialog.findViewById(R.id.btnSave);
 
         // Pre-fill with current data
         if (etFullName != null) {
@@ -209,7 +360,7 @@ public class UserProfileActivity extends BaseActivity {
 
                 // Validate
                 if (name.isEmpty()) {
-                    android.widget.Toast.makeText(this, getString(R.string.msg_enter_full_name),
+                    android.widget.Toast.makeText(this, "Please enter your full name",
                             android.widget.Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -225,7 +376,7 @@ public class UserProfileActivity extends BaseActivity {
     private void saveProfileChanges(String name, String phone, String location, android.app.Dialog dialog) {
         String userId = AuthHelper.getCurrentUserId(this);
         if (userId == null) {
-            android.widget.Toast.makeText(this, getString(R.string.msg_user_not_authenticated),
+            android.widget.Toast.makeText(this, "User not authenticated",
                     android.widget.Toast.LENGTH_SHORT).show();
             return;
         }
@@ -253,9 +404,10 @@ public class UserProfileActivity extends BaseActivity {
                 // Update Firebase Auth display name
                 FirebaseUser user = AuthHelper.getCurrentUser();
                 if (user != null) {
-                    com.google.firebase.auth.UserProfileChangeRequest profileUpdates = new com.google.firebase.auth.UserProfileChangeRequest.Builder()
-                            .setDisplayName(name)
-                            .build();
+                    com.google.firebase.auth.UserProfileChangeRequest profileUpdates =
+                            new com.google.firebase.auth.UserProfileChangeRequest.Builder()
+                                    .setDisplayName(name)
+                                    .build();
                     user.updateProfile(profileUpdates);
                 }
 
@@ -266,7 +418,7 @@ public class UserProfileActivity extends BaseActivity {
                 dialog.dismiss();
 
                 // Show success message
-                android.widget.Toast.makeText(UserProfileActivity.this, getString(R.string.msg_profile_updated),
+                android.widget.Toast.makeText(UserProfileActivity.this, "Profile updated successfully",
                         android.widget.Toast.LENGTH_SHORT).show();
 
                 // Reload user data to refresh UI
@@ -277,7 +429,7 @@ public class UserProfileActivity extends BaseActivity {
             public void onError(String error) {
                 android.util.Log.e("UserProfileActivity", "Error updating profile: " + error);
                 android.widget.Toast.makeText(UserProfileActivity.this,
-                        getString(R.string.error_update_profile, error),
+                        "Failed to update profile: " + error,
                         android.widget.Toast.LENGTH_LONG).show();
             }
         });
@@ -285,24 +437,23 @@ public class UserProfileActivity extends BaseActivity {
 
     private void handleLogout() {
         new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle(getString(R.string.title_logout))
-                .setMessage(getString(R.string.msg_logout_confirm))
-                .setPositiveButton(getString(R.string.btn_logout), (dialog, which) -> {
+                .setTitle("Log Out")
+                .setMessage("Are you sure you want to log out?")
+                .setPositiveButton("Log Out", (dialog, which) -> {
                     // Sign out from Firebase
                     AuthHelper.signOut();
 
                     // Navigate to login screen in sign in mode (not create account)
-                    Intent intent = new Intent(this, LoginActivity.class);
+                    Intent intent = new Intent(this, SignInActivity.class);
                     intent.putExtra("mode", "sign_in");
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
-                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     finish();
 
-                    android.widget.Toast.makeText(this, getString(R.string.msg_logged_out),
+                    android.widget.Toast.makeText(this, "Logged out successfully",
                             android.widget.Toast.LENGTH_SHORT).show();
                 })
-                .setNegativeButton(getString(R.string.cancel), null)
+                .setNegativeButton("Cancel", null)
                 .show();
     }
 
@@ -329,14 +480,14 @@ public class UserProfileActivity extends BaseActivity {
                 Intent intent = new Intent(this, BookingsActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 finish();
                 return true;
             } else if (itemId == R.id.nav_messages) {
                 showScreenLoading(true);
                 Intent intent = new Intent(this, MessagesActivity.class);
                 startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 finish();
                 return true;
             } else if (itemId == R.id.nav_profile) {
@@ -350,7 +501,6 @@ public class UserProfileActivity extends BaseActivity {
 
     /**
      * Show or hide screen transition loading overlay
-     * 
      * @param show true to show, false to hide
      */
     private void showScreenLoading(boolean show) {
@@ -418,31 +568,29 @@ public class UserProfileActivity extends BaseActivity {
         View rootView = findViewById(android.R.id.content);
         if (rootView == null) {
             // Fallback: hide after minimum duration
-            new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> hideScreenLoading(),
-                    MIN_LOADING_DURATION);
+            new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> hideScreenLoading(), MIN_LOADING_DURATION);
             return;
         }
 
         // Wait for layout to be measured and laid out
-        rootView.getViewTreeObserver()
-                .addOnGlobalLayoutListener(new android.view.ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        // Check if layout is ready (has dimensions)
-                        if (rootView.getWidth() > 0 && rootView.getHeight() > 0) {
-                            // Remove listener to avoid multiple calls
-                            rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new android.view.ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                // Check if layout is ready (has dimensions)
+                if (rootView.getWidth() > 0 && rootView.getHeight() > 0) {
+                    // Remove listener to avoid multiple calls
+                    rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
-                            // Calculate remaining time to meet minimum duration
-                            long elapsedTime = System.currentTimeMillis() - loadingStartTime;
-                            long remainingTime = MIN_LOADING_DURATION - elapsedTime;
+                    // Calculate remaining time to meet minimum duration
+                    long elapsedTime = System.currentTimeMillis() - loadingStartTime;
+                    long remainingTime = MIN_LOADING_DURATION - elapsedTime;
 
-                            // Wait for minimum duration or additional 200ms, whichever is longer
-                            long delayTime = Math.max(remainingTime, 200);
-                            rootView.postDelayed(() -> hideScreenLoading(), delayTime);
-                        }
-                    }
-                });
+                    // Wait for minimum duration or additional 200ms, whichever is longer
+                    long delayTime = Math.max(remainingTime, 200);
+                    rootView.postDelayed(() -> hideScreenLoading(), delayTime);
+                }
+            }
+        });
     }
 
     /**
@@ -486,8 +634,7 @@ public class UserProfileActivity extends BaseActivity {
             public void onError(String error) {
                 android.util.Log.e("UserProfileActivity", "Error loading user profile: " + error);
                 // Fallback to Firebase Auth data if Firestore fails
-                // This handles cases where Firestore rules aren't deployed yet or permission
-                // errors
+                // This handles cases where Firestore rules aren't deployed yet or permission errors
                 if (firebaseUser != null) {
                     android.util.Log.d("UserProfileActivity", "Falling back to Firebase Auth data");
                     populateUserData(null, firebaseUser);
@@ -505,8 +652,9 @@ public class UserProfileActivity extends BaseActivity {
         // Get all text views
         TextView tvUserName = findViewById(R.id.tvUserName);
         TextView tvEmail = findViewById(R.id.tvEmail);
-        // tvPhone, tvLocation, tvMemberSince removed
-
+        TextView tvPhone = findViewById(R.id.tvPhone);
+        TextView tvLocation = findViewById(R.id.tvLocation);
+        TextView tvMemberSince = findViewById(R.id.tvMemberSince);
         TextView tvBookingsCount = findViewById(R.id.tvBookingsCount);
         TextView tvReviewsCount = findViewById(R.id.tvReviewsCount);
         TextView tvFavoritesCount = findViewById(R.id.tvFavoritesCount);
@@ -527,8 +675,8 @@ public class UserProfileActivity extends BaseActivity {
             phone = userProfile.get("phone") != null ? userProfile.get("phone").toString() : null;
             location = userProfile.get("location") != null ? userProfile.get("location").toString() : null;
             photoUrl = userProfile.get("photoUrl") != null ? userProfile.get("photoUrl").toString() : null;
-            createdAt = userProfile.get("createdAt") instanceof Timestamp ? (Timestamp) userProfile.get("createdAt")
-                    : null;
+            createdAt = userProfile.get("createdAt") instanceof Timestamp ?
+                    (Timestamp) userProfile.get("createdAt") : null;
         }
 
         // Store current values for editing
@@ -554,16 +702,40 @@ public class UserProfileActivity extends BaseActivity {
 
         // Set user name
         if (tvUserName != null) {
-            tvUserName.setText(name != null && !name.isEmpty() ? name : getString(R.string.default_user));
+            tvUserName.setText(name != null && !name.isEmpty() ? name : "User");
         }
 
         // Set email
         if (tvEmail != null) {
-            tvEmail.setText(email != null && !email.isEmpty() ? email : getString(R.string.msg_no_email));
+            tvEmail.setText(email != null && !email.isEmpty() ? email : "No email");
         }
 
-        // Logic for tvPhone, tvLocation, tvMemberSince removed as they are not in the
-        // existing XML
+        // Set phone
+        if (tvPhone != null) {
+            tvPhone.setText(phone != null && !phone.isEmpty() ? phone : "No phone number");
+        }
+
+        // Set location
+        if (tvLocation != null) {
+            tvLocation.setText(location != null && !location.isEmpty() ? location : "Not set");
+        }
+
+        // Set member since date
+        if (tvMemberSince != null) {
+            if (createdAt != null) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MMM yyyy", Locale.getDefault());
+                String memberSince = "Member since " + dateFormat.format(createdAt.toDate());
+                tvMemberSince.setText(memberSince);
+            } else if (firebaseUser != null && firebaseUser.getMetadata() != null) {
+                // Use Firebase Auth creation time as fallback
+                long creationTime = firebaseUser.getMetadata().getCreationTimestamp();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MMM yyyy", Locale.getDefault());
+                String memberSince = "Member since " + dateFormat.format(new java.util.Date(creationTime));
+                tvMemberSince.setText(memberSince);
+            } else {
+                tvMemberSince.setText("Member");
+            }
+        }
 
         // Set booking count (placeholder - TODO: query bookings collection)
         if (tvBookingsCount != null) {
@@ -627,19 +799,19 @@ public class UserProfileActivity extends BaseActivity {
     private void openImagePicker() {
         // Check permission for Android 13+ (API 33+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES)
+                    != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this,
-                        new String[] { Manifest.permission.READ_MEDIA_IMAGES },
+                        new String[]{Manifest.permission.READ_MEDIA_IMAGES},
                         REQUEST_PERMISSION_READ_MEDIA);
                 return;
             }
         } else {
             // For Android 12 and below
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this,
-                        new String[] { Manifest.permission.READ_EXTERNAL_STORAGE },
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                         REQUEST_PERMISSION_READ_MEDIA);
                 return;
             }
@@ -648,112 +820,9 @@ public class UserProfileActivity extends BaseActivity {
         // Create intent to pick image
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
-        startActivityForResult(Intent.createChooser(intent, getString(R.string.title_select_profile_pic)),
-                REQUEST_IMAGE_PICK);
+        startActivityForResult(Intent.createChooser(intent, "Select Profile Picture"), REQUEST_IMAGE_PICK);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_PERMISSION_READ_MEDIA) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted, open image picker
-                openImagePicker();
-            } else {
-                android.widget.Toast.makeText(this, getString(R.string.msg_permission_denied_image),
-                        android.widget.Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_IMAGE_PICK && resultCode == RESULT_OK && data != null) {
-            Uri imageUri = data.getData();
-            if (imageUri != null) {
-                uploadProfileImage(imageUri);
-            }
-        }
-    }
-
-    /**
-     * Upload profile image to Firebase Storage and update user profile
-     */
-    private void uploadProfileImage(Uri imageUri) {
-        String userId = AuthHelper.getCurrentUserId(this);
-        if (userId == null) {
-            android.widget.Toast.makeText(this, getString(R.string.msg_user_not_authenticated),
-                    android.widget.Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Show loading indicator
-        androidx.appcompat.app.AlertDialog loadingDialog = new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setMessage(getString(R.string.msg_uploading_profile_pic))
-                .setCancelable(false)
-                .create();
-
-        // Create a progress bar
-        android.widget.ProgressBar progressBar = new android.widget.ProgressBar(this);
-        progressBar.setIndeterminate(true);
-        loadingDialog.setView(progressBar);
-        loadingDialog.show();
-
-        // Upload image to Firebase Storage
-        storageService.uploadProfilePhoto(imageUri, userId, new FirebaseStorageService.ImageUploadCallback() {
-            @Override
-            public void onSuccess(String imageUrl) {
-                loadingDialog.dismiss();
-
-                // Update user profile in Firestore
-                java.util.Map<String, Object> updates = new java.util.HashMap<>();
-                updates.put("photoUrl", imageUrl);
-                updates.put("updatedAt", com.google.firebase.Timestamp.now());
-
-                userService.updateUserProfile(userId, updates, new FirebaseUserService.UserProfileCallback() {
-                    @Override
-                    public void onSuccess(Map<String, Object> userProfile) {
-                        // Update Firebase Auth photo URL
-                        FirebaseUser user = AuthHelper.getCurrentUser();
-                        if (user != null) {
-                            com.google.firebase.auth.UserProfileChangeRequest profileUpdates = new com.google.firebase.auth.UserProfileChangeRequest.Builder()
-                                    .setPhotoUri(Uri.parse(imageUrl))
-                                    .build();
-                            user.updateProfile(profileUpdates);
-                        }
-
-                        // Update local variable
-                        currentUserPhotoUrl = imageUrl;
-
-                        // Show success message
-                        android.widget.Toast.makeText(UserProfileActivity.this,
-                                getString(R.string.msg_profile_pic_updated),
-                                android.widget.Toast.LENGTH_SHORT).show();
-
-                        // Reload user data to refresh UI
-                        loadUserData();
-                    }
-
-                    @Override
-                    public void onError(String error) {
-                        android.util.Log.e("UserProfileActivity", "Error updating profile: " + error);
-                        android.widget.Toast.makeText(UserProfileActivity.this,
-                                getString(R.string.error_update_profile, error),
-                                android.widget.Toast.LENGTH_LONG).show();
-                    }
-                });
-            }
-
-            @Override
-            public void onError(String error) {
-                loadingDialog.dismiss();
-                android.util.Log.e("UserProfileActivity", "Error uploading image: " + error);
-                android.widget.Toast.makeText(UserProfileActivity.this,
-                        getString(R.string.error_upload_image, error),
-                        android.widget.Toast.LENGTH_LONG).show();
-            }
-        });
-    }
 }
+
