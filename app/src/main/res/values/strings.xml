@@ -355,4 +355,299 @@
     <string name="get_protected_service">Get Protected Service</string>
     <string name="empty_heart">Empty Heart</string>
     <string name="homerepairs_connects_you_with_trusted_verified_professionals_for_all_your_home_service_needs_fast_reliable_and_hassle_free">HomeRepairs connects you with trusted, verified professionals for all your home service needs. Fast, reliable, and hassle-free.</string>
+
+    <!-- Profile - Payment Methods -->
+    <string name="title_payment_methods">Payment Methods</string>
+    <string name="card_visa_label">Visa •••• 4242</string>
+    <string name="card_mastercard_label">Mastercard •••• 8888</string>
+    <string name="expires_placeholder">Expires: 12/25</string>
+    <string name="default_label">Default</string>
+    <string name="btn_add_payment_method">Add Payment Method</string>
+    <string name="msg_delete_payment">Are you sure you want to delete %1$s?</string>
+    <string name="msg_deleted">Deleted %1$s</string>
+    
+    <!-- Profile - Addresses -->
+    <string name="title_addresses">Addresses</string>
+    <string name="address_home_label">Home</string>
+    <string name="address_work_label">Work</string>
+    <string name="address_home_value">123 Main St, Phnom Penh</string>
+    <string name="address_work_value">456 Office Rd, Phnom Penh</string>
+    <string name="btn_add_address">Add Address</string>
+    <string name="msg_delete_address">Are you sure you want to delete %1$s?</string>
+    
+    <!-- Profile - Notifications -->
+    <string name="title_notifications">Notifications</string>
+    <string name="unread_notifications_count">You have 3 unread notifications</string>
+    <string name="push_notifications">Push Notifications</string>
+    <string name="push_desc">Receive notifications on your device</string>
+    <string name="email_notifications">Email Notifications</string>
+    <string name="email_desc">Receive updates via email</string>
+    <string name="sms_notifications">SMS Notifications</string>
+    <string name="sms_desc">Receive text messages</string>
+    <string name="order_updates">Order Updates</string>
+    <string name="order_desc">Track your orders</string>
+    <string name="promotions">Promotions</string>
+    <string name="promo_desc">Special offers and deals</string>
+    
+    <!-- Profile - App Settings -->
+    <string name="title_app_settings">App Settings</string>
+    <string name="language">Language</string>
+    <string name="theme">Theme</string>
+    <string name="currency">Currency</string>
+    <string name="select_language">Select Language</string>
+    <string name="select_theme">Select Theme</string>
+    <string name="select_currency">Select Currency</string>
+    
+    <!-- Profile - Privacy & Security -->
+    <string name="title_privacy_security">Privacy &amp; Security</string>
+    <string name="change_password">Change Password</string>
+    <string name="change_password_desc">Update your password</string>
+    <string name="two_factor_auth">Two-Factor Authentication</string>
+    <string name="two_factor_desc">Add an extra layer of security</string>
+    <string name="privacy_settings">Privacy Settings</string>
+    <string name="privacy_settings_desc">Manage your data</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="delete_account_confirmation">Are you sure you want to delete your account? This action cannot be undone.</string>
+    <string name="delete_account_initiated">Account deletion initiated</string>
+    <string name="title_add_payment">Add Payment Method</string>
+    <string name="card_number">Card Number</string>
+    <string name="card_holder">Card Holder Name</string>
+    <string name="expiry_date">Expiry Date (MM/YY)</string>
+    <string name="cvv">CVV</string>
+    <string name="save_payment">Save Payment Method</string>
+    
+    <string name="title_add_address">Add Address</string>
+    <string name="address_name">Address Name (e.g., Home)</string>
+    <string name="street_address">Street Address</string>
+    <string name="city">City</string>
+    <string name="zip_code">Zip Code</string>
+    <string name="save_address">Save Address</string>
+    
+    <string name="msg_payment_saved">Payment method saved</string>
+    <string name="msg_address_saved">Address saved</string>
+
+    <!-- Main Activity -->
+    <string name="title_home_repairs">Home Repairs</string>
+    <string name="greeting_format">Hello, %1$s</string>
+    <string name="search_hint">Search services or professionals...</string>
+    <string name="btn_emergency">Emergency</string>
+    <string name="btn_bookings">Bookings</string>
+    <string name="btn_favorites">Favorites</string>
+    <string name="section_services">Services</string>
+    <string name="section_featured_pro">Featured Pros</string>
+    <string name="subtitle_highly_recommended">Highly Recommended</string>
+    <string name="section_recent_activity">Recent Activity</string>
+    <string name="view_all_caps">VIEW ALL</string>
+    <string name="view_less">View Less</string>
+    <string name="view_less_arrow">View Less &gt;</string>
+    <string name="no_internet">No Internet Connection</string>
+    
+    <!-- Bookings Activity -->
+    <string name="title_my_bookings">My Bookings</string>
+    <string name="bookings_count_format">%1$d total bookings</string>
+    <string name="filter_all">All (%1$d)</string>
+    <string name="filter_active">Active (%1$d)</string>
+    <string name="filter_scheduled">Scheduled (%1$d)</string>
+    <string name="filter_completed">Completed</string>
+    <string name="no_bookings">No bookings yet</string>
+
+    <!-- New Booking Activity -->
+    <string name="title_new_booking">New Booking</string>
+    <string name="step_describe">Describe your issue</string>
+    <string name="label_service">Service</string>
+    <string name="service_select">Select Service</string>
+    <string name="service_category_placeholder">Tap to choose</string>
+    <string name="label_issue_description">Issue Description</string>
+    <string name="hint_issue_description">Describe the issue in detail...</string>
+    <string name="label_photos">Photos</string>
+    <string name="hint_add_photos">Add photos to help the professional understand the issue better</string>
+    <string name="btn_take_photo">Take Photo</string>
+    <string name="btn_gallery">Gallery</string>
+    <string name="label_urgency">Urgency</string>
+    <string name="btn_same_day">Same Day</string>
+    <string name="btn_schedule">Schedule</string>
+    <string name="label_property_location">Property Location</string>
+    <string name="btn_next">Next</string>
+    <string name="msg_describe_issue">Please describe the issue</string>
+    <string name="msg_select_urgency">Please select urgency</string>
+    <string name="msg_login_required_booking">Please login to create a booking</string>
+    <string name="msg_booking_created">Booking created successfully!</string>
+    
+    <!-- Provider Profile Activity -->
+    <string name="label_response">Response</string>
+    <string name="label_jobs_done">Jobs Done</string>
+    <string name="label_repeat">Repeat Hires</string>
+    <string name="label_starting_from">Starting from</string>
+    <string name="btn_get_quote">Get Quote</string>
+    <string name="section_about">About</string>
+    <string name="label_location">Location</string>
+    <string name="section_details">Details</string>
+    <string name="label_typical_job_costs">Typical Job Costs</string>
+    <string name="btn_book_now">Book Now</string>
+    <string name="reviews_count_format">(%1$d reviews)</string>
+    
+    <!-- Profile Activity -->
+    <string name="title_profile">Profile</string>
+    <string name="btn_edit">Edit</string>
+    <string name="label_bookings">Bookings</string>
+    <string name="label_reviews">Reviews</string>
+    <string name="label_favorites">Favorites</string>
+    <string name="title_account">Account</string>
+    <string name="title_preferences">Preferences</string>
+    <string name="btn_logout">Logout</string>
+    <string name="title_logout">Logout</string>
+    <string name="msg_logout_confirm">Are you sure you want to logout?</string>
+    <string name="msg_logged_out">Logged out successfully</string>
+    <string name="msg_user_not_authenticated">User not authenticated</string>
+    <string name="msg_no_email">No email</string>
+    <string name="msg_enter_full_name">Please enter your full name</string>
+    <string name="msg_profile_updated">Profile updated successfully</string>
+    <string name="error_update_profile">Failed to update profile: %1$s</string>
+    <string name="msg_uploading_profile_pic">Uploading profile picture...</string>
+    <string name="msg_profile_pic_updated">Profile picture updated successfully</string>
+    <string name="error_upload_image">Failed to upload image: %1$s</string>
+    <string name="msg_permission_denied_image">Permission denied. Cannot select image.</string>
+    <string name="title_select_profile_pic">Select Profile Picture</string>
+    
+    <!-- Edit Profile Dialog -->
+    <string name="title_personal_info">Personal Information</string>
+    <string name="label_full_name">Full Name</string>
+    <string name="label_email">Email</string>
+    <string name="label_phone">Phone</string>
+    <string name="label_location_profile">Location</string>
+    <string name="btn_save_changes">Save Changes</string>
+
+    <!-- Java Code Strings -->
+    <string name="default_location">Phnom Penh</string>
+    <string name="default_weather">22°C Sunny</string>
+    <string name="greeting_morning">Good Morning</string>
+    <string name="greeting_afternoon">Good Afternoon</string>
+    <string name="greeting_evening">Good Evening</string>
+    <string name="default_user">User</string>
+    <string name="view_all_arrow">View All &gt;</string>
+    <string name="error_weather_fetch">Unable to fetch weather data</string>
+    <string name="opening_category">Opening %1$s</string>
+    <string name="error_provider_not_found">Provider not found</string>
+    
+    <!-- BookingsActivity -->
+    <string name="filter_all_count">All (%1$d)</string>
+    <string name="filter_active_count">Active (%1$d)</string>
+    <string name="filter_scheduled_count">Scheduled (%1$d)</string>
+    <string name="filter_completed_count">Completed (%1$d)</string>
+    <string name="booking_count_format">%1$d Total Bookings</string>
+    <string name="filter_coming_soon">Filter option coming soon</string>
+    <string name="phone_not_available">Phone not available</string>
+    <string name="dialog_cancel_booking_title">Cancel Booking</string>
+    <string name="dialog_cancel_booking_message">Are you sure you want to cancel this booking?</string>
+    <string name="dialog_yes_cancel">Yes, Cancel</string>
+    <string name="dialog_no">No</string>
+    <string name="msg_canceling_booking">Canceling booking...</string>
+    <string name="msg_booking_canceled">Booking canceled successfully</string>
+    <string name="error_cancel_booking">Failed to cancel booking: %1$s</string>
+    <string name="error_load_bookings">Failed to load bookings: %1$s</string>
+    
+    <!-- NewBookingActivity -->
+    <string name="urgency_emergency">Emergency</string>
+    <string name="urgency_same_day">Same Day</string>
+    <string name="urgency_schedule_later">Schedule Later</string>
+    <string name="option_take_photo">Take Photo</string>
+    <string name="option_choose_gallery">Choose from Gallery</string>
+    <string name="option_remove_photo">Remove Photo</string>
+    <string name="permission_denied">Permission denied</string>
+    <string name="camera_not_available">Camera not available</string>
+    <string name="title_select_picture">Select Picture</string>
+    <string name="error_loading_image">Error loading image</string>
+    <string name="error_describe_issue">Please describe the issue</string>
+    <string name="error_select_urgency">Please select urgency</string>
+    <string name="default_service_category">Plumbing</string>
+    <string name="title_service_request">Service Request</string>
+    <string name="default_home">Home</string>
+    <string name="login_required_booking">Please log in to make a booking</string>
+    <string name="default_time_slot">Tomorrow, 10:00 AM - 11:00 AM</string>
+    <string name="msg_creating_booking">Creating booking...</string>
+    <string name="msg_uploading_images">Uploading images...</string>
+    <string name="msg_booking_created_success">Booking created successfully!</string>
+    <string name="error_create_booking">Failed to create booking</string>
+    <string name="error_firebase_config">Firebase configuration issue. Please check your internet connection and try again.</string>
+    <string name="select_service">Select Service</string>
+    <string name="tap_to_choose">Tap to choose</string>
+    <string name="msg_uploading_progress">Uploading images... %1$d/%2$d</string>
+    <string name="msg_booking_created_image_fail">Booking created but failed to save image links</string>
+    <string name="msg_booking_created_some_images_fail">Booking created but some images failed to upload</string>
+    
+    <!-- ProviderProfileActivity -->
+    <string name="msg_quote_sent">Quote request sent!</string>
+    <string name="share_provider_text">Check out this provider: %1$s</string>
+    <string name="error_provider_data_not_found">Provider data not found</string>
+    <string name="error_provider_data_incomplete">Provider data incomplete</string>
+    <string name="error_loading_provider">Error loading provider: %1$s</string>
+    <string name="error_opening_booking">Error opening booking: %1$s</string>
+    <string name="cost_format">• %1$s: %2$s</string>
+    
+    <!-- BookingCardAdapter -->
+    <string name="default_service_category_suffix"> Service</string>
+    <string name="default_provider_name">Provider</string>
+    <string name="status_pending">Pending</string>
+    <string name="time_just_now">Just now</string>
+    <string name="time_recently">Recently</string>
+    <string name="time_day_ago">%1$d days ago</string>
+    <string name="time_days_ago">%1$d days ago</string>
+    <string name="time_hour_ago">%1$d hours ago</string>
+    <string name="time_hours_ago">%1$d hours ago</string>
+    <string name="time_minute_ago">%1$d minutes ago</string>
+    <string name="time_minutes_ago">%1$d minutes ago</string>
+    <string name="btn_book_again">Book Again</string>
+    <string name="btn_review">Review</string>
+    <string name="btn_track_job">Track</string>
+    <string name="btn_call_now">Call Now</string>
+    <string name="btn_view_details">View Details</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="default_duration">2 hours</string>
+
+    <!-- Messages Activity -->
+    <string name="filter_all_label">All</string>
+    <string name="filter_unread">Unread</string>
+    <string name="filter_pinned">Pinned</string>
+    <string name="filter_starred">Starred</string>
+    <string name="filter_star">Star</string>
+    <string name="filter_unread_count">Unread (%1$d)</string>
+    <string name="filter_pinned_count">Pinned (%1$d)</string>
+    <string name="msg_unread_count">%1$d Unread Messages</string>
+    <string name="msg_no_unread">No Unread Messages</string>
+    <string name="msg_selected_count">%1$d Selected</string>
+    <string name="btn_select">Select</string>
+    <string name="btn_cancel_selection">Cancel</string>
+    <string name="dialog_delete_title">Delete Conversation</string>
+    <string name="dialog_delete_message">Are you sure you want to delete %1$d conversations?</string>
+    <string name="dialog_delete_confirm">Delete</string>
+    <string name="msg_conversations_deleted">Conversations deleted</string>
+    <string name="msg_archive_soon">Archive feature coming soon</string>
+    <string name="msg_firebase_permission_error">Firebase permission not set. Check security rules.</string>
+    <string name="btn_creating">Creating...</string>
+    <string name="msg_creating_test_data">Creating test conversations...</string>
+    <string name="msg_test_data_created">Test conversations created!</string>
+    <string name="btn_test">Test</string>
+    <string name="error_prefix">Error: %1$s</string>
+    <string name="msg_start_conversation">Start conversation...</string>
+
+    <!-- Chat Activity -->
+    <string name="status_online">Online</string>
+    <string name="msg_send_failed">Failed to send message: %1$s</string>
+    <string name="msg_send_failed_generic">Failed to send message</string>
+    <string name="msg_permission_denied">Permission denied. Check Firebase security rules.</string>
+    <string name="msg_creating_index">Creating data index... Messages will appear soon.</string>
+    <string name="time_min_ago">%1$d min ago</string>
+    <string name="time_hour_ago_short">%1$d hr ago</string>
+    <string name="time_day_ago_short">%1$d d ago</string>
+
+    <!-- Messages XML Layout -->
+    <string name="title_messages">Messages</string>
+    <string name="hint_search_messages">Search messages...</string>
+    <string name="btn_mark_read">Mark Read</string>
+    <string name="title_no_messages">No Messages Found</string>
+    <string name="subtitle_no_messages">Start a conversation with service providers</string>
+    <string name="btn_browse_services">Browse Services</string>
+    <string name="msg_loading">Loading...</string>
+    <string name="msg_no_internet">No Internet Connection</string>
+    <string name="use_current_location">Use Current Location</string>
 </resources>

@@ -416,32 +416,145 @@
                             android:textColor="@color/text_primary"
                             android:layout_marginBottom="12dp" />
 
+                        <!-- Wallet -->
                         <LinearLayout
-                            android:id="@+id/llPaymentMethod"
+                            android:id="@+id/llPaymentWallet"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:gravity="center_vertical"
                             android:padding="12dp"
-                            android:background="@drawable/search_bar_background"
+                            android:background="@drawable/payment_method_card_selected"
+                            android:layout_marginBottom="8dp"
                             android:clickable="true"
                             android:focusable="true">
 
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_wallet"
+                                android:layout_marginEnd="12dp"
+                                app:tint="@color/primary_teal_professional" />
+
                             <TextView
-                                android:id="@+id/tvPaymentMethod"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="@string/visa_42"
+                                android:text="E-Wallet"
                                 android:textSize="16sp"
                                 android:textColor="@color/text_primary" />
 
-                            <CheckBox
-                                android:id="@+id/cbPaymentMethod"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:checked="true" />
+                            <View
+                                android:id="@+id/radioWallet"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:background="@drawable/radio_button_selected" />
                         </LinearLayout>
+
+                        <!-- Card -->
+                        <LinearLayout
+                            android:id="@+id/llPaymentCard"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:padding="12dp"
+                            android:background="@drawable/payment_method_card_background"
+                            android:layout_marginBottom="8dp"
+                            android:clickable="true"
+                            android:focusable="true">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_credit_card"
+                                android:layout_marginEnd="12dp"
+                                app:tint="@color/text_secondary" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Credit/Debit Card"
+                                android:textSize="16sp"
+                                android:textColor="@color/text_primary" />
+
+                            <View
+                                android:id="@+id/radioCard"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:background="@drawable/radio_button_unselected" />
+                        </LinearLayout>
+
+                        <!-- QR Code -->
+                        <LinearLayout
+                            android:id="@+id/llPaymentQR"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:padding="12dp"
+                            android:background="@drawable/payment_method_card_background"
+                            android:layout_marginBottom="8dp"
+                            android:clickable="true"
+                            android:focusable="true">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_qr_code"
+                                android:layout_marginEnd="12dp"
+                                app:tint="@color/text_secondary" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="KHQR"
+                                android:textSize="16sp"
+                                android:textColor="@color/text_primary" />
+
+                            <View
+                                android:id="@+id/radioQR"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:background="@drawable/radio_button_unselected" />
+                        </LinearLayout>
+
+                        <!-- Cash -->
+                        <LinearLayout
+                            android:id="@+id/llPaymentCash"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:padding="12dp"
+                            android:background="@drawable/payment_method_card_background"
+                            android:clickable="true"
+                            android:focusable="true">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_cash"
+                                android:layout_marginEnd="12dp"
+                                app:tint="@color/text_secondary" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Cash on Delivery"
+                                android:textSize="16sp"
+                                android:textColor="@color/text_primary" />
+
+                            <View
+                                android:id="@+id/radioCash"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:background="@drawable/radio_button_unselected" />
+                        </LinearLayout>
+
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 

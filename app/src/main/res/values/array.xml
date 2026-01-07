@@ -2,12 +2,5 @@
 <resources>
     <!-- Replace the <item> contents with the real provider certificate base64 strings
          Example uses Google Play font provider certs when applicable. -->
-    <array name="com_google_android_gms_fonts_certs">
-        <item>
-            MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnm...FULL_CERT_BASE64_1...
-        </item>
-        <item>
-            MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAk...FULL_CERT_BASE64_2...
-        </item>
-    </array>
+
 </resources>

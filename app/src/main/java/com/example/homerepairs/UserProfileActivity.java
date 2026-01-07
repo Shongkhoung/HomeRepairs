@@ -84,14 +84,13 @@ public class UserProfileActivity extends AppCompatActivity {
         tvAvatarLetter = findViewById(R.id.tvAvatarLetter);
         cardAvatar = findViewById(R.id.cardAvatar);
 
-
         View btnPrivacy = findViewById(R.id.btnPrivacy);
 
         btnPrivacy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Navigate to PrivacyActivity
-                Intent intent = new Intent(UserProfileActivity.this, PrivacyAndSecurityActivity.class);
+                Intent intent = new Intent(UserProfileActivity.this, PrivacySecurityActivity.class);
                 startActivity(intent);
                 ;
             }
@@ -121,7 +120,6 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         });
 
-
         // Check if user is authenticated
         String userId = AuthHelper.getCurrentUserId(this);
         if (userId == null) {
@@ -140,8 +138,7 @@ public class UserProfileActivity extends AppCompatActivity {
             // Set dark status bar icons (dark icons on light background)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 getWindow().getDecorView().setSystemUiVisibility(
-                        getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                );
+                        getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
             }
         }
 
@@ -156,6 +153,7 @@ public class UserProfileActivity extends AppCompatActivity {
         // Wait for layout to be ready before hiding loading overlay
         waitForLayoutReady();
     }
+
     // Upload the selected profile photo to Firebase Storage
     private void uploadProfilePhotoToFirebase(Uri imageUri) {
         // Display loading message or progress
@@ -182,7 +180,8 @@ public class UserProfileActivity extends AppCompatActivity {
                     })
                     .addOnFailureListener(e -> {
                         // Handle failure
-                        Toast.makeText(UserProfileActivity.this, "Failed to upload profile photo: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UserProfileActivity.this, "Failed to upload profile photo: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show();
                     });
         } else {
             Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show();
@@ -200,11 +199,14 @@ public class UserProfileActivity extends AppCompatActivity {
             userRef.update("photoUrl", imageUrl)
                     .addOnSuccessListener(aVoid -> {
                         // Image URL has been updated successfully
-                        Toast.makeText(UserProfileActivity.this, "Profile photo updated successfully!", Toast.LENGTH_SHORT).show();
-                        loadUserData();  // Reload the profile data to reflect the new image
+                        Toast.makeText(UserProfileActivity.this, "Profile photo updated successfully!",
+                                Toast.LENGTH_SHORT).show();
+                        loadUserData(); // Reload the profile data to reflect the new image
                     })
                     .addOnFailureListener(e -> {
-                        Toast.makeText(UserProfileActivity.this, "Failed to update profile photo in Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UserProfileActivity.this,
+                                "Failed to update profile photo in Firestore: " + e.getMessage(), Toast.LENGTH_SHORT)
+                                .show();
                     });
         }
     }
@@ -214,21 +216,22 @@ public class UserProfileActivity extends AppCompatActivity {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (firebaseUser != null) {
             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                    .setPhotoUri(Uri.parse(imageUrl))  // Set the new photo URL
+                    .setPhotoUri(Uri.parse(imageUrl)) // Set the new photo URL
                     .build();
 
             firebaseUser.updateProfile(profileUpdates)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             // Profile photo updated successfully in Firebase Auth
-                            Toast.makeText(UserProfileActivity.this, "Profile photo updated in Firebase Auth!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(UserProfileActivity.this, "Profile photo updated in Firebase Auth!",
+                                    Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(UserProfileActivity.this, "Failed to update profile photo in Firebase Auth", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(UserProfileActivity.this, "Failed to update profile photo in Firebase Auth",
+                                    Toast.LENGTH_SHORT).show();
                         }
                     });
         }
     }
-
 
     // Handle permission request result (for camera)
 
@@ -293,8 +296,6 @@ public class UserProfileActivity extends AppCompatActivity {
                     android.widget.Toast.LENGTH_SHORT).show();
         });
 
-
-
         findViewById(R.id.btnInviteFriends).setOnClickListener(v -> {
             android.widget.Toast.makeText(this, "Invite Friends - Coming soon",
                     android.widget.Toast.LENGTH_SHORT).show();
@@ -308,24 +309,17 @@ public class UserProfileActivity extends AppCompatActivity {
         dialog.setContentView(R.layout.dialog_edit_profile);
         dialog.getWindow().setLayout(
                 android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-                android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-        );
+                android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
         // Get dialog views
-        com.google.android.material.textfield.TextInputEditText etFullName =
-                dialog.findViewById(R.id.etFullName);
-        com.google.android.material.textfield.TextInputEditText etEmail =
-                dialog.findViewById(R.id.etEmail);
-        com.google.android.material.textfield.TextInputEditText etPhone =
-                dialog.findViewById(R.id.etPhone);
-        com.google.android.material.textfield.TextInputEditText etLocation =
-                dialog.findViewById(R.id.etLocation);
+        com.google.android.material.textfield.TextInputEditText etFullName = dialog.findViewById(R.id.etFullName);
+        com.google.android.material.textfield.TextInputEditText etEmail = dialog.findViewById(R.id.etEmail);
+        com.google.android.material.textfield.TextInputEditText etPhone = dialog.findViewById(R.id.etPhone);
+        com.google.android.material.textfield.TextInputEditText etLocation = dialog.findViewById(R.id.etLocation);
         ImageButton btnClose = dialog.findViewById(R.id.btnClose);
-        com.google.android.material.button.MaterialButton btnCancel =
-                dialog.findViewById(R.id.btnCancel);
-        com.google.android.material.button.MaterialButton btnSave =
-                dialog.findViewById(R.id.btnSave);
+        com.google.android.material.button.MaterialButton btnCancel = dialog.findViewById(R.id.btnCancel);
+        com.google.android.material.button.MaterialButton btnSave = dialog.findViewById(R.id.btnSave);
 
         // Pre-fill with current data
         if (etFullName != null) {
@@ -404,10 +398,9 @@ public class UserProfileActivity extends AppCompatActivity {
                 // Update Firebase Auth display name
                 FirebaseUser user = AuthHelper.getCurrentUser();
                 if (user != null) {
-                    com.google.firebase.auth.UserProfileChangeRequest profileUpdates =
-                            new com.google.firebase.auth.UserProfileChangeRequest.Builder()
-                                    .setDisplayName(name)
-                                    .build();
+                    com.google.firebase.auth.UserProfileChangeRequest profileUpdates = new com.google.firebase.auth.UserProfileChangeRequest.Builder()
+                            .setDisplayName(name)
+                            .build();
                     user.updateProfile(profileUpdates);
                 }
 
@@ -501,6 +494,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
     /**
      * Show or hide screen transition loading overlay
+     * 
      * @param show true to show, false to hide
      */
     private void showScreenLoading(boolean show) {
@@ -568,29 +562,31 @@ public class UserProfileActivity extends AppCompatActivity {
         View rootView = findViewById(android.R.id.content);
         if (rootView == null) {
             // Fallback: hide after minimum duration
-            new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> hideScreenLoading(), MIN_LOADING_DURATION);
+            new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> hideScreenLoading(),
+                    MIN_LOADING_DURATION);
             return;
         }
 
         // Wait for layout to be measured and laid out
-        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new android.view.ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                // Check if layout is ready (has dimensions)
-                if (rootView.getWidth() > 0 && rootView.getHeight() > 0) {
-                    // Remove listener to avoid multiple calls
-                    rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        rootView.getViewTreeObserver()
+                .addOnGlobalLayoutListener(new android.view.ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        // Check if layout is ready (has dimensions)
+                        if (rootView.getWidth() > 0 && rootView.getHeight() > 0) {
+                            // Remove listener to avoid multiple calls
+                            rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
-                    // Calculate remaining time to meet minimum duration
-                    long elapsedTime = System.currentTimeMillis() - loadingStartTime;
-                    long remainingTime = MIN_LOADING_DURATION - elapsedTime;
+                            // Calculate remaining time to meet minimum duration
+                            long elapsedTime = System.currentTimeMillis() - loadingStartTime;
+                            long remainingTime = MIN_LOADING_DURATION - elapsedTime;
 
-                    // Wait for minimum duration or additional 200ms, whichever is longer
-                    long delayTime = Math.max(remainingTime, 200);
-                    rootView.postDelayed(() -> hideScreenLoading(), delayTime);
-                }
-            }
-        });
+                            // Wait for minimum duration or additional 200ms, whichever is longer
+                            long delayTime = Math.max(remainingTime, 200);
+                            rootView.postDelayed(() -> hideScreenLoading(), delayTime);
+                        }
+                    }
+                });
     }
 
     /**
@@ -634,7 +630,8 @@ public class UserProfileActivity extends AppCompatActivity {
             public void onError(String error) {
                 android.util.Log.e("UserProfileActivity", "Error loading user profile: " + error);
                 // Fallback to Firebase Auth data if Firestore fails
-                // This handles cases where Firestore rules aren't deployed yet or permission errors
+                // This handles cases where Firestore rules aren't deployed yet or permission
+                // errors
                 if (firebaseUser != null) {
                     android.util.Log.d("UserProfileActivity", "Falling back to Firebase Auth data");
                     populateUserData(null, firebaseUser);
@@ -675,8 +672,8 @@ public class UserProfileActivity extends AppCompatActivity {
             phone = userProfile.get("phone") != null ? userProfile.get("phone").toString() : null;
             location = userProfile.get("location") != null ? userProfile.get("location").toString() : null;
             photoUrl = userProfile.get("photoUrl") != null ? userProfile.get("photoUrl").toString() : null;
-            createdAt = userProfile.get("createdAt") instanceof Timestamp ?
-                    (Timestamp) userProfile.get("createdAt") : null;
+            createdAt = userProfile.get("createdAt") instanceof Timestamp ? (Timestamp) userProfile.get("createdAt")
+                    : null;
         }
 
         // Store current values for editing
@@ -799,19 +796,19 @@ public class UserProfileActivity extends AppCompatActivity {
     private void openImagePicker() {
         // Check permission for Android 13+ (API 33+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES)
-                    != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.READ_MEDIA_IMAGES},
+                        new String[] { Manifest.permission.READ_MEDIA_IMAGES },
                         REQUEST_PERMISSION_READ_MEDIA);
                 return;
             }
         } else {
             // For Android 12 and below
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        new String[] { Manifest.permission.READ_EXTERNAL_STORAGE },
                         REQUEST_PERMISSION_READ_MEDIA);
                 return;
             }
@@ -823,6 +820,4 @@ public class UserProfileActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent, "Select Profile Picture"), REQUEST_IMAGE_PICK);
     }
 
-
 }
-

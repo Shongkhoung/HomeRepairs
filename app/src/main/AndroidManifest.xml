@@ -83,7 +83,7 @@
         <activity android:name=".ChatActivity" android:exported="false"/>
         <activity android:name=".FavoritesActivity" android:exported="false"/>
         <activity android:name=".UserProfileActivity" android:exported="false"/>
-        <activity android:name=".PrivacyAndSecurityActivity" android:exported="false"/>
+        <activity android:name=".PrivacySecurityActivity" android:exported="false"/>
         <activity android:name=".TermsConditionsActivity" android:exported="false"/>
         <activity android:name=".SavedLocationActivity" android:exported="false"/>
         <activity android:name=".AddPropertyActivity" android:exported="false"/>

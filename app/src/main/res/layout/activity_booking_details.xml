@@ -115,6 +115,21 @@
                     android:padding="12dp"
                     android:textSize="14sp"
                     android:textColorHint="@color/text_hint"
+                    android:layout_marginBottom="8dp" />
+
+                <Button
+                    android:id="@+id/btnUseCurrentLocation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/use_current_location"
+                    android:textColor="@color/primary_teal_professional"
+                    android:backgroundTint="@color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:strokeColor="@color/primary_teal_professional"
+                    app:strokeWidth="1dp"
+                    app:cornerRadius="8dp"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
                     android:layout_marginBottom="24dp" />
 
                 <!-- Access instructions -->
@@ -187,41 +202,95 @@
                     android:textColor="@color/text_primary"
                     android:layout_marginBottom="8dp" />
 
-                <RadioGroup
-                    android:id="@+id/rgContactPreference"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:layout_marginBottom="24dp">
 
-                    <RadioButton
-                        android:id="@+id/rbCallWhenArriving"
+                    <!-- Call -->
+                    <LinearLayout
+                        android:id="@+id/llCallWhenArriving"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/call_when_arriving"
-                        android:textSize="16sp"
-                        android:textColor="@color/text_primary"
-                        android:paddingVertical="8dp"
-                        android:checked="true" />
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="12dp"
+                        android:background="@drawable/payment_method_card_background"
+                        android:layout_marginBottom="8dp"
+                        android:clickable="true"
+                        android:focusable="true">
 
-                    <RadioButton
-                        android:id="@+id/rbRingDoorbell"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/ring_doorbell"
-                        android:textSize="16sp"
-                        android:textColor="@color/text_primary"
-                        android:paddingVertical="8dp" />
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/call_when_arriving"
+                            android:textSize="16sp"
+                            android:textColor="@color/text_primary" />
 
-                    <RadioButton
-                        android:id="@+id/rbTextMessage"
+                        <View
+                            android:id="@+id/radioCall"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:background="@drawable/radio_button_unselected" />
+                    </LinearLayout>
+
+                    <!-- Doorbell -->
+                    <LinearLayout
+                        android:id="@+id/llRingDoorbell"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/text_message"
-                        android:textSize="16sp"
-                        android:textColor="@color/text_primary"
-                        android:paddingVertical="8dp" />
-                </RadioGroup>
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="12dp"
+                        android:background="@drawable/payment_method_card_selected"
+                        android:layout_marginBottom="8dp"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/ring_doorbell"
+                            android:textSize="16sp"
+                            android:textColor="@color/text_primary" />
+
+                        <View
+                            android:id="@+id/radioDoorbell"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:background="@drawable/radio_button_selected" />
+                    </LinearLayout>
+
+                    <!-- Text -->
+                    <LinearLayout
+                        android:id="@+id/llTextMessage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="12dp"
+                        android:background="@drawable/payment_method_card_background"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/text_message"
+                            android:textSize="16sp"
+                            android:textColor="@color/text_primary" />
+
+                        <View
+                            android:id="@+id/radioText"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:background="@drawable/radio_button_unselected" />
+                    </LinearLayout>
+                </LinearLayout>
 
             </LinearLayout>
         </LinearLayout>
