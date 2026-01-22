@@ -8,7 +8,7 @@
     android:layout_marginEnd="8dp"
     android:layout_marginTop="4dp"
     android:layout_marginBottom="12dp"
-    app:cardCornerRadius="20dp"
+    app:cardCornerRadius="16dp"
     app:cardElevation="4dp"
     app:cardBackgroundColor="@color/white"
     android:foreground="?attr/selectableItemBackground"
@@ -35,17 +35,19 @@
         <!-- Profile Image with Verification Badge -->
         <FrameLayout
             android:id="@+id/flProfileContainer"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
             android:layout_marginTop="2dp"
             android:layout_marginBottom="10dp">
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/ivProviderPhoto"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
                 android:contentDescription="Provider Photo"
-                android:src="@drawable/profile" />
+                android:src="@drawable/profile"
+                app:civ_border_width="2dp"
+                app:civ_border_color="#E0E0E0" />
 
             <!-- Verification Badge -->
             <ImageView
@@ -76,7 +78,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Pulu Martinez"
-                android:textSize="15sp"
+                android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary"
                 android:maxLines="1"
@@ -118,7 +120,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="5 (142)"
-                android:textSize="15sp"
+                android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary" />
 

@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -217,35 +218,27 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
     }
 
     class ConversationViewHolder extends RecyclerView.ViewHolder {
-        private MaterialCardView cardConversation;
+        private LinearLayout layoutContent;
         private MaterialCheckBox checkboxSelect;
         private ImageView ivProfileImage;
-        private ImageView ivPinnedBadge;
-        private ImageView ivStarredBadge;
-        private View viewOnlineStatus;
+        private TextView tvInitials;
+
         private TextView tvProviderName;
-        private ImageView ivStarIcon;
         private TextView tvTime;
-        private ImageView ivReadCheckmark;
         private TextView tvLastMessage;
-        private View viewUnreadIndicator;
         private TextView tvUnreadBadge;
         private ImageButton btnOptions;
 
         ConversationViewHolder(@NonNull View itemView) {
             super(itemView);
-            cardConversation = itemView.findViewById(R.id.cardConversation);
+            layoutContent = itemView.findViewById(R.id.layoutContent);
             checkboxSelect = itemView.findViewById(R.id.checkboxSelect);
             ivProfileImage = itemView.findViewById(R.id.ivProfileImage);
-            ivPinnedBadge = itemView.findViewById(R.id.ivPinnedBadge);
-            ivStarredBadge = itemView.findViewById(R.id.ivStarredBadge);
-            viewOnlineStatus = itemView.findViewById(R.id.viewOnlineStatus);
+            tvInitials = itemView.findViewById(R.id.tvInitials);
+
             tvProviderName = itemView.findViewById(R.id.tvProviderName);
-            ivStarIcon = itemView.findViewById(R.id.ivStarIcon);
             tvTime = itemView.findViewById(R.id.tvTime);
-            ivReadCheckmark = itemView.findViewById(R.id.ivReadCheckmark);
             tvLastMessage = itemView.findViewById(R.id.tvLastMessage);
-            viewUnreadIndicator = itemView.findViewById(R.id.viewUnreadIndicator);
             tvUnreadBadge = itemView.findViewById(R.id.tvUnreadBadge);
             btnOptions = itemView.findViewById(R.id.btnOptions);
         }
@@ -253,6 +246,18 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         void bind(Conversation conversation) {
             if (conversation == null) {
                 return;
+            }
+
+            // Unread state - background and bold text
+            boolean isUnread = conversation.getUnreadCount() > 0;
+            if (isUnread) {
+                layoutContent.setBackgroundResource(R.drawable.bg_unread_message);
+                tvLastMessage.setTextColor(itemView.getContext().getResources().getColor(R.color.gray_900));
+                tvLastMessage.setTypeface(null, android.graphics.Typeface.BOLD);
+            } else {
+                layoutContent.setBackgroundResource(android.R.color.white);
+                tvLastMessage.setTextColor(itemView.getContext().getResources().getColor(R.color.gray_600));
+                tvLastMessage.setTypeface(null, android.graphics.Typeface.NORMAL);
             }
 
             // Selection mode
@@ -276,21 +281,11 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
 
                 // Highlight selected items
                 if (selectedConversationIds.contains(conversation.getId())) {
-                    cardConversation.setCardBackgroundColor(
-                            itemView.getContext().getResources().getColor(R.color.ripple_light));
-                    cardConversation.setStrokeWidth(2);
-                    cardConversation.setStrokeColor(
-                            itemView.getContext().getResources().getColor(R.color.bright_periwinkle_blue));
-                } else {
-                    cardConversation
-                            .setCardBackgroundColor(itemView.getContext().getResources().getColor(R.color.white));
-                    cardConversation.setStrokeWidth(0);
+                    layoutContent.setBackgroundResource(R.color.ripple_light);
                 }
             } else {
                 checkboxSelect.setVisibility(View.GONE);
                 btnOptions.setVisibility(View.VISIBLE);
-                cardConversation.setCardBackgroundColor(itemView.getContext().getResources().getColor(R.color.white));
-                cardConversation.setStrokeWidth(0);
             }
 
             tvProviderName.setText(conversation.getProviderName());
@@ -303,15 +298,8 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                 tvLastMessage.setText(itemView.getContext().getString(R.string.msg_start_conversation));
             }
 
-            // Read checkmark
-            if (conversation.isRead() && conversation.getUnreadCount() == 0) {
-                ivReadCheckmark.setVisibility(View.VISIBLE);
-            } else {
-                ivReadCheckmark.setVisibility(View.GONE);
-            }
-
-            // Load profile image
-            loadProviderImage(conversation.getProviderId(), ivProfileImage);
+            // Load profile image or set initials
+            loadProviderImageAndInitials(conversation, ivProfileImage, tvInitials);
 
             // Format time
             if (conversation.getLastMessageTime() != null) {
@@ -325,41 +313,19 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             if (unreadCount > 0) {
                 tvUnreadBadge.setVisibility(View.VISIBLE);
                 tvUnreadBadge.setText(String.valueOf(unreadCount > 99 ? "99+" : unreadCount));
-                viewUnreadIndicator.setVisibility(View.VISIBLE);
             } else {
                 tvUnreadBadge.setVisibility(View.GONE);
-                viewUnreadIndicator.setVisibility(View.GONE);
             }
-
-            // Pinned badge
-            if (conversation.isPinned()) {
-                ivPinnedBadge.setVisibility(View.VISIBLE);
-                ivStarredBadge.setVisibility(View.GONE);
-            } else {
-                ivPinnedBadge.setVisibility(View.GONE);
-            }
-
-            // Starred badge and icon
-            if (conversation.isStarred()) {
-                ivStarredBadge.setVisibility(conversation.isPinned() ? View.GONE : View.VISIBLE);
-                ivStarIcon.setVisibility(View.VISIBLE);
-            } else {
-                ivStarredBadge.setVisibility(View.GONE);
-                ivStarIcon.setVisibility(View.GONE);
-            }
-
-            // Online status (mock - you can implement real status later)
-            viewOnlineStatus.setVisibility(View.VISIBLE);
 
             // Click listeners
             if (!isSelectionMode) {
-                cardConversation.setOnClickListener(v -> {
+                itemView.setOnClickListener(v -> {
                     if (listener != null) {
                         listener.onConversationClick(conversation);
                     }
                 });
             } else {
-                cardConversation.setOnClickListener(v -> {
+                itemView.setOnClickListener(v -> {
                     checkboxSelect.setChecked(!checkboxSelect.isChecked());
                 });
             }
@@ -369,120 +335,35 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         }
 
         private void showOptionsMenu(Conversation conversation, View anchor) {
-            PopupMenu popupMenu = new PopupMenu(anchor.getContext(), anchor);
-            popupMenu.getMenuInflater().inflate(R.menu.conversation_options, popupMenu.getMenu());
-
-            // Force icons to show in PopupMenu (works on API 29+)
             try {
-                java.lang.reflect.Field[] fields = popupMenu.getClass().getDeclaredFields();
-                for (java.lang.reflect.Field field : fields) {
-                    if ("mPopup".equals(field.getName())) {
-                        field.setAccessible(true);
-                        Object menuPopupHelper = field.get(popupMenu);
-                        Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
-                        java.lang.reflect.Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon",
-                                boolean.class);
-                        setForceIcons.invoke(menuPopupHelper, true);
-                        break;
-                    }
-                }
-            } catch (Exception e) {
-                // Try alternative method for older Android versions
-                try {
-                    java.lang.reflect.Field mPopup = popupMenu.getClass().getDeclaredField("mPopup");
-                    mPopup.setAccessible(true);
-                    Object menuPopupHelper = mPopup.get(popupMenu);
-                    java.lang.reflect.Method setForceShowIcon = menuPopupHelper.getClass()
-                            .getDeclaredMethod("setForceShowIcon", boolean.class);
-                    setForceShowIcon.invoke(menuPopupHelper, true);
-                } catch (Exception ex) {
-                    android.util.Log.e("ConversationAdapter", "Error forcing icons to show", ex);
-                }
+                androidx.fragment.app.FragmentActivity activity = (androidx.fragment.app.FragmentActivity) anchor
+                        .getContext();
+
+                com.example.homerepairs.bottomsheets.ConversationOptionsBottomSheet bottomSheet = new com.example.homerepairs.bottomsheets.ConversationOptionsBottomSheet();
+
+                bottomSheet.setConversation(conversation);
+                bottomSheet.setActionListener(actionListener);
+                bottomSheet.show(activity.getSupportFragmentManager(), "ConversationOptions");
+
+            } catch (ClassCastException e) {
+                // Fallback for context that isn't a FragmentActivity, though in this app it
+                // should be.
+                e.printStackTrace();
             }
-
-            // Update menu items based on conversation state
-            MenuItem markReadItem = popupMenu.getMenu().findItem(R.id.action_mark_read);
-            MenuItem markUnreadItem = popupMenu.getMenu().findItem(R.id.action_mark_unread);
-            MenuItem pinItem = popupMenu.getMenu().findItem(R.id.action_pin);
-            MenuItem unpinItem = popupMenu.getMenu().findItem(R.id.action_unpin);
-            MenuItem starItem = popupMenu.getMenu().findItem(R.id.action_star);
-            MenuItem unstarItem = popupMenu.getMenu().findItem(R.id.action_unstar);
-
-            // Show "Mark as Read" if there are unread messages, otherwise show "Mark as
-            // Unread"
-            if (conversation.getUnreadCount() > 0) {
-                markReadItem.setVisible(true);
-                markUnreadItem.setVisible(false);
-            } else {
-                markReadItem.setVisible(false);
-                markUnreadItem.setVisible(true);
-            }
-
-            if (conversation.isPinned()) {
-                pinItem.setVisible(false);
-                unpinItem.setVisible(true);
-            } else {
-                pinItem.setVisible(true);
-                unpinItem.setVisible(false);
-            }
-
-            if (conversation.isStarred()) {
-                starItem.setVisible(false);
-                unstarItem.setVisible(true);
-            } else {
-                starItem.setVisible(true);
-                unstarItem.setVisible(false);
-            }
-
-            // Style delete item with red text and icon color
-            MenuItem deleteItem = popupMenu.getMenu().findItem(R.id.action_delete);
-            if (deleteItem != null) {
-                // Set red text color
-                android.text.SpannableString deleteText = new android.text.SpannableString(deleteItem.getTitle());
-                int errorColor = anchor.getContext().getResources().getColor(R.color.error);
-                deleteText.setSpan(new android.text.style.ForegroundColorSpan(errorColor),
-                        0, deleteText.length(), 0);
-                deleteItem.setTitle(deleteText);
-
-                // Set red icon tint
-                if (deleteItem.getIcon() != null) {
-                    android.graphics.drawable.Drawable deleteIcon = deleteItem.getIcon();
-                    deleteIcon = deleteIcon.mutate();
-                    deleteIcon.setColorFilter(errorColor, android.graphics.PorterDuff.Mode.SRC_IN);
-                    deleteItem.setIcon(deleteIcon);
-                }
-            }
-
-            popupMenu.setOnMenuItemClickListener(item -> {
-                if (actionListener == null)
-                    return false;
-
-                int itemId = item.getItemId();
-                if (itemId == R.id.action_mark_read) {
-                    actionListener.onMarkAsRead(java.util.Collections.singletonList(conversation));
-                } else if (itemId == R.id.action_mark_unread) {
-                    actionListener.onMarkAsUnread(java.util.Collections.singletonList(conversation));
-                } else if (itemId == R.id.action_pin) {
-                    actionListener.onPin(conversation);
-                } else if (itemId == R.id.action_unpin) {
-                    actionListener.onUnpin(conversation);
-                } else if (itemId == R.id.action_star) {
-                    actionListener.onStar(conversation);
-                } else if (itemId == R.id.action_unstar) {
-                    actionListener.onUnstar(conversation);
-                } else if (itemId == R.id.action_archive) {
-                    actionListener.onArchive(conversation);
-                } else if (itemId == R.id.action_delete) {
-                    actionListener.onDelete(java.util.Collections.singletonList(conversation));
-                }
-                return true;
-            });
-
-            popupMenu.show();
         }
 
-        private void loadProviderImage(String providerId, ImageView imageView) {
-            if (providerId == null || imageView == null) {
+        private void loadProviderImageAndInitials(Conversation conversation, ImageView imageView, TextView tvInitials) {
+            String providerId = conversation.getProviderId();
+            String providerName = conversation.getProviderName();
+
+            if (imageView == null || tvInitials == null)
+                return;
+
+            // Set initial state: show image view, hide initials
+            tvInitials.setVisibility(View.GONE);
+            imageView.setVisibility(View.VISIBLE);
+
+            if (providerId == null) {
                 imageView.setImageResource(R.drawable.no_profile_image);
                 return;
             }
@@ -495,7 +376,6 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                         com.example.homerepairs.models.Provider provider = providers.get(0);
                         if (provider != null) {
                             String imageUrl = provider.getProfileImageUrl();
-
                             if (imageUrl != null && !imageUrl.isEmpty()) {
                                 Glide.with(imageView.getContext())
                                         .load(imageUrl)
@@ -504,14 +384,11 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                                         .circleCrop()
                                         .into(imageView);
                             } else {
-                                // Fallback to no_profile_image if no URL
-                                Glide.with(imageView.getContext())
-                                        .load(R.drawable.no_profile_image)
-                                        .circleCrop()
-                                        .into(imageView);
+                                // Show initials as fallback
+                                imageView.setVisibility(View.GONE);
+                                tvInitials.setVisibility(View.VISIBLE);
+                                tvInitials.setText(getInitials(providerName));
                             }
-                        } else {
-                            imageView.setImageResource(R.drawable.no_profile_image);
                         }
                     } else {
                         imageView.setImageResource(R.drawable.no_profile_image);
@@ -520,10 +397,22 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
 
                 @Override
                 public void onError(String error) {
-                    android.util.Log.e("ConversationAdapter", "Error loading provider image: " + error);
                     imageView.setImageResource(R.drawable.no_profile_image);
                 }
             });
+        }
+
+        private String getInitials(String name) {
+            if (name == null || name.trim().isEmpty())
+                return "??";
+            String[] parts = name.trim().split("\\s+");
+            StringBuilder initials = new StringBuilder();
+            for (int i = 0; i < Math.min(parts.length, 2); i++) {
+                if (!parts[i].isEmpty()) {
+                    initials.append(parts[i].charAt(0));
+                }
+            }
+            return initials.toString().toUpperCase();
         }
 
         private String formatTime(Date date) {

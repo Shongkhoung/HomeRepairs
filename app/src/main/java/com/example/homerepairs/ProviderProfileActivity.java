@@ -5,139 +5,93 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.homerepairs.adapters.CalendarAdapter;
+import com.bumptech.glide.Glide;
 import com.example.homerepairs.adapters.PortfolioAdapter;
 import com.example.homerepairs.adapters.ReviewAdapter;
+import com.example.homerepairs.databinding.ActivityProviderProfileBinding;
+import com.example.homerepairs.models.PortfolioItem;
 import com.example.homerepairs.models.ProviderDetail;
 import com.example.homerepairs.models.Review;
-import com.example.homerepairs.models.PortfolioItem;
 import com.example.homerepairs.services.FirebaseProviderService;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.chip.Chip;
 import com.google.firebase.firestore.ListenerRegistration;
-import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
 public class ProviderProfileActivity extends BaseActivity {
 
-    private boolean isJobCostsExpanded = false;
-    private boolean isPaymentMethodsExpanded = false;
-
-    // Removed unused fields for calendar, reviews, portfolio, service area,
-    // languages
+    private ActivityProviderProfileBinding binding;
     private FirebaseProviderService firebaseService;
     private ListenerRegistration listenerRegistration;
     private ProviderDetail currentProvider;
-    private String providerName = "Panha"; // Default to Panha
-    private boolean isInitializingBottomNav = true; // Flag to prevent navigation during initialization
+    private String providerName = "Panha";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_provider_profile);
+        binding = ActivityProviderProfileBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        // Get provider name from intent or use default
-        String intentProviderName = getIntent().getStringExtra("provider_name");
-        if (intentProviderName != null && !intentProviderName.isEmpty()) {
-            providerName = intentProviderName;
-            android.util.Log.d("ProviderProfileActivity", "Provider name from Intent: " + providerName);
-        } else {
-            android.util.Log.w("ProviderProfileActivity", "No provider name in Intent, using default: " + providerName);
-        }
-
-        // Also get service category if provided
-        String serviceCategory = getIntent().getStringExtra("service_category");
-        if (serviceCategory != null && !serviceCategory.isEmpty()) {
-            android.util.Log.d("ProviderProfileActivity", "Service category from Intent: " + serviceCategory);
-        }
+        String intentName = getIntent().getStringExtra("provider_name");
+        if (intentName != null && !intentName.isEmpty())
+            providerName = intentName;
 
         firebaseService = new FirebaseProviderService();
-
         initializeViews();
-        setupExpandableSections();
         setupButtons();
-        setupBottomNavigation();
-
-        // Load provider data from Firebase
         loadProviderData();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (listenerRegistration != null) {
+        if (listenerRegistration != null)
             listenerRegistration.remove();
-        }
     }
 
     private void loadProviderData() {
-        android.util.Log.d("ProviderProfileActivity", "Loading provider data for: " + providerName);
-
-        // Set up real-time listener for auto-sync
         listenerRegistration = firebaseService.listenToProviderByName(providerName,
                 new FirebaseProviderService.ProviderDetailCallback() {
                     @Override
-                    public void onSuccess(ProviderDetail providerDetail) {
-                        android.util.Log.d("ProviderProfileActivity", "Provider data loaded successfully: " +
-                                (providerDetail != null ? providerDetail.getName() : "null"));
-                        currentProvider = providerDetail;
-                        if (providerDetail != null) {
-                            populateUI(providerDetail);
-                        } else {
-                            android.util.Log.e("ProviderProfileActivity",
-                                    "ProviderDetail is null after successful load");
-                            Toast.makeText(ProviderProfileActivity.this,
-                                    getString(R.string.error_provider_data_incomplete),
+                    public void onSuccess(ProviderDetail detail) {
+                        currentProvider = detail;
+                        if (detail != null)
+                            populateUI(detail);
+                        else
+                            Toast.makeText(ProviderProfileActivity.this, getString(R.string.msg_data_incomplete),
                                     Toast.LENGTH_SHORT).show();
-                        }
                     }
 
                     @Override
                     public void onError(String error) {
-                        android.util.Log.e("ProviderProfileActivity", "Error loading provider: " + error);
-                        Toast.makeText(ProviderProfileActivity.this, getString(R.string.error_loading_provider, error),
-                                Toast.LENGTH_LONG).show();
-                        // Try to load from one-time fetch as fallback
-                        android.util.Log.d("ProviderProfileActivity", "Attempting fallback fetch for: " + providerName);
+                        Log.e("ProviderProfileActivity", "Error: " + error);
                         firebaseService.getProviderByName(providerName,
                                 new FirebaseProviderService.ProviderDetailCallback() {
                                     @Override
-                                    public void onSuccess(ProviderDetail providerDetail) {
-                                        android.util.Log.d("ProviderProfileActivity", "Fallback fetch successful: " +
-                                                (providerDetail != null ? providerDetail.getName() : "null"));
-                                        currentProvider = providerDetail;
-                                        if (providerDetail != null) {
-                                            populateUI(providerDetail);
-                                        }
+                                    public void onSuccess(ProviderDetail detail) {
+                                        currentProvider = detail;
+                                        if (detail != null)
+                                            populateUI(detail);
                                     }
 
                                     @Override
-                                    public void onError(String error) {
-                                        android.util.Log.e("ProviderProfileActivity",
-                                                "Fallback fetch also failed: " + error);
+                                    public void onError(String e) {
                                         Toast.makeText(ProviderProfileActivity.this,
-                                                "Failed to load provider data. Please check your Firebase connection.",
-                                                Toast.LENGTH_SHORT).show();
+                                                getString(R.string.msg_load_failed), Toast.LENGTH_SHORT)
+                                                .show();
                                     }
                                 });
                     }
@@ -145,354 +99,201 @@ public class ProviderProfileActivity extends BaseActivity {
     }
 
     private void initializeViews() {
-        // Back button
-        ImageButton btnBack = findViewById(R.id.btnBack);
-        btnBack.setOnClickListener(v -> finish());
+        binding.btnBack.setOnClickListener(v -> finish());
+        binding.btnShare.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_SEND).setType("text/plain");
+            String name = currentProvider != null ? currentProvider.getName() : providerName;
+            intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_provider_text_2, name));
+            startActivity(Intent.createChooser(intent, getString(R.string.share)));
+        });
 
-        // Favorite button removed
-
-        // Share button
-        ImageButton btnShare = findViewById(R.id.btnShare);
-        if (btnShare != null) {
-            btnShare.setOnClickListener(v -> {
-                // Share provider profile
-                Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                shareIntent.setType("text/plain");
-                String shareText = getString(R.string.share_provider_text,
-                        (currentProvider != null && currentProvider.getName() != null ? currentProvider.getName()
-                                : providerName));
-                shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
-                startActivity(Intent.createChooser(shareIntent, "Share provider profile"));
-            });
-        }
     }
 
     private void populateUI(ProviderDetail provider) {
-        if (provider == null) {
-            Toast.makeText(this, getString(R.string.error_provider_data_not_found), Toast.LENGTH_SHORT).show();
-            return;
-        }
+        binding.tvProviderName.setText(provider.getName() != null ? provider.getName() : "");
+        binding.tvProfession.setText(provider.getService() != null ? provider.getService() : "");
+        binding.tvRating.setText(String.format("%.1f", provider.getRating()));
+        binding.tvLocation.setText(provider.getServiceArea() != null ? provider.getServiceArea() : "");
 
-        // Basic Profile Info
-        TextView tvProviderName = findViewById(R.id.tvProviderName);
-        TextView tvProfession = findViewById(R.id.tvProfession);
-        TextView tvRating = findViewById(R.id.tvRating);
-        ImageView ivProfilePicture = findViewById(R.id.ivProfilePicture);
+        Glide.with(this)
+                .load(provider.getProfileImageUrl())
+                .placeholder(R.drawable.no_profile_image)
+                .error(R.drawable.no_profile_image)
+                .circleCrop()
+                .into(binding.ivProfilePicture);
 
-        if (tvProviderName != null)
-            tvProviderName.setText(provider.getName() != null ? provider.getName() : "");
-        if (tvProfession != null)
-            tvProfession.setText(provider.getService() != null ? provider.getService() : "");
+        binding.tvJobsCount.setText(provider.getJobsCompleted() != null ? provider.getJobsCompleted() : "0");
+        binding.tvRepeatRate.setText(provider.getRepeatCustomers() != null ? provider.getRepeatCustomers() : "0%");
+        binding.tvArrival.setText(provider.getResponseTime() != null ? provider.getResponseTime() : "--");
+        binding.tvExperience.setText(provider.getYearsInBusiness() + "y");
 
-        if (provider.getRating() > 0) {
-            String ratingText = String.format("%.1f", provider.getRating());
-            if (tvRating != null)
-                tvRating.setText(ratingText);
-        }
+        binding.layoutBadgeVerified.setVisibility(provider.isVerified() ? View.VISIBLE : View.GONE);
+        binding.layoutBadgeTopRated.setVisibility(provider.getRating() >= 4.5 ? View.VISIBLE : View.GONE);
 
-        // Load profile image
-        if (provider.getProfileImageUrl() != null && !provider.getProfileImageUrl().isEmpty()) {
-            Glide.with(this)
-                    .load(provider.getProfileImageUrl())
-                    .placeholder(R.drawable.no_profile_image)
-                    .error(R.drawable.no_profile_image)
-                    .into(ivProfilePicture);
+        boolean fast = provider.getResponseTime() != null && (provider.getResponseTime().toLowerCase().contains("min")
+                || provider.getResponseTime().contains("1 hour"));
+        binding.layoutBadgeFastResponse.setVisibility(fast ? View.VISIBLE : View.GONE);
+
+        String priceText = provider.getPricingRange() != null ? provider.getPricingRange() : provider.getPrice();
+        if (priceText != null) {
+            // Remove redundant per hour suffix as it's shown in the UI label below
+            priceText = priceText.replace("/hr", "").replace("/ hr", "").replace("per hour", "").trim();
+            // Remove trailing slash if it was " /"
+            if (priceText.endsWith("/")) {
+                priceText = priceText.substring(0, priceText.length() - 1).trim();
+            }
+
+            if (!priceText.isEmpty() && !priceText.startsWith("$") && priceText.matches(".*\\d.*")) {
+                binding.tvPricing.setText("$" + priceText);
+            } else {
+                binding.tvPricing.setText(priceText);
+            }
         } else {
-            // Default fallback for profile image
-            ivProfilePicture.setImageResource(R.drawable.no_profile_image);
+            binding.tvPricing.setText("");
         }
 
-        // Validating View References
-        TextView tvJobsCompletedAbout = findViewById(R.id.tvJobsCompletedAbout);
-        TextView tvResponseTime = findViewById(R.id.tvResponseTime);
-        TextView tvRepeatCustomers = findViewById(R.id.tvRepeatCustomers);
+        binding.tvAbout.setText(provider.getAbout() != null ? provider.getAbout() : "");
+        binding.tvServiceArea.setText(provider.getServiceArea() != null ? provider.getServiceArea() : "");
+        binding.layoutCertifications.setVisibility(provider.isHasCertifications() ? View.VISIBLE : View.GONE);
 
-        if (tvJobsCompletedAbout != null && provider.getJobsCompleted() != null) {
-            tvJobsCompletedAbout.setText(provider.getJobsCompleted());
-        }
-        if (tvResponseTime != null && provider.getResponseTime() != null) {
-            tvResponseTime.setText(provider.getResponseTime());
-        }
-        if (tvRepeatCustomers != null && provider.getRepeatCustomers() != null) {
-            tvRepeatCustomers.setText(provider.getRepeatCustomers());
-        }
+        setupSpecializations(provider);
+        setupServices(provider);
+        setupRatingBreakdown(provider);
+        setupReviews(provider);
 
-        // Pricing
-        TextView tvPricing = findViewById(R.id.tvPricing);
-        if (tvPricing != null) {
-            if (provider.getPricingRange() != null && !provider.getPricingRange().isEmpty()) {
-                tvPricing.setText(provider.getPricingRange());
-            } else if (provider.getPrice() != null && !provider.getPrice().isEmpty()) {
-                tvPricing.setText(provider.getPrice());
+        binding.tvContactPhone
+                .setText(provider.getPhoneNumber() != null ? provider.getPhoneNumber() : "+855 12 345 678");
+        binding.btnContactPhone
+                .setOnClickListener(v -> startActivity(new Intent(Intent.ACTION_DIAL,
+                        android.net.Uri.parse("tel:" + (provider.getPhoneNumber() != null
+                                ? provider.getPhoneNumber().replaceAll("[^0-9+]", "")
+                                : "12345678")))));
+
+        binding.tvContactEmail.setText(provider.getEmail() != null ? provider.getEmail() : "contact@provider.com");
+        binding.btnContactEmail.setOnClickListener(v -> startActivity(new Intent(Intent.ACTION_SENDTO, android.net.Uri
+                .parse("mailto:" + (provider.getEmail() != null ? provider.getEmail() : "contact@provider.com")))));
+    }
+
+    // Portfolio section removed
+
+    private void setupSpecializations(ProviderDetail provider) {
+        binding.chipGroupSpecializations.removeAllViews();
+        List<String> services = provider.getServices();
+        if (services != null) {
+            for (String s : services) {
+                Chip chip = new Chip(this);
+                chip.setText(s);
+                chip.setClickable(false);
+                binding.chipGroupSpecializations.addView(chip);
             }
         }
+    }
 
-        // About Section
-        TextView tvAbout = findViewById(R.id.tvAbout);
-        if (tvAbout != null && provider.getAbout() != null) {
-            tvAbout.setText(provider.getAbout());
+    private void setupServices(ProviderDetail provider) {
+        if (provider.getTypicalJobCosts() == null)
+            return;
+        binding.llServicesList.removeAllViews();
+        for (Map<String, String> job : provider.getTypicalJobCosts()) {
+            View v = getLayoutInflater().inflate(R.layout.item_service_box, binding.llServicesList, false);
+            TextView t = v.findViewById(R.id.tvServiceTitle);
+            TextView d = v.findViewById(R.id.tvServiceDesc);
+            TextView c = v.findViewById(R.id.tvServiceCost);
+            if (t != null)
+                t.setText(job.get("job"));
+            if (d != null)
+                d.setText(getString(R.string.default_service_description));
+            if (c != null)
+                c.setText(job.get("cost"));
+            binding.llServicesList.addView(v);
         }
+    }
 
-        // Typical Job Costs
-        LinearLayout llJobCostsContent = findViewById(R.id.llJobCostsContent);
-        if (llJobCostsContent != null && provider.getTypicalJobCosts() != null
-                && !provider.getTypicalJobCosts().isEmpty()) {
-            llJobCostsContent.removeAllViews();
-            for (Map<String, String> jobCost : provider.getTypicalJobCosts()) {
-                String job = jobCost.get("job");
-                String cost = jobCost.get("cost");
-                if (job != null && cost != null) {
-                    TextView costText = new TextView(this);
+    private void setupRatingBreakdown(ProviderDetail provider) {
+        Map<String, Integer> dist = provider.getRatingDistribution();
+        if (dist == null)
+            dist = new java.util.HashMap<>();
 
-                    // Parse and format cost
-                    String formattedCost = cost;
-                    try {
-                        String cleanCost = cost.replaceAll("[^\\d.]", "");
-                        if (!cleanCost.isEmpty()) {
-                            double priceVal = Double.parseDouble(cleanCost);
-                            formattedCost = com.example.homerepairs.utils.CurrencyHelper.formatPrice(this, priceVal);
-                        }
-                    } catch (NumberFormatException e) {
-                        // Keep original text if parsing fails
-                    }
+        // Calculate total safely handling potential Long types
+        int total = 0;
+        for (Object value : dist.values()) {
+            if (value instanceof Number) {
+                total += ((Number) value).intValue();
+            }
+        }
+        int finalTotal = total == 0 ? 1 : total;
 
-                    costText.setText(getString(R.string.cost_format, job, formattedCost));
-                    costText.setTextSize(14);
-                    costText.setTextColor(getResources().getColor(R.color.text_secondary));
-                    LinearLayout.MarginLayoutParams params = new LinearLayout.MarginLayoutParams(
-                            LinearLayout.MarginLayoutParams.MATCH_PARENT,
-                            LinearLayout.MarginLayoutParams.WRAP_CONTENT);
-                    params.setMargins(0, 0, 0, 8);
-                    costText.setLayoutParams(params);
-                    llJobCostsContent.addView(costText);
+        binding.layoutRatingBreakdown.removeAllViews();
+        for (int i = 5; i >= 1; i--) {
+            View row = getLayoutInflater().inflate(R.layout.item_rating_row, binding.layoutRatingBreakdown, false);
+            TextView star = row.findViewById(R.id.tvStarLabel);
+            ProgressBar bar = row.findViewById(R.id.pbRating);
+            TextView perc = row.findViewById(R.id.tvPercentLabel);
+
+            star.setText(String.valueOf(i));
+
+            // Safe retrieval handling potential Long/Integer mismatch
+            int count = 0;
+            Object val = dist.get(String.valueOf(i));
+            if (val instanceof Number) {
+                count = ((Number) val).intValue();
+            }
+
+            int p = (count * 100) / finalTotal;
+            bar.setProgress(p);
+            perc.setText(p + "%");
+            binding.layoutRatingBreakdown.addView(row);
+        }
+    }
+
+    private void setupReviews(ProviderDetail provider) {
+        List<Review> list = new ArrayList<>();
+        if (provider.getReviews() != null) {
+            for (Object o : provider.getReviews()) {
+                if (o instanceof Review)
+                    list.add((Review) o);
+                else if (o instanceof Map) {
+                    Map<?, ?> m = (Map<?, ?>) o;
+                    Review r = new Review((String) m.get("reviewerName"), (String) m.get("timeAgo"),
+                            ((Number) m.get("rating")).intValue(), (String) m.get("comment"),
+                            ((Number) m.get("thumbsUp")).intValue(), ((Number) m.get("thumbsDown")).intValue());
+                    list.add(r);
                 }
             }
         }
-    }
-
-    private void setupExpandableSections() {
-        // Typical Job Costs
-        LinearLayout cardJobCosts = findViewById(R.id.cardJobCosts);
-        LinearLayout llJobCostsContent = findViewById(R.id.llJobCostsContent);
-        ImageView ivJobCostsArrow = findViewById(R.id.ivJobCostsArrow);
-
-        if (cardJobCosts != null && llJobCostsContent != null && ivJobCostsArrow != null) {
-            cardJobCosts.setOnClickListener(v -> {
-                isJobCostsExpanded = !isJobCostsExpanded;
-                toggleExpandableSection(llJobCostsContent, ivJobCostsArrow, isJobCostsExpanded);
-            });
-        }
-
-        // Payment Methods logic removed as view ID is missing
-
-    }
-
-    private void toggleExpandableSection(View contentView, ImageView arrowView, boolean isExpanded) {
-        if (isExpanded) {
-            contentView.setVisibility(View.VISIBLE);
-            // Rotate to 270 degrees (pointing up) when expanded
-            ObjectAnimator rotation = ObjectAnimator.ofFloat(arrowView, "rotation", arrowView.getRotation(), 270f);
-            rotation.setDuration(200);
-            rotation.start();
-        } else {
-            contentView.setVisibility(View.GONE);
-            // Rotate to 90 degrees (pointing down) when collapsed
-            ObjectAnimator rotation = ObjectAnimator.ofFloat(arrowView, "rotation", arrowView.getRotation(), 90f);
-            rotation.setDuration(200);
-            rotation.start();
-        }
+        if (list.isEmpty())
+            list.add(new Review("User", "1d", 5, "Great!", 0, 0));
+        binding.rvReviews.setLayoutManager(new LinearLayoutManager(this));
+        binding.rvReviews.setAdapter(new ReviewAdapter(list));
     }
 
     private void setupButtons() {
-        Button btnGetQuote = findViewById(R.id.btnGetQuote);
-
-        Button btnBookNow = findViewById(R.id.btnBookNow);
-
-        // Setup Get Quote button
-        if (btnGetQuote != null) {
-            btnGetQuote.setOnClickListener(v -> {
-                animateButtonClick(v);
-                android.util.Log.d("ProviderProfileActivity", "Get Quote button clicked");
-                Toast.makeText(this, getString(R.string.msg_quote_sent), Toast.LENGTH_SHORT).show();
-            });
-        } else {
-            android.util.Log.e("ProviderProfileActivity", "btnGetQuote not found in layout");
-        }
-
-        // Setup Book Now button - navigate to NewBookingActivity
-        if (btnBookNow != null) {
-            btnBookNow.setOnClickListener(v -> {
-                animateButtonClick(v);
-                android.util.Log.d("ProviderProfileActivity", "Book Now button clicked");
-                try {
-                    Intent intent = new Intent(this, NewBookingActivity.class);
-                    // Pass provider information to booking screen
-                    String bookingProviderName = currentProvider != null && currentProvider.getName() != null
-                            ? currentProvider.getName()
-                            : providerName;
-                    String serviceCategory = currentProvider != null && currentProvider.getService() != null
+        View.OnClickListener book = v -> {
+            animateButtonClick(v);
+            Intent intent = new Intent(this, NewBookingActivity.class);
+            String safeServiceName = (currentProvider != null && currentProvider.getService() != null
+                    && !currentProvider.getService().isEmpty())
                             ? currentProvider.getService()
-                            : "Plumbing";
-                    String providerId = currentProvider != null && currentProvider.getId() != null
-                            ? currentProvider.getId()
-                            : null;
+                            : "General Service";
 
-                    if (bookingProviderName != null) {
-                        intent.putExtra("provider_name", bookingProviderName);
-                    }
-                    if (serviceCategory != null) {
-                        intent.putExtra("service_category", serviceCategory);
-                    }
-                    if (providerId != null) {
-                        intent.putExtra("provider_id", providerId);
-                    }
+            intent.putExtra("provider_name", currentProvider != null ? currentProvider.getName() : providerName);
+            intent.putExtra("service_category", safeServiceName);
+            intent.putExtra("service_name", safeServiceName);
+            intent.putExtra("provider_id", currentProvider != null ? currentProvider.getId() : null);
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        };
+        binding.btnBookNow.setOnClickListener(book);
+        binding.btnBookTop.setOnClickListener(book);
 
-                    android.util.Log.d("ProviderProfileActivity",
-                            "Navigating to NewBookingActivity with provider: " + bookingProviderName);
-                    startActivity(intent);
-                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                } catch (Exception e) {
-                    android.util.Log.e("ProviderProfileActivity", "Error navigating to NewBookingActivity", e);
-                    Toast.makeText(this, getString(R.string.error_opening_booking, e.getMessage()), Toast.LENGTH_SHORT)
-                            .show();
-                }
-            });
-        } else {
-            android.util.Log.e("ProviderProfileActivity", "btnBookNow not found in layout");
-        }
-    }
-
-    private void setupBottomNavigation() {
-        BottomNavigationView bottomNavigation = findViewById(R.id.bottomNavigation);
-        if (bottomNavigation == null) {
-            android.util.Log.w("ProviderProfileActivity", "BottomNavigationView not found");
-            return;
-        }
-
-        bottomNavigation.setOnItemSelectedListener(item -> {
-            // Ignore selections during initialization to prevent auto-navigation
-            if (isInitializingBottomNav) {
-                android.util.Log.d("ProviderProfileActivity", "Ignoring bottom nav selection during initialization");
-                return false;
-            }
-
-            int itemId = item.getItemId();
-            android.util.Log.d("ProviderProfileActivity", "Bottom nav item selected: " + itemId);
-
-            if (itemId == R.id.nav_home) {
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-                finish();
-                return true;
-            } else if (itemId == R.id.nav_bookings) {
-                Intent intent = new Intent(this, BookingsActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                finish();
-                return true;
-            } else if (itemId == R.id.nav_messages) {
-                Intent intent = new Intent(this, MessagesActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                finish();
-                return true;
-            } else if (itemId == R.id.nav_profile) {
-                Intent intent = new Intent(this, UserProfileActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                finish();
-                return true;
-            }
-            return false;
-        });
-
-        // Don't set selected item - ProviderProfileActivity is not a main navigation
-        // screen
-        // Setting it would trigger navigation to ProfileActivity
-        // Mark initialization as complete after a short delay to allow UI to settle
-        bottomNavigation.post(() -> {
-            isInitializingBottomNav = false;
-            android.util.Log.d("ProviderProfileActivity", "Bottom navigation initialization complete");
+        binding.btnMessage.setOnClickListener(v -> {
+            animateButtonClick(v);
+            startActivity(new Intent(this, MessagesActivity.class));
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
     }
 
-    private void animateButtonClick(View button) {
-        float originalScaleX = button.getScaleX();
-        float originalScaleY = button.getScaleY();
-
-        ObjectAnimator scaleDownX = ObjectAnimator.ofFloat(button, "scaleX", originalScaleX, 0.94f);
-        ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(button, "scaleY", originalScaleY, 0.94f);
-
-        scaleDownX.setDuration(80);
-        scaleDownY.setDuration(80);
-        scaleDownX.setInterpolator(new android.view.animation.DecelerateInterpolator(1.5f));
-        scaleDownY.setInterpolator(new android.view.animation.DecelerateInterpolator(1.5f));
-
-        scaleDownX.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                ObjectAnimator scaleUpX = ObjectAnimator.ofFloat(button, "scaleX", 0.94f, originalScaleX);
-                ObjectAnimator scaleUpY = ObjectAnimator.ofFloat(button, "scaleY", 0.94f, originalScaleY);
-
-                scaleUpX.setDuration(120);
-                scaleUpY.setDuration(120);
-
-                OvershootInterpolator springInterpolator = new OvershootInterpolator(1.1f);
-                scaleUpX.setInterpolator(springInterpolator);
-                scaleUpY.setInterpolator(springInterpolator);
-
-                scaleUpX.start();
-                scaleUpY.start();
-            }
-        });
-
-        scaleDownX.start();
-        scaleDownY.start();
-    }
-
-    // Review data class
-    public static class Review {
-        private String reviewerName;
-        private String timeAgo;
-        private int rating;
-        private String comment;
-        private int thumbsUp;
-        private int thumbsDown;
-
-        public Review(String reviewerName, String timeAgo, int rating, String comment, int thumbsUp, int thumbsDown) {
-            this.reviewerName = reviewerName;
-            this.timeAgo = timeAgo;
-            this.rating = rating;
-            this.comment = comment;
-            this.thumbsUp = thumbsUp;
-            this.thumbsDown = thumbsDown;
-        }
-
-        public String getReviewerName() {
-            return reviewerName;
-        }
-
-        public String getTimeAgo() {
-            return timeAgo;
-        }
-
-        public int getRating() {
-            return rating;
-        }
-
-        public String getComment() {
-            return comment;
-        }
-
-        public int getThumbsUp() {
-            return thumbsUp;
-        }
-
-        public int getThumbsDown() {
-            return thumbsDown;
-        }
+    private void animateButtonClick(View v) {
+        v.animate().scaleX(0.94f).scaleY(0.94f).setDuration(80).withEndAction(() -> v.animate().scaleX(1f).scaleY(1f)
+                .setDuration(120).setInterpolator(new OvershootInterpolator(1.1f)).start()).start();
     }
 }

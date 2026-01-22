@@ -18,7 +18,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center"
-        android:padding="8dp"
+        android:padding="16dp"
         android:clickable="false"
         android:focusable="false">
 
@@ -44,7 +44,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Plumbing"
-            android:textSize="13sp"
+            android:textSize="14sp"
             android:textStyle="bold"
             android:textColor="@color/text_white"
             android:gravity="center"
@@ -62,7 +62,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="12 providers"
-            android:textSize="11sp"
+            android:textSize="12sp"
             android:textColor="#E6FFFFFF"
             android:gravity="center"
             android:maxLines="1"

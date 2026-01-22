@@ -4,491 +4,336 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.homerepairs.adapters.ProviderListAdapter;
+import com.example.homerepairs.databinding.ActivityPlumbingBinding;
 import com.example.homerepairs.models.Provider;
 import com.example.homerepairs.services.FirebaseProviderService;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-public class PlumbingActivity extends AppCompatActivity {
+public class PlumbingActivity extends BaseActivity {
 
-    private RecyclerView rvProviders;
+    private ActivityPlumbingBinding binding;
     private ProviderListAdapter adapter;
-    private EditText etSearch;
-    private ImageButton btnFilter;
     private List<Provider> allProviders;
-    private String currentFilter = "All"; // Current filter: All, Available Now, Highest Rated, Lowest Price
+    private int currentFilterIndex = 0; // 0: All, 1: Available Now, 2: Highest Rated, 3: Lowest Price
     private boolean isInitializingBottomNav = true;
     private FirebaseProviderService firebaseProviderService;
-    private ProgressBar progressBar;
-    private TextView tvNoResults;
-    private ListenerRegistration providerListener; // Real-time listener registration
+    private ListenerRegistration providerListener;
+    private boolean isPickMode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        android.util.Log.d("PlumbingActivity", "=== onCreate START ===");
-        setContentView(R.layout.activity_plumbing);
-        android.util.Log.d("PlumbingActivity", "setContentView completed");
+        binding = ActivityPlumbingBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         initializeViews();
-        android.util.Log.d("PlumbingActivity", "Views initialized");
-
         setupRecyclerView();
-        android.util.Log.d("PlumbingActivity", "RecyclerView setup completed");
-
         setupButtons();
-        android.util.Log.d("PlumbingActivity", "Buttons setup completed");
-
         setupBottomNavigation();
-        android.util.Log.d("PlumbingActivity", "Bottom navigation setup completed");
-
-        android.util.Log.d("PlumbingActivity", "=== onCreate END - PlumbingActivity setup complete ===");
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        android.util.Log.d("PlumbingActivity", "=== onStart called ===");
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        android.util.Log.d("PlumbingActivity", "=== onResume called ===");
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        android.util.Log.d("PlumbingActivity", "=== onPause called ===");
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        android.util.Log.d("PlumbingActivity", "=== onStop called ===");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        android.util.Log.d("PlumbingActivity", "=== onDestroy called ===");
-        // Remove real-time listener to prevent memory leaks
         if (providerListener != null) {
             providerListener.remove();
-            providerListener = null;
-            android.util.Log.d("PlumbingActivity", "Real-time listener removed");
         }
     }
 
     private void initializeViews() {
-        ImageButton btnBack = findViewById(R.id.btnBack);
-        if (btnBack != null) {
-            btnBack.setOnClickListener(v -> finish());
+        binding.btnBack.setOnClickListener(v -> finish());
+
+        String categoryName = getIntent().getStringExtra("category_name");
+        if (categoryName == null || categoryName.isEmpty()) {
+            categoryName = "Plumbing";
         }
 
-        TextView tvTitle = findViewById(R.id.tvTitle);
-        if (tvTitle != null) {
-            String categoryName = getIntent().getStringExtra("category_name");
-            if (categoryName != null && !categoryName.isEmpty()) {
-                tvTitle.setText(categoryName);
-            } else {
-                tvTitle.setText("Plumbing"); // Default title
-            }
+        if ("Plumbing".equals(categoryName)) {
+            binding.tvTitle.setText(getString(R.string.category_plumbing));
+        } else if ("Search Results".equals(categoryName)) {
+            binding.tvTitle.setText(getString(R.string.title_search_results));
+        } else {
+            binding.tvTitle.setText(categoryName);
         }
 
-        etSearch = findViewById(R.id.etSearch);
-        btnFilter = findViewById(R.id.btnFilter);
-        rvProviders = findViewById(R.id.rvProviders);
-        progressBar = findViewById(R.id.progressBar);
-        tvNoResults = findViewById(R.id.tvNoResults);
-
-        // Initialize Firebase service
+        isPickMode = getIntent().getBooleanExtra("ACTION_PICK_PROVIDER", false);
         firebaseProviderService = new FirebaseProviderService();
-
-        // Check for null views
-        if (rvProviders == null) {
-            android.util.Log.e("PlumbingActivity", "RecyclerView not found in layout");
-        }
     }
 
     private void setupRecyclerView() {
-        if (rvProviders == null) {
-            android.util.Log.e("PlumbingActivity", "Cannot setup RecyclerView - view is null");
-            return;
-        }
+        binding.rvProviders.setLayoutManager(new LinearLayoutManager(this));
+        binding.rvProviders.setNestedScrollingEnabled(false);
 
-        // Setup layout manager
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        rvProviders.setLayoutManager(layoutManager);
+        DefaultItemAnimator animator = new DefaultItemAnimator();
+        animator.setAddDuration(0);
+        binding.rvProviders.setItemAnimator(animator);
 
-        // Ensure RecyclerView doesn't interfere with touch events
-        rvProviders.setNestedScrollingEnabled(false);
-        rvProviders.setHasFixedSize(false);
+        adapter = new ProviderListAdapter(new ArrayList<>(), new ProviderListAdapter.OnProviderClickListener() {
+            @Override
+            public void onProviderClick(Provider p) {
+                handleProviderClick(p);
+            }
 
-        // Use smooth item animator with better timing
-        // Set add duration to 0 to prevent animation from blocking first click
-        androidx.recyclerview.widget.DefaultItemAnimator animator = new androidx.recyclerview.widget.DefaultItemAnimator();
-        animator.setAddDuration(0); // No animation on add to ensure immediate clickability
-        animator.setRemoveDuration(200);
-        animator.setMoveDuration(200);
-        animator.setChangeDuration(200);
-        rvProviders.setItemAnimator(animator);
+            @Override
+            public void onBookClick(Provider p) {
+                handleProviderClick(p);
+            }
 
-        // Initialize adapter with empty list
-        adapter = new ProviderListAdapter(new ArrayList<>(), provider -> {
-            android.util.Log.d("PlumbingActivity", "=== PROVIDER CLICKED ===");
-            android.util.Log.d("PlumbingActivity", "Provider name: " + provider.getName());
-            android.util.Log.d("PlumbingActivity", "Provider service: " + provider.getService());
-
-            try {
-                Intent intent = new Intent(PlumbingActivity.this, ProviderProfileActivity.class);
-                intent.putExtra("provider_name", provider.getName());
-                intent.putExtra("service_category", provider.getService());
-                android.util.Log.d("PlumbingActivity", "Starting ProviderProfileActivity...");
-                startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                android.util.Log.d("PlumbingActivity", "ProviderProfileActivity started successfully");
-            } catch (Exception e) {
-                android.util.Log.e("PlumbingActivity", "Error starting ProviderProfileActivity", e);
-                android.widget.Toast
-                        .makeText(PlumbingActivity.this, "Error: " + e.getMessage(), android.widget.Toast.LENGTH_LONG)
-                        .show();
+            @Override
+            public void onFavoriteClick(Provider p) {
+                boolean newStatus = !p.isFavorite();
+                p.setFavorite(newStatus);
+                adapter.notifyDataSetChanged();
+                updateFavoriteStatus(p.getId(), newStatus);
             }
         });
 
-        // Set adapter
-        rvProviders.setAdapter(adapter);
-
-        // Load providers from Firebase
+        binding.rvProviders.setAdapter(adapter);
         loadProvidersFromFirebase();
     }
 
-    private void loadProvidersFromFirebase() {
-        // Remove existing listener if any
-        if (providerListener != null) {
-            providerListener.remove();
-            providerListener = null;
-        }
+    private void updateFavoriteStatus(String providerId, boolean isFavorite) {
+        if (providerId == null)
+            return;
+        Set<String> ids = getSharedPreferences("favorites", MODE_PRIVATE).getStringSet("provider_ids",
+                new java.util.HashSet<>());
+        Set<String> newIds = new java.util.HashSet<>(ids);
+        if (isFavorite)
+            newIds.add(providerId);
+        else
+            newIds.remove(providerId);
+        getSharedPreferences("favorites", MODE_PRIVATE).edit().putStringSet("provider_ids", newIds).apply();
+    }
 
-        // Show loading indicator
-        if (progressBar != null) {
-            progressBar.setVisibility(View.VISIBLE);
-        }
-        if (rvProviders != null) {
-            rvProviders.setVisibility(View.GONE);
-        }
-
-        // Get service category from intent or use default
-        String serviceCategory = getIntent().getStringExtra("category_name");
-        if (serviceCategory == null || serviceCategory.isEmpty()) {
-            serviceCategory = "Plumbing"; // Default
-        }
-
-        android.util.Log.d("PlumbingActivity", "Setting up real-time listener for category: " + serviceCategory);
-
-        // Set up real-time listener that automatically updates when data changes in
-        // Firebase
-        if (firebaseProviderService != null) {
-            // Callback for handling results (shared logic)
-            FirebaseProviderService.ProviderCallback callback = new FirebaseProviderService.ProviderCallback() {
-                @Override
-                public void onSuccess(List<Provider> providers) {
-                    android.util.Log.d("PlumbingActivity", "Providers loaded: " + providers.size());
-
-                    if (providers.isEmpty()) {
-                        // No providers in Firestore - use mock data and show helpful message
-                        android.util.Log.w("PlumbingActivity", "No providers found in Firestore. Using mock data.");
-                        // Only show toast if not searching (empty search results shouldn't show this)
-                        if (!"Search Results".equals(getIntent().getStringExtra("category_name"))) {
-                            android.widget.Toast.makeText(PlumbingActivity.this,
-                                    "No providers in database. Using sample data.",
-                                    android.widget.Toast.LENGTH_LONG).show();
-                            allProviders = createMockProviders();
-                        } else {
-                            allProviders = new ArrayList<>();
-                        }
-                        updateProviderList(allProviders);
-                        return;
-                    }
-
-                    // Set default image resource ID
-                    for (Provider provider : providers) {
-                        if (provider.getProfileImageResId() == 0
-                                || provider.getProfileImageResId() == R.drawable.profile) {
-                            provider.setProfileImageResId(R.drawable.no_profile_image);
-                        }
-                    }
-
-                    allProviders = providers;
-
-                    // Always call updateProviderList first to ensure Progress Bar is hidden
-                    updateProviderList(providers);
-
-                    // If this is a search result, filter immediately by the query passed in intent
-                    String initialQuery = getIntent().getStringExtra("search_query");
-                    if (initialQuery != null && !initialQuery.isEmpty()) {
-                        if (etSearch != null)
-                            etSearch.setText(initialQuery); // Set text in search box
-                        filterProviders(initialQuery);
-                    }
-                }
-
-                @Override
-                public void onError(String error) {
-                    android.util.Log.e("PlumbingActivity", "Firebase error: " + error);
-                    android.util.Log.d("PlumbingActivity", "Falling back to mock data");
-                    allProviders = createMockProviders();
-                    updateProviderList(allProviders);
-                }
-            };
-
-            if ("Search Results".equals(serviceCategory) || "All".equals(serviceCategory)) {
-                // Fetch ALL providers for search
-                firebaseProviderService.getAllProviders(callback);
-            } else {
-                // Fetch specific category
-                providerListener = firebaseProviderService.listenToProviders(serviceCategory, callback);
-            }
-        } else {
-            // Fallback to mock data if Firebase service is not available
-            android.util.Log.w("PlumbingActivity", "Firebase service not initialized, using mock data");
-            allProviders = createMockProviders();
-            updateProviderList(allProviders);
+    private void syncFavoritesState(List<Provider> providers) {
+        Set<String> savedIds = getSharedPreferences("favorites", MODE_PRIVATE).getStringSet("provider_ids",
+                new java.util.HashSet<>());
+        for (Provider p : providers) {
+            p.setFavorite(p.getId() != null && savedIds.contains(p.getId()));
         }
     }
 
-    private void updateProviderList(List<Provider> providers) {
-        runOnUiThread(() -> {
-            // Hide loading indicator
-            if (progressBar != null) {
-                progressBar.setVisibility(View.GONE);
-            }
-            if (rvProviders != null) {
-                rvProviders.setVisibility(View.VISIBLE);
-            }
-
-            if (providers == null || providers.isEmpty()) {
-                android.util.Log.w("PlumbingActivity", "No providers to display");
-                if (adapter != null) {
-                    adapter.updateProviders(new ArrayList<>());
-                }
-                return;
-            }
-
-            if (adapter != null) {
-                adapter.updateProviders(providers);
-                android.util.Log.d("PlumbingActivity",
-                        "RecyclerView updated with " + adapter.getItemCount() + " items");
-            }
-
-            // Force layout to ensure items are displayed
-            if (rvProviders != null) {
-                rvProviders.post(() -> {
-                    if (adapter != null && rvProviders != null) {
-                        android.util.Log.d("PlumbingActivity", "RecyclerView post - ensuring views are ready");
-                        rvProviders.requestLayout();
-                    }
-                });
-            }
-        });
-    }
-
-    private List<Provider> createMockProviders() {
-        List<Provider> providers = new ArrayList<>();
-        providers.add(new Provider("Expert Plumber", "Plumbing", 4.8, 123,
-                "Available Now", "$60/hr", R.drawable.no_profile_image, true, true));
-        providers.add(new Provider("Reliable Plumber", "Plumbing", 4.7, 98,
-                "Available Now", "$55/hr", R.drawable.no_profile_image, true, true));
-        providers.add(new Provider("Professional Plumber", "Plumbing", 4.9, 156,
-                "Next available: 2pm", "$70/hr", R.drawable.no_profile_image, true, false));
-        providers.add(new Provider("Skilled Plumber", "Plumbing", 4.6, 87,
-                "Available Now", "$50/hr", R.drawable.no_profile_image, true, true));
-        providers.add(new Provider("Certified Plumber", "Plumbing", 4.8, 134,
-                "Available Now", "$65/hr", R.drawable.no_profile_image, true, true));
-        return providers;
-    }
-
-    private void setupButtons() {
-        // Setup search functionality
-        if (etSearch != null) {
-            etSearch.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    filterProviders(s.toString());
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                }
-            });
-        }
-
-        // Setup filter button
-        if (btnFilter != null) {
-            btnFilter.setOnClickListener(v -> showFilterDialog());
-        }
-    }
-
-    private void filterProviders(String searchQuery) {
-        if (allProviders == null) {
+    private void handleProviderClick(Provider provider) {
+        if (isPickMode) {
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("provider_id", provider.getId());
+            resultIntent.putExtra("provider_name", provider.getName());
+            resultIntent.putExtra("service_category", provider.getService());
+            setResult(RESULT_OK, resultIntent);
+            finish();
             return;
         }
 
-        List<Provider> filtered = allProviders.stream()
-                .filter(provider -> {
-                    // Filter by search query
-                    boolean matchesSearch = searchQuery == null || searchQuery.isEmpty() ||
-                            provider.getName().toLowerCase().contains(searchQuery.toLowerCase()) ||
-                            provider.getService().toLowerCase().contains(searchQuery.toLowerCase());
+        Intent intent = new Intent(this, ProviderProfileActivity.class);
+        intent.putExtra("provider_name", provider.getName());
+        intent.putExtra("service_category", provider.getService());
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+    }
 
-                    // Apply current filter
-                    boolean matchesFilter = true;
-                    switch (currentFilter) {
-                        case "Available Now":
-                            matchesFilter = provider.isAvailableNow();
-                            break;
-                        case "Highest Rated":
-                            // Will sort after filtering
-                            break;
-                        case "Lowest Price":
-                            // Will sort after filtering
+    private void loadProvidersFromFirebase() {
+        if (providerListener != null)
+            providerListener.remove();
+        binding.progressBar.setVisibility(View.VISIBLE);
+        binding.rvProviders.setVisibility(View.GONE);
+
+        String serviceCategory = getIntent().getStringExtra("category_name");
+        if (serviceCategory == null || serviceCategory.isEmpty())
+            serviceCategory = "Plumbing";
+
+        FirebaseProviderService.ProviderCallback callback = new FirebaseProviderService.ProviderCallback() {
+            @Override
+            public void onSuccess(List<Provider> providers) {
+                allProviders = new ArrayList<>(providers);
+                syncFavoritesState(allProviders);
+
+                // Ensure at least 12 providers (pad with mock if needed)
+                if (allProviders.size() < 12) {
+                    List<Provider> mocks = createMockProviders();
+                    for (Provider m : mocks) {
+                        if (allProviders.stream()
+                                .noneMatch(existing -> existing.getName().equalsIgnoreCase(m.getName()))) {
+                            allProviders.add(m);
+                        }
+                        if (allProviders.size() >= 12)
                             break;
                     }
+                }
 
+                for (Provider p : allProviders) {
+                    if (p.getProfileImageResId() == 0 || p.getProfileImageResId() == R.drawable.profile) {
+                        p.setProfileImageResId(R.drawable.no_profile_image);
+                    }
+                }
+
+                runOnUiThread(() -> {
+                    binding.progressBar.setVisibility(View.GONE);
+                    binding.rvProviders.setVisibility(View.VISIBLE);
+                    adapter.updateProviders(allProviders);
+
+                    String initialQuery = getIntent().getStringExtra("search_query");
+                    if (initialQuery != null && !initialQuery.isEmpty()) {
+                        binding.etSearch.setText(initialQuery);
+                        filterProviders(initialQuery);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(String error) {
+                Log.e("PlumbingActivity", "Error: " + error);
+                allProviders = createMockProviders();
+                runOnUiThread(() -> {
+                    binding.progressBar.setVisibility(View.GONE);
+                    binding.rvProviders.setVisibility(View.VISIBLE);
+                    adapter.updateProviders(allProviders);
+                });
+            }
+        };
+
+        if ("Search Results".equals(serviceCategory) || "All".equals(serviceCategory)) {
+            firebaseProviderService.getAllProviders(callback);
+        } else {
+            providerListener = firebaseProviderService.listenToProviders(serviceCategory, callback);
+        }
+    }
+
+    private List<Provider> createMockProviders() {
+        List<Provider> p = new ArrayList<>();
+        p.add(new Provider("Expert Plumber", "Plumbing", 4.8, 123, "Available Now", "$60/hr",
+                R.drawable.no_profile_image, true, true));
+        p.add(new Provider("Reliable Plumber", "Plumbing", 4.7, 98, "Available Now", "$55/hr",
+                R.drawable.no_profile_image, true, true));
+        p.add(new Provider("Professional Plumber", "Plumbing", 4.9, 156, "Next available: 2pm", "$70/hr",
+                R.drawable.no_profile_image, true, false));
+        p.add(new Provider("Skilled Plumber", "Plumbing", 4.6, 87, "Available Now", "$50/hr",
+                R.drawable.no_profile_image, true, true));
+        p.add(new Provider("Certified Plumber", "Plumbing", 4.8, 134, "Available Now", "$65/hr",
+                R.drawable.no_profile_image, true, true));
+        p.add(new Provider("Master Plumber", "Plumbing", 4.9, 210, "Available Now", "$80/hr",
+                R.drawable.no_profile_image, true, true));
+        p.add(new Provider("Express Plumbing", "Plumbing", 4.5, 76, "Available in 1h", "$55/hr",
+                R.drawable.no_profile_image, false, true));
+        p.add(new Provider("City Plumbers", "Plumbing", 4.4, 45, "Available Now", "$45/hr", R.drawable.no_profile_image,
+                true, false));
+        p.add(new Provider("Golden Hand Service", "Plumbing", 4.7, 112, "Next available: Tomorrow", "$60/hr",
+                R.drawable.no_profile_image, false, true));
+        p.add(new Provider("ProFix Plumbing", "Plumbing", 4.6, 90, "Available Now", "$50/hr",
+                R.drawable.no_profile_image, true, true));
+        p.add(new Provider("Elite Rooter", "Plumbing", 4.8, 180, "Available Now", "$90/hr", R.drawable.no_profile_image,
+                true, true));
+        p.add(new Provider("A+ Plumbing", "Plumbing", 4.9, 300, "Available Now", "$75/hr", R.drawable.no_profile_image,
+                true, true));
+        for (int i = 0; i < p.size(); i++)
+            p.get(i).setId("mock_" + (i + 1));
+        return p;
+    }
+
+    private void setupButtons() {
+        binding.etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterProviders(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+        binding.btnFilter.setOnClickListener(v -> showFilterDialog());
+    }
+
+    private void filterProviders(String query) {
+        if (allProviders == null)
+            return;
+        List<Provider> filtered = allProviders.stream()
+                .filter(p -> {
+                    boolean matchesSearch = query == null || query.isEmpty()
+                            || p.getName().toLowerCase().contains(query.toLowerCase())
+                            || p.getService().toLowerCase().contains(query.toLowerCase());
+                    boolean matchesFilter = true;
+                    if (currentFilterIndex == 1) // Available Now
+                        matchesFilter = p.isAvailableNow();
                     return matchesSearch && matchesFilter;
                 })
                 .collect(Collectors.toList());
 
-        // Apply sorting if needed
-        if ("Highest Rated".equals(currentFilter)) {
+        if (currentFilterIndex == 2) // Highest Rated
             filtered.sort((p1, p2) -> Double.compare(p2.getRating(), p1.getRating()));
-        } else if ("Lowest Price".equals(currentFilter)) {
-            filtered.sort((p1, p2) -> {
-                // Extract numeric value from price string (e.g., "$60/hr" -> 60)
-                double price1 = extractPrice(p1.getPrice());
-                double price2 = extractPrice(p2.getPrice());
-                return Double.compare(price1, price2);
-            });
-        }
+        else if (currentFilterIndex == 3) // Lowest Price
+            filtered.sort((p1, p2) -> Double.compare(extractPrice(p1.getPrice()), extractPrice(p2.getPrice())));
 
         adapter.updateProviders(filtered);
-
-        // Toggle visibility based on results
-        if (filtered.isEmpty()) {
-            rvProviders.setVisibility(View.GONE);
-            if (tvNoResults != null)
-                tvNoResults.setVisibility(View.VISIBLE);
-        } else {
-            rvProviders.setVisibility(View.VISIBLE);
-            if (tvNoResults != null)
-                tvNoResults.setVisibility(View.GONE);
-        }
+        binding.rvProviders.setVisibility(filtered.isEmpty() ? View.GONE : View.VISIBLE);
+        binding.tvNoResults.setVisibility(filtered.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
-    private double extractPrice(String priceString) {
+    private double extractPrice(String price) {
         try {
-            // Remove "$", "/hr", and any other non-numeric characters except decimal point
-            String cleaned = priceString.replaceAll("[^0-9.]", "");
-            return Double.parseDouble(cleaned);
-        } catch (NumberFormatException e) {
+            return Double.parseDouble(price.replaceAll("[^0-9.]", ""));
+        } catch (Exception e) {
             return 0.0;
         }
     }
 
     private void showFilterDialog() {
-        String[] filterOptions = { "All", "Available Now", "Highest Rated", "Lowest Price" };
-        int selectedIndex = 0;
-        for (int i = 0; i < filterOptions.length; i++) {
-            if (filterOptions[i].equals(currentFilter)) {
-                selectedIndex = i;
-                break;
-            }
-        }
+        String[] options = {
+                getString(R.string.filter_option_all),
+                getString(R.string.filter_option_available_now),
+                getString(R.string.filter_option_highest_rated),
+                getString(R.string.filter_option_lowest_price)
+        };
 
         new AlertDialog.Builder(this)
-                .setTitle("Filter Providers")
-                .setSingleChoiceItems(filterOptions, selectedIndex, (dialog, which) -> {
-                    currentFilter = filterOptions[which];
-                    String searchText = etSearch != null ? etSearch.getText().toString() : "";
-                    filterProviders(searchText);
-                    dialog.dismiss();
+                .setTitle(getString(R.string.title_filter_providers))
+                .setSingleChoiceItems(options, currentFilterIndex, (d, w) -> {
+                    currentFilterIndex = w;
+                    filterProviders(binding.etSearch.getText().toString());
+                    d.dismiss();
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(getString(R.string.cancel), null)
                 .show();
     }
 
     private void setupBottomNavigation() {
-        BottomNavigationView bottomNavigation = findViewById(R.id.bottomNavigation);
-        if (bottomNavigation == null) {
-            android.util.Log.w("PlumbingActivity", "BottomNavigationView not found");
-            return;
-        }
-
-        bottomNavigation.setOnItemSelectedListener(item -> {
-            // Ignore selections during initialization
-            if (isInitializingBottomNav) {
-                android.util.Log.d("PlumbingActivity", "Ignoring bottom nav selection during initialization");
+        binding.bottomNavigation.setOnItemSelectedListener(item -> {
+            if (isInitializingBottomNav)
                 return false;
-            }
-
-            int itemId = item.getItemId();
-            android.util.Log.d("PlumbingActivity", "Bottom nav item selected: " + itemId);
-
-            if (itemId == R.id.nav_home) {
-                android.util.Log.d("PlumbingActivity", "Navigating to MainActivity from bottom nav");
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
+            int id = item.getItemId();
+            if (id == R.id.nav_home) {
+                startActivity(new Intent(this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-                finish(); // Finish this activity when navigating to home
-                return true;
-            } else if (itemId == R.id.nav_bookings) {
-                Intent intent = new Intent(this, BookingsActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 finish();
                 return true;
-            } else if (itemId == R.id.nav_messages) {
-                Intent intent = new Intent(this, MessagesActivity.class);
-                startActivity(intent);
+            } else if (id == R.id.nav_bookings) {
+                startActivity(new Intent(this, BookingsActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                finish();
-                return true;
-            } else if (itemId == R.id.nav_profile) {
-                Intent intent = new Intent(this, UserProfileActivity.class);
-                startActivity(intent);
+            } else if (id == R.id.nav_profile) {
+                startActivity(new Intent(this, UserProfileActivity.class));
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 finish();
                 return true;
             }
             return false;
         });
-
-        // Mark initialization as complete - now listener will work
         isInitializingBottomNav = false;
-        android.util.Log.d("PlumbingActivity", "Bottom navigation listener setup complete");
     }
 }

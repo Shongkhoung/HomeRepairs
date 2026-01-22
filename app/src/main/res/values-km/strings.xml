@@ -301,9 +301,61 @@
     <string name="btn_mark_read">គូសថាបានអាន</string>
     <string name="title_no_messages">រកមិនឃើញសារ</string>
     <string name="subtitle_no_messages">ចាប់ផ្តើមការសន្ទនាជាមួយអ្នកផ្តល់សេវាកម្ម</string>
+
+    <!-- Booking Confirmed Activity -->
+    <string name="booking_confirmed">ការកក់ត្រូវបានបញ្ជាក់!</string>
+    <string name="booking_reference_label">លេខយោងការកក់: %1$s</string>
+    <string name="scheduled_for">បានកំណត់ពេលសម្រាប់</string>
+    <string name="booking_details">ព័ត៌មានលម្អិតនៃការកក់</string>
+    <string name="service_location">ទីតាំងសេវាកម្ម</string>
+    <string name="total_amount">ចំនួនទឹកប្រាក់សរុប</string>
+    <string name="payment_on_delivery">បង់ប្រាក់នៅពេលដឹកជញ្ជូន</string>
+    <string name="whats_next">តើមានអ្វីបន្ទាប់?</string>
+    <string name="step_1_desc">យើងនឹងផ្ញើអ៊ីមែលបញ្ជាក់ដែលមានព័ត៌មានលម្អិតទាំងអស់</string>
+    <string name="step_2_desc">អ្នកផ្តល់សេវានឹងទាក់ទងអ្នក ៣០ នាទីមុនពេលមកដល់</string>
+    <string name="step_3_desc">អ្នកអាចតាមដានទីតាំងរបស់អ្នកផ្តល់សេវានៅថ្ងៃផ្តល់សេវា</string>
+    <string name="btn_return_home">ត្រឡប់ទៅទំព័រដើម</string>
+    <string name="view_booking_details">មើលព័ត៌មានលម្អិតនៃការកក់</string>
+    <string name="scheduled_time_duration_format">ពេលវេលាដែលបានកំណត់ (%1$s)</string>
+    <string name="service_by">សេវាកម្មដោយ %1$s</string>
     <string name="btn_browse_services">ស្វែងរកសេវាកម្ម</string>
     <string name="msg_loading">កំពុងផ្ទុក...</string>
     <string name="msg_no_internet">គ្មានការតភ្ជាប់អ៊ីនធឺណិត</string>
 
 
+
+    <!-- Plumbing Activity  -->
+    <string name="title_filter_providers">ត្រងអ្នកផ្តល់សេវា</string>
+    <string name="filter_option_all">ទាំងអស់</string>
+    <string name="filter_option_available_now">មានពេលឥឡូវនេះ</string>
+    <string name="filter_option_highest_rated">ការវាយតម្លៃខ្ពស់បំផុត</string>
+    <string name="filter_option_lowest_price">តម្លៃទាបបំផុត</string>
+    <string name="category_plumbing">ប្រព័ន្ធទឹក</string>
+    <string name="title_search_results">លទ្ធផលស្វែងរក</string>
+    <string name="default_provider_category">ប្រព័ន្ធទឹក</string>
+
+    <!-- Favorites Activity -->
+    <string name="category_all">ទាំងអស់</string>
+    <string name="category_handyman">ជាងជួសជុល</string>
+    <string name="category_electrical">អគ្គិសនី</string>
+    <string name="category_roofing">ដំបូល</string>
+    <string name="category_hvac">ម៉ាស៊ីនត្រជាក់</string>
+    <string name="category_painting">គំនូរ</string>
+    <string name="category_cleaning">ការសម្អាត</string>
+
+    <string name="title_search_favorites">ស្វែងរកការពេញចិត្ត</string>
+    <string name="hint_search_favorites">បញ្ចូលឈ្មោះឬសេវាកម្ម...</string>
+    <string name="btn_search">ស្វែងរក</string>
+    <string name="btn_clear">សម្អាត</string>
+    <string name="msg_no_providers_matching">រកមិនឃើញអ្នកផ្តល់សេវាដែលត្រូវនឹង \"%1$s\"</string>
+    <string name="msg_no_category_providers">គ្មានអ្នកផ្តល់សេវា %1$s ដែលបានរក្សាទុក</string>
+    <string name="label_saved_providers">អ្នកផ្តល់សេវា %1$d ដែលបានរក្សាទុក</string>
+    <string name="msg_removed_from_favorites">បានលុបចេញពីការពេញចិត្ត</string>
+    <string name="default_job_count">០ ការងារ</string>
+
+    <string name="share">ចែករំលែក</string>
+    <string name="share_provider_text_2">មើល %1$s នៅលើ HomeRepairs!</string>
+    <string name="default_service_description">សេវាកម្មប្រកបដោយវិជ្ជាជីវៈ</string>
+    <string name="msg_data_incomplete">ទិន្នន័យមិនពេញលេញ</string>
+    <string name="msg_load_failed">ការផ្ទុកបរាជ័យ</string>
 </resources>

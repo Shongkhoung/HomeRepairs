@@ -46,6 +46,7 @@ import com.example.homerepairs.models.ServiceCategory;
 import com.example.homerepairs.utils.AuthHelper;
 import com.example.homerepairs.utils.NetworkUtils;
 import com.example.homerepairs.viewmodel.HomeViewModel;
+import com.example.homerepairs.databinding.ActivityMainBinding;
 import com.example.homerepairs.services.FirebaseUserService;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -76,13 +77,18 @@ public class MainActivity extends BaseActivity {
     // Handler for periodic weather refresh
     private android.os.Handler weatherRefreshHandler;
     private Runnable weatherRefreshRunnable;
-    private static final long WEATHER_REFRESH_INTERVAL = 60000; // 1 minute for real-time sync
+    private static final long WEATHER_REFRESH_INTERVAL = 900000; // 15 minutes (was 1 minute)
 
     // Debounce mechanism to prevent duplicate weather fetches
     private android.os.Handler weatherDebounceHandler;
     private Runnable weatherDebounceRunnable;
     private static final long WEATHER_DEBOUNCE_DELAY = 2000; // 2 seconds debounce
     private long lastWeatherFetchTime = 0;
+
+    // Search Debounce
+    private android.os.Handler searchDebounceHandler = new android.os.Handler();
+    private Runnable searchDebounceRunnable;
+    private static final long SEARCH_DEBOUNCE_DELAY = 300; // 300ms debounce
 
     // Track network state to prevent excessive weather fetches
     private boolean wasInternetAvailable = false;
@@ -92,41 +98,9 @@ public class MainActivity extends BaseActivity {
     private ListenerRegistration userProfileListener;
     private String currentUserName = null;
 
-    // Views
-    private TextView tvWeather;
-    private LottieAnimationView ivWeatherIcon;
-    private TextView tvLocation;
-    private TextView tvGreeting;
-    private EditText etSearch;
-    private RecyclerView rvCategories;
-    private RecyclerView rvFeaturedProviders;
-    private RecyclerView rvRecentActivity;
-    private ProgressBar progressBar;
-    private ViewGroup llMainContent;
-    private ImageButton btnNotification;
-    private View btnEmergency;
-    private View btnScheduleLater;
-    private View btnDocument;
-    private LottieAnimationView ivEmergencyIcon;
-    // private LinearLayout llNoSearchResults;
-    // private LottieAnimationView ivSearchingAnimation;
-
-    private ImageView ivBookingLaterIcon;
-    private ImageView ivFavoriteIcon;
-    private FrameLayout llInternetLoading;
-    private de.hdodenhof.circleimageview.CircleImageView ivProfileIcon;
-    private TextView tvProfileLetter;
-    private View cardProfileIcon;
-    private TextView tvInternetMessage;
-    private LottieAnimationView ivNoConnection;
+    private ActivityMainBinding binding;
     private android.os.Handler offlineDelayHandler;
-    private TextView tvViewAllServices;
-    private TextView tvViewAllActivity;
     private Runnable offlineDelayRunnable;
-    private FrameLayout llScreenLoading;
-    private LottieAnimationView ivScreenLoading;
-    private long loadingStartTime = 0;
-    private static final long MIN_LOADING_DURATION = 1500; // Minimum 1.5 seconds
 
     // Adapters
     private ServiceCategoryAdapter categoryAdapter;
@@ -154,8 +128,6 @@ public class MainActivity extends BaseActivity {
 
         // Check if user is authenticated
         if (!AuthHelper.isAuthenticated()) {
-            // Redirect to login screen in sign in mode (user likely needs to sign in, not
-            // create account)
             Intent intent = new Intent(this, LoginActivity.class);
             intent.putExtra("mode", "sign_in");
             startActivity(intent);
@@ -163,22 +135,13 @@ public class MainActivity extends BaseActivity {
             return;
         }
 
-        setContentView(R.layout.activity_main);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        // Set status bar color to white to match screen background
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.white));
-            // Set dark status bar icons (dark icons on light background)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                getWindow().getDecorView().setSystemUiVisibility(
-                        getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            }
-        }
-
-        // Initialize Firebase Authentication (anonymous sign-in for testing)
+        // Initialize Firebase Authentication
         initializeFirebaseAuth();
 
-        // Initialize user service for loading user data
+        // Initialize user service
         userService = new FirebaseUserService();
 
         initializeViews();
@@ -190,16 +153,11 @@ public class MainActivity extends BaseActivity {
         requestLocationPermission();
         setupNetworkCallback();
 
-        // Load user data from Firebase
         loadUserData();
 
-        // Wait for layout to be ready before hiding loading overlay
-        waitForLayoutReady();
-        // Initialize debounce handler
         weatherDebounceHandler = new android.os.Handler(android.os.Looper.getMainLooper());
         setupWeatherRefresh();
 
-        // Check network status after a short delay to ensure views are ready
         new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
             checkNetworkStatus();
         }, 500);
@@ -218,14 +176,14 @@ public class MainActivity extends BaseActivity {
         startWeatherRefresh();
 
         // Clear search text and focus when returning to the screen
-        if (etSearch != null) {
-            etSearch.setText("");
-            etSearch.clearFocus();
+        if (binding.etSearch != null) {
+            binding.etSearch.setText("");
+            binding.etSearch.clearFocus();
             // Hide keyboard if visible
             android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) getSystemService(
                     android.content.Context.INPUT_METHOD_SERVICE);
             if (imm != null) {
-                imm.hideSoftInputFromWindow(etSearch.getWindowToken(), 0);
+                imm.hideSoftInputFromWindow(binding.etSearch.getWindowToken(), 0);
             }
         }
     }
@@ -264,65 +222,22 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initializeViews() {
-        tvWeather = findViewById(R.id.tvWeather);
-        ivWeatherIcon = findViewById(R.id.ivWeatherIcon);
-        tvLocation = findViewById(R.id.tvLocation);
-        tvGreeting = findViewById(R.id.tvGreeting);
-        etSearch = findViewById(R.id.etSearch);
-        rvCategories = findViewById(R.id.rvCategories);
-        rvFeaturedProviders = findViewById(R.id.rvFeaturedProviders);
-        rvRecentActivity = findViewById(R.id.rvRecentActivity);
-        progressBar = findViewById(R.id.progressBar);
-        llMainContent = findViewById(R.id.llMainContent);
-        btnNotification = findViewById(R.id.btnNotification);
-        btnEmergency = findViewById(R.id.btnEmergency);
-        btnScheduleLater = findViewById(R.id.btnScheduleLater);
-        btnDocument = findViewById(R.id.btnDocument);
-        ivEmergencyIcon = findViewById(R.id.ivEmergencyIcon);
-        ivBookingLaterIcon = findViewById(R.id.ivBookingLaterIcon);
-        ivFavoriteIcon = findViewById(R.id.ivFavoriteIcon);
-        ivFavoriteIcon = findViewById(R.id.ivFavoriteIcon);
-        // llNoSearchResults = findViewById(R.id.llNoSearchResults);
-        // ivSearchingAnimation = findViewById(R.id.ivSearchingAnimation);
-        llInternetLoading = findViewById(R.id.llInternetLoading);
-        tvInternetMessage = findViewById(R.id.tvInternetMessage);
-        ivNoConnection = findViewById(R.id.ivNoConnection);
-        tvViewAllServices = findViewById(R.id.tvViewAllServices);
-        tvViewAllActivity = findViewById(R.id.tvViewAllActivity);
-        llScreenLoading = findViewById(R.id.llScreenLoading);
-        ivScreenLoading = findViewById(R.id.ivScreenLoading);
-        ivProfileIcon = findViewById(R.id.ivProfileIcon);
-        tvProfileLetter = findViewById(R.id.tvProfileLetter);
-        cardProfileIcon = findViewById(R.id.cardProfileIcon);
         offlineDelayHandler = new android.os.Handler();
-
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        // Set default values (will be updated with real data)
         updateGreeting();
-        updateProfileIcon(); // Initialize profile icon
-        tvLocation.setText(getString(R.string.default_location));
-        tvWeather.setText(getString(R.string.default_weather));
-        if (ivWeatherIcon != null) {
-            // Use sunny_weather.json for weather icon (sunny.json is for time-based
-            // greeting icon)
-            ivWeatherIcon.setAnimation(R.raw.sunny_weather);
-            ivWeatherIcon.playAnimation();
-        }
+        updateProfileIcon();
+        binding.tvLocation.setText(getString(R.string.default_location));
+        binding.tvWeather.setText(getString(R.string.default_weather));
 
-        // Initialize button icons
-        if (ivEmergencyIcon != null) {
-            // Emergency uses Lottie animation
-            ivEmergencyIcon.setAnimation(R.raw.amercency);
-            ivEmergencyIcon.playAnimation();
-        }
-        // Booking Later and Favorite icons are set in XML layout using drawable
-        // resources
+        binding.ivWeatherIcon.setAnimation(R.raw.sunny_weather);
+        binding.ivWeatherIcon.playAnimation();
 
-        // Initialize internet loading indicator as hidden
+        binding.ivEmergencyIcon.setAnimation(R.raw.amercency);
+        binding.ivEmergencyIcon.playAnimation();
+
         showInternetLoading(false);
-
     }
 
     /**
@@ -451,13 +366,13 @@ public class MainActivity extends BaseActivity {
      * @param email User's email (for fallback letter)
      */
     private void updateProfileIcon(String name, String email) {
-        if (ivProfileIcon == null || tvProfileLetter == null) {
+        if (binding.ivProfileIcon == null || binding.tvProfileLetter == null) {
             return;
         }
 
         // Always show letter, never load images (matching profile screen behavior)
-        ivProfileIcon.setVisibility(View.GONE);
-        tvProfileLetter.setVisibility(View.VISIBLE);
+        binding.ivProfileIcon.setVisibility(View.GONE);
+        binding.tvProfileLetter.setVisibility(View.VISIBLE);
 
         // Get first letter - same priority as profile screen:
         // 1. First letter of name
@@ -470,15 +385,15 @@ public class MainActivity extends BaseActivity {
             firstLetter = email.substring(0, 1).toUpperCase();
         }
 
-        tvProfileLetter.setText(firstLetter);
+        binding.tvProfileLetter.setText(firstLetter);
     }
 
     /**
      * Update greeting text with current user name
      */
     private void updateGreeting() {
-        if (tvGreeting != null) {
-            tvGreeting.setText(getTimeBasedGreeting());
+        if (binding.tvGreeting != null) {
+            binding.tvGreeting.setText(getTimeBasedGreeting());
         }
     }
 
@@ -524,22 +439,17 @@ public class MainActivity extends BaseActivity {
         // Observe categories
         viewModel.getCategories().observe(this, categories -> {
             if (categories != null && !categories.isEmpty()) {
-                // Store original categories for search highlighting
-                originalCategories = new java.util.ArrayList<>(categories);
+                // Show ALL categories immediately (User Request: Show all, no see more/less)
                 allCategories = new java.util.ArrayList<>(categories);
+                originalCategories = new java.util.ArrayList<>(categories);
 
-                // Show only first 6 categories initially
-                List<ServiceCategory> initialCategories;
-                if (categories.size() > 6) {
-                    initialCategories = new java.util.ArrayList<>(categories.subList(0, 6));
-                } else {
-                    initialCategories = new java.util.ArrayList<>(categories);
-                }
-                categoryAdapter.updateCategories(initialCategories);
+                categoryAdapter.updateCategories(allCategories);
                 categoryAdapter.setSearchQuery(currentSearchQuery); // Apply search highlighting
-                showingAllCategories = false;
-                if (tvViewAllServices != null) {
-                    tvViewAllServices.setText(getString(R.string.view_all_arrow));
+                showingAllCategories = true;
+
+                // Hide the View All button since we are showing everything
+                if (binding.tvViewAllServices != null) {
+                    binding.tvViewAllServices.setVisibility(View.GONE);
                 }
             }
         });
@@ -560,17 +470,14 @@ public class MainActivity extends BaseActivity {
         viewModel.getRecentActivities().observe(this, activities -> {
             if (activities != null && !activities.isEmpty()) {
                 allActivities = new java.util.ArrayList<>(activities);
-                // Show only first 2 activities by default
-                List<RecentActivity> displayActivities;
-                if (!showingAllActivities && activities.size() > 2) {
-                    displayActivities = new java.util.ArrayList<>(activities.subList(0, 2));
-                } else {
-                    displayActivities = new java.util.ArrayList<>(activities);
-                }
-                activityAdapter.updateActivities(displayActivities);
+                // Show ALL activities immediately (User Request: Show all, no see more/less)
+                activityAdapter.updateActivities(allActivities);
+                showingAllActivities = true;
 
-                // Update "View All" button text
-                updateViewAllActivityButton();
+                // Hide View All button
+                if (binding.tvViewAllActivity != null) {
+                    binding.tvViewAllActivity.setVisibility(View.GONE);
+                }
             }
         });
 
@@ -578,41 +485,42 @@ public class MainActivity extends BaseActivity {
         viewModel.getWeatherData().observe(this, weather -> {
             if (weather != null) {
                 android.util.Log.d("MainActivity", "Weather data updated: " + weather);
-                tvWeather.setText(weather);
+                binding.tvWeather.setText(weather);
             }
         });
 
         // Observe weather icon (Lottie animation)
         viewModel.getWeatherIconFileName().observe(this, fileName -> {
             android.util.Log.d("MainActivity", "Weather icon observer triggered, fileName: " + fileName
-                    + ", ivWeatherIcon null: " + (ivWeatherIcon == null));
-            if (fileName != null && !fileName.isEmpty() && ivWeatherIcon != null) {
+                    + ", binding.ivWeatherIcon null: " + (binding.ivWeatherIcon == null));
+            if (fileName != null && !fileName.isEmpty() && binding.ivWeatherIcon != null) {
                 android.util.Log.d("MainActivity", "Setting weather icon to Lottie file: " + fileName);
                 int resId = getLottieResourceId(fileName);
                 if (resId != 0) {
-                    ivWeatherIcon.setAnimation(resId);
-                    ivWeatherIcon.playAnimation();
+                    binding.ivWeatherIcon.setAnimation(resId);
+                    binding.ivWeatherIcon.playAnimation();
                     android.util.Log.d("MainActivity", "Weather icon updated successfully");
                 } else {
                     android.util.Log.e("MainActivity", "Invalid Lottie file name: " + fileName);
                 }
             } else {
                 android.util.Log.w("MainActivity",
-                        "Cannot update weather icon - fileName: " + fileName + ", ivWeatherIcon: " + ivWeatherIcon);
+                        "Cannot update weather icon - fileName: " + fileName + ", binding.ivWeatherIcon: "
+                                + binding.ivWeatherIcon);
             }
         });
 
         // Observe location
         viewModel.getUserLocation().observe(this, location -> {
             if (location != null) {
-                tvLocation.setText(location);
+                binding.tvLocation.setText(location);
             }
         });
 
         // Observe loading state
         viewModel.getIsLoading().observe(this, isLoading -> {
-            if (progressBar != null) {
-                progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+            if (binding.progressBar != null) {
+                binding.progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
             }
         });
 
@@ -632,15 +540,15 @@ public class MainActivity extends BaseActivity {
         });
 
         // Load data
-        viewModel.loadCategories();
-        viewModel.loadFeaturedProviders();
-        // Load recent activity with current user ID
+        // Load optimized dashboard data (Categories, Featured, Recent)
         String userId = AuthHelper.getCurrentUserId(this);
         if (userId != null) {
-            viewModel.loadRecentActivity(userId);
+            viewModel.loadDashboardData(userId);
         } else {
             // This should not happen as we check authentication in onCreate
             android.util.Log.e("MainActivity", "getCurrentUserId returned null - user should be authenticated");
+            // Still try to load data without user ID context if needed
+            viewModel.loadDashboardData(null);
         }
     }
 
@@ -740,15 +648,15 @@ public class MainActivity extends BaseActivity {
 
     private void setupRecyclerViews() {
         // Categories - Grid layout (3 columns for better fit on 6.43-inch screen)
-        if (rvCategories != null && categoryAdapter != null) {
+        if (binding.rvCategories != null && categoryAdapter != null) {
             GridLayoutManager categoryLayoutManager = new GridLayoutManager(this, 3);
-            rvCategories.setLayoutManager(categoryLayoutManager);
-            rvCategories.setAdapter(categoryAdapter);
-            rvCategories.setHasFixedSize(true);
+            binding.rvCategories.setLayoutManager(categoryLayoutManager);
+            binding.rvCategories.setAdapter(categoryAdapter);
+            binding.rvCategories.setHasFixedSize(true);
 
             // Disable individual item animator to prevent "random" flight during layout
             // changes
-            rvCategories.setItemAnimator(null);
+            binding.rvCategories.setItemAnimator(null);
 
             android.util.Log.d("MainActivity",
                     "RecyclerView setup complete, adapter item count: " + categoryAdapter.getItemCount());
@@ -760,9 +668,9 @@ public class MainActivity extends BaseActivity {
         // Horizontal layout for Featured Pro cards (scrollable cards)
         LinearLayoutManager providerLayoutManager = new LinearLayoutManager(
                 this, LinearLayoutManager.HORIZONTAL, false);
-        rvFeaturedProviders.setLayoutManager(providerLayoutManager);
-        rvFeaturedProviders.setAdapter(providerAdapter);
-        rvFeaturedProviders.setItemAnimator(null);
+        binding.rvFeaturedProviders.setLayoutManager(providerLayoutManager);
+        binding.rvFeaturedProviders.setAdapter(providerAdapter);
+        binding.rvFeaturedProviders.setItemAnimator(null);
 
         // Calculate card width to match recent activity card width
         // Recent activity: RecyclerView width = screen width - 40dp (container padding
@@ -773,8 +681,8 @@ public class MainActivity extends BaseActivity {
         // padding 20dp each side)
         // Card width should match recent activity = screen width - 72dp
         // Card margins = 16dp + 8dp = 24dp
-        rvFeaturedProviders.post(() -> {
-            int recyclerViewWidth = rvFeaturedProviders.getWidth();
+        binding.rvFeaturedProviders.post(() -> {
+            int recyclerViewWidth = binding.rvFeaturedProviders.getWidth();
             float density = getResources().getDisplayMetrics().density;
             // Recent activity card width = screen width - 72dp
             // Since RecyclerView width = screen width - 40dp, we can calculate:
@@ -791,50 +699,50 @@ public class MainActivity extends BaseActivity {
             int cardWithMargins = cardWidth + (int) (24 * density);
             int paddingEnd = (recyclerViewWidth - cardWithMargins) / 2;
             if (paddingEnd > 0) {
-                rvFeaturedProviders.setPadding(0, 0, paddingEnd, 0);
-                rvFeaturedProviders.setClipToPadding(false);
+                binding.rvFeaturedProviders.setPadding(0, 0, paddingEnd, 0);
+                binding.rvFeaturedProviders.setClipToPadding(false);
             }
         });
 
         // Recent activity - Vertical layout
         LinearLayoutManager activityLayoutManager = new LinearLayoutManager(this);
-        rvRecentActivity.setLayoutManager(activityLayoutManager);
-        rvRecentActivity.setAdapter(activityAdapter);
+        binding.rvRecentActivity.setLayoutManager(activityLayoutManager);
+        binding.rvRecentActivity.setAdapter(activityAdapter);
     }
 
     private void setupButtons() {
         // Profile icon click - navigate to Profile screen
-        if (cardProfileIcon != null) {
-            cardProfileIcon.setOnClickListener(v -> {
+        if (binding.cardProfileIcon != null) {
+            binding.cardProfileIcon.setOnClickListener(v -> {
                 Intent intent = new Intent(this, UserProfileActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             });
         }
 
-        btnNotification.setOnClickListener(v -> {
+        binding.btnNotification.setOnClickListener(v -> {
             Toast.makeText(this, "Notifications", Toast.LENGTH_SHORT).show();
         });
 
-        btnEmergency.setOnClickListener(v -> navigateToBooking("Emergency"));
-        btnScheduleLater.setOnClickListener(v -> navigateToBooking("Schedule Later"));
+        binding.btnEmergency.setOnClickListener(v -> navigateToBooking("Emergency"));
+        binding.btnScheduleLater.setOnClickListener(v -> navigateToBooking("Schedule Later"));
 
-        btnDocument.setOnClickListener(v -> {
+        binding.btnDocument.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, FavoritesActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
 
         // View all services click handler
-        if (tvViewAllServices != null) {
-            tvViewAllServices.setOnClickListener(v -> {
+        if (binding.tvViewAllServices != null) {
+            binding.tvViewAllServices.setOnClickListener(v -> {
                 toggleCategoriesView();
             });
         }
 
         // View all activity click handler - toggle expand/collapse
-        if (tvViewAllActivity != null) {
-            tvViewAllActivity.setOnClickListener(v -> {
+        if (binding.tvViewAllActivity != null) {
+            binding.tvViewAllActivity.setOnClickListener(v -> {
                 toggleActivitiesView();
             });
         }
@@ -843,63 +751,129 @@ public class MainActivity extends BaseActivity {
         // Setup Search Actions
         setupSearch();
 
-        // Seed Firebase Data (One-time)
-        com.example.homerepairs.utils.FirebaseSeeder.seedProviders(this);
+        // Seed Firebase Data (One-time) in background thread
+        // Seed Firebase Data (One-time) in background thread
+        new Thread(() -> {
+            // Seed providers and update counts
+            com.example.homerepairs.utils.FirebaseSeeder.seedProviders(this);
+
+            // Check if images already seeded to prevent re-randomizing on every launch
+            android.content.SharedPreferences prefs = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+            if (prefs.getBoolean("images_seeded_v1", false)) {
+                return;
+            }
+
+            // Update all provider profiles with image URL
+            // Wait a bit for seeding to complete before updating images
+            try {
+                Thread.sleep(3000); // Wait 3 seconds for seeding to complete
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            // Update all providers with random images from the list
+            java.util.List<String> imageUrls = new java.util.ArrayList<>();
+            imageUrls.add("https://i.pinimg.com/1200x/e0/cc/4b/e0cc4b56a0ae8eff72afa090591abfbe.jpg");
+            imageUrls.add("https://i.pinimg.com/736x/c1/9e/8c/c19e8c264bdb02463f66c04e3bf97204.jpg");
+            imageUrls.add("https://i.pinimg.com/736x/76/36/6c/76366cca75463a631ef27a91c9966a34.jpg");
+            imageUrls.add("https://i.pinimg.com/736x/88/6c/4b/886c4b6802d3092892b528186d50694f.jpg");
+            imageUrls.add("https://i.pinimg.com/736x/f2/38/f9/f238f9ba5fa9a3f2b0fc4a8e2aa6a38b.jpg");
+
+            com.example.homerepairs.utils.ProviderImageUpdater.updateProvidersWithRandomImages(this, imageUrls);
+
+            // Mark images as seeded
+            prefs.edit().putBoolean("images_seeded_v1", true).apply();
+        }).start();
     }
 
     /**
      * Setup search functionality to filter categories
      */
     private void setupSearch() {
-        if (etSearch == null) {
+        if (binding.etSearch == null) {
             return;
         }
 
+        // Clear focus when touching the background/scroll view
+        if (binding.nsvMain != null) {
+            binding.nsvMain.setOnTouchListener((v, event) -> {
+                if (event.getAction() == android.view.MotionEvent.ACTION_DOWN) {
+                    if (binding.etSearch != null && binding.etSearch.hasFocus()) {
+                        binding.etSearch.clearFocus();
+                        android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) getSystemService(
+                                android.content.Context.INPUT_METHOD_SERVICE);
+                        if (imm != null) {
+                            imm.hideSoftInputFromWindow(binding.etSearch.getWindowToken(), 0);
+                        }
+                    }
+                }
+                return false; // Let scrolling happen
+            });
+        }
+
         // SCROLL OPTIMIZATION: Scroll search bar to top when focused
-        etSearch.setOnFocusChangeListener((v, hasFocus) -> {
+        binding.etSearch.setOnFocusChangeListener((v, hasFocus) -> {
+            if (binding.bottomNavigation != null) {
+                binding.bottomNavigation.setVisibility(hasFocus ? View.GONE : View.VISIBLE);
+            }
+
+            // Adjust padding: 0 when typing (so content goes to keyboard), 80dp when not
+            // (to clear nav bar)
+            if (binding.nsvMain != null) {
+                int paddingBottom = hasFocus ? 0 : (int) (80 * getResources().getDisplayMetrics().density);
+                binding.nsvMain.setPadding(0, 0, 0, paddingBottom);
+            }
+
             if (hasFocus) {
                 // Determine the scroll position to bring the search bar to the top
                 // We need to account for any toolbar/header height if necessary
-                android.view.View searchCard = findViewById(R.id.cvSearchBar);
-                androidx.core.widget.NestedScrollView nsvMain = findViewById(R.id.nsvMain);
+                android.view.View searchCard = binding.cvSearchBar;
 
-                if (searchCard != null && nsvMain != null) {
+                if (searchCard != null && binding.nsvMain != null) {
                     // Post to message queue to ensure layout is measured
-                    nsvMain.post(() -> {
+                    binding.nsvMain.post(() -> {
                         // Get text location
                         int top = searchCard.getTop();
                         // Smooth scroll to that position
-                        nsvMain.smoothScrollTo(0, top - 40); // 40px buffer for padding
+                        binding.nsvMain.smoothScrollTo(0, top - 40); // 40px buffer for padding
                     });
                 }
             }
         });
 
-        // Add text change listener for real-time search
-        etSearch.addTextChangedListener(new TextWatcher() {
+        // Add text change listener for real-time search with debounce
+        binding.etSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                currentSearchQuery = s.toString().toLowerCase().trim();
-                filterBySearchQuery(currentSearchQuery);
+                // Remove pending search runnable
+                if (searchDebounceHandler != null && searchDebounceRunnable != null) {
+                    searchDebounceHandler.removeCallbacks(searchDebounceRunnable);
+                }
             }
 
             @Override
             public void afterTextChanged(Editable s) {
+                // Post new search runnable with delay
+                searchDebounceRunnable = () -> {
+                    currentSearchQuery = s.toString().toLowerCase().trim();
+                    filterBySearchQuery(currentSearchQuery);
+                };
+                searchDebounceHandler.postDelayed(searchDebounceRunnable, SEARCH_DEBOUNCE_DELAY);
             }
         });
 
         // Handle keyboard "Search" or "Enter" action
-        etSearch.setOnEditorActionListener((v, actionId, event) -> {
+        binding.etSearch.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH ||
                     actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE ||
                     (event != null && event.getKeyCode() == android.view.KeyEvent.KEYCODE_ENTER
                             && event.getAction() == android.view.KeyEvent.ACTION_DOWN)) {
 
-                String query = etSearch.getText().toString().trim();
+                String query = binding.etSearch.getText().toString().trim();
                 if (!query.isEmpty()) {
                     android.util.Log.d("MainActivity", "Search action triggering navigation for: " + query);
 
@@ -907,26 +881,21 @@ public class MainActivity extends BaseActivity {
                     android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) getSystemService(
                             android.content.Context.INPUT_METHOD_SERVICE);
                     if (imm != null) {
-                        imm.hideSoftInputFromWindow(etSearch.getWindowToken(), 0);
+                        imm.hideSoftInputFromWindow(binding.etSearch.getWindowToken(), 0);
                     }
 
+                    // Clear focus to show nav bar
+                    binding.etSearch.clearFocus();
+
                     // Show searching animation as full screen loader
-                    showSearchLoading(true);
+                    // showSearchLoading(true); // REMOVED
 
-                    // Simulate search delay then navigate
-                    new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
-                        // Navigate to results screen (reusing PlumbingActivity as generic list)
-                        Intent intent = new Intent(MainActivity.this, PlumbingActivity.class);
-                        intent.putExtra("category_name", "Search Results");
-                        intent.putExtra("search_query", query);
-                        startActivity(intent);
-                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-
-                        // Hide loading after transition (will be hidden by onStop/onResume/layout logic
-                        // anyway)
-                        new android.os.Handler().postDelayed(() -> showSearchLoading(false), 500);
-
-                    }, 2000); // 2 second delay for animation
+                    // Navigate to results screen (reusing PlumbingActivity as generic list)
+                    Intent intent = new Intent(MainActivity.this, PlumbingActivity.class);
+                    intent.putExtra("category_name", "Search Results");
+                    intent.putExtra("search_query", query);
+                    startActivity(intent);
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
                     return true;
                 }
@@ -962,29 +931,21 @@ public class MainActivity extends BaseActivity {
                 }
             }
             categoryAdapter.updateCategories(categoriesToShow);
-            if (tvViewAllServices != null) {
-                tvViewAllServices.setVisibility(View.VISIBLE);
-                tvViewAllServices.setEnabled(true);
+            // Hide View All button (User Request)
+            if (binding.tvViewAllServices != null) {
+                binding.tvViewAllServices.setVisibility(View.GONE);
             }
 
             // Providers
             providerAdapter.updateProviders(new java.util.ArrayList<>(originalProviders));
 
             // Activities
-            List<RecentActivity> activitiesToShow;
-            if (showingAllActivities) {
-                activitiesToShow = new java.util.ArrayList<>(allActivities);
-            } else {
-                if (allActivities.size() > 2) {
-                    activitiesToShow = new java.util.ArrayList<>(allActivities.subList(0, 2));
-                } else {
-                    activitiesToShow = new java.util.ArrayList<>(allActivities);
-                }
-            }
-            activityAdapter.updateActivities(activitiesToShow);
-            if (tvViewAllActivity != null) {
-                updateViewAllActivityButton(); // This handles visibility
-                tvViewAllActivity.setVisibility(View.VISIBLE);
+            // Always show all (User Request)
+            activityAdapter.updateActivities(new java.util.ArrayList<>(allActivities));
+
+            // Hide View All button
+            if (binding.tvViewAllActivity != null) {
+                binding.tvViewAllActivity.setVisibility(View.GONE);
             }
 
             // Hide No Results
@@ -995,35 +956,21 @@ public class MainActivity extends BaseActivity {
             // SEARCH MODE
             String queryLower = query.toLowerCase();
 
-            // 1. Filter Categories (Match name OR providers within category)
+            // 1. Do NOT Filter Categories (User Request: All provider/category cards must
+            // still be visible)
+            // We kept the search highlighting logic in the adapter, but we pass ALL
+            // categories now.
             List<ServiceCategory> filteredCategories = new java.util.ArrayList<>();
             for (ServiceCategory cat : originalCategories) {
-                boolean match = cat.getName().toLowerCase().contains(queryLower);
-                if (!match) {
-                    // Check providers in this category using originalProviders
-                    for (FeaturedProvider prov : originalProviders) {
-                        if (prov.getService() != null
-                                && prov.getService().equalsIgnoreCase(cat.getName())) {
-                            if (prov.getName().toLowerCase().contains(queryLower)) {
-                                match = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (match) {
-                    filteredCategories.add(cat);
-                }
+                // Add all categories, regardless of match
+                filteredCategories.add(cat);
             }
 
-            // 2. Filter Providers
-            List<FeaturedProvider> filteredProviders = new java.util.ArrayList<>();
-            for (FeaturedProvider prov : originalProviders) {
-                if (prov.getName().toLowerCase().contains(queryLower) ||
-                        (prov.getService() != null && prov.getService().toLowerCase().contains(queryLower))) {
-                    filteredProviders.add(prov);
-                }
-            }
+            // 2. Do NOT Filter Providers (User Request: All provider cards must still be
+            // visible)
+            // We kept the original logic for categories and activities, but providers
+            // remain unfiltered
+            List<FeaturedProvider> filteredProviders = new java.util.ArrayList<>(originalProviders);
 
             // 3. Filter Activities
             List<RecentActivity> filteredActivities = new java.util.ArrayList<>();
@@ -1064,11 +1011,11 @@ public class MainActivity extends BaseActivity {
             // }
 
             // Hide "View All" buttons during search
-            if (tvViewAllServices != null) {
-                tvViewAllServices.setVisibility(View.INVISIBLE);
+            if (binding.tvViewAllServices != null) {
+                binding.tvViewAllServices.setVisibility(View.INVISIBLE);
             }
-            if (tvViewAllActivity != null) {
-                tvViewAllActivity.setVisibility(View.GONE);
+            if (binding.tvViewAllActivity != null) {
+                binding.tvViewAllActivity.setVisibility(View.GONE);
             }
         }
 
@@ -1087,14 +1034,14 @@ public class MainActivity extends BaseActivity {
         }
 
         // Disable clicks during animation
-        if (tvViewAllServices != null) {
-            tvViewAllServices.setEnabled(false);
+        if (binding.tvViewAllServices != null) {
+            binding.tvViewAllServices.setEnabled(false);
         }
 
         if (showingAllCategories) {
             // Animate layout changes
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                android.transition.TransitionManager.beginDelayedTransition(llMainContent,
+                android.transition.TransitionManager.beginDelayedTransition(binding.llMainContent,
                         new android.transition.ChangeBounds().setDuration(300));
             }
             // Show only first 6 with smooth animation
@@ -1108,34 +1055,38 @@ public class MainActivity extends BaseActivity {
             categoryAdapter.updateCategoriesGranular(limitedCategories, false);
             categoryAdapter.setSearchQuery(currentSearchQuery); // Maintain search highlighting
             showingAllCategories = false;
-            if (tvViewAllServices != null) {
-                tvViewAllServices.setText(getString(R.string.view_all_arrow));
+            if (binding.tvViewAllServices != null) {
+                binding.tvViewAllServices.setText(getString(R.string.view_all_arrow));
             }
 
             // Re-enable after animation starts (shorter delay for better UX)
-            rvCategories.postDelayed(() -> {
-                if (tvViewAllServices != null) {
-                    tvViewAllServices.setEnabled(true);
+            binding.rvCategories.postDelayed(() -> {
+                if (binding.tvViewAllServices != null) {
+                    binding.tvViewAllServices.setEnabled(true);
                 }
             }, 300);
         } else {
-            // Animate layout changes
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                android.transition.TransitionManager.beginDelayedTransition(llMainContent,
-                        new android.transition.ChangeBounds().setDuration(300));
-            }
+            // Animate layout changes - REMOVED to prevent card "rotation" effect
+            /*
+             * if (android.os.Build.VERSION.SDK_INT >=
+             * android.os.Build.VERSION_CODES.KITKAT) {
+             * android.transition.TransitionManager.beginDelayedTransition(binding.
+             * llMainContent,
+             * new android.transition.ChangeBounds().setDuration(300));
+             * }
+             */
             // Show all categories with smooth animation
             categoryAdapter.updateCategoriesGranular(new java.util.ArrayList<>(originalCategories), true);
             categoryAdapter.setSearchQuery(currentSearchQuery); // Maintain search highlighting
             showingAllCategories = true;
-            if (tvViewAllServices != null) {
-                tvViewAllServices.setText(getString(R.string.view_less_arrow));
+            if (binding.tvViewAllServices != null) {
+                binding.tvViewAllServices.setText(getString(R.string.view_less_arrow));
             }
 
             // Re-enable after animation starts (shorter delay for better UX)
-            rvCategories.postDelayed(() -> {
-                if (tvViewAllServices != null) {
-                    tvViewAllServices.setEnabled(true);
+            binding.rvCategories.postDelayed(() -> {
+                if (binding.tvViewAllServices != null) {
+                    binding.tvViewAllServices.setEnabled(true);
                 }
             }, 300);
         }
@@ -1150,16 +1101,20 @@ public class MainActivity extends BaseActivity {
         }
 
         // Disable clicks during update
-        if (tvViewAllActivity != null) {
-            tvViewAllActivity.setEnabled(false);
+        if (binding.tvViewAllActivity != null) {
+            binding.tvViewAllActivity.setEnabled(false);
         }
 
         if (showingAllActivities) {
-            // Animate layout changes
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                android.transition.TransitionManager.beginDelayedTransition(llMainContent,
-                        new android.transition.ChangeBounds().setDuration(300));
-            }
+            // Animate layout changes - REMOVED to prevent card "rotation" effect
+            /*
+             * if (android.os.Build.VERSION.SDK_INT >=
+             * android.os.Build.VERSION_CODES.KITKAT) {
+             * android.transition.TransitionManager.beginDelayedTransition(binding.
+             * llMainContent,
+             * new android.transition.ChangeBounds().setDuration(300));
+             * }
+             */
             // Collapse: Show only first 2 activities
             List<RecentActivity> limitedActivities;
             if (allActivities.size() > 2) {
@@ -1173,26 +1128,30 @@ public class MainActivity extends BaseActivity {
             updateViewAllActivityButton();
 
             // Re-enable after update
-            rvRecentActivity.postDelayed(() -> {
-                if (tvViewAllActivity != null) {
-                    tvViewAllActivity.setEnabled(true);
+            binding.rvRecentActivity.postDelayed(() -> {
+                if (binding.tvViewAllActivity != null) {
+                    binding.tvViewAllActivity.setEnabled(true);
                 }
             }, 100);
         } else {
-            // Animate layout changes
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                android.transition.TransitionManager.beginDelayedTransition(llMainContent,
-                        new android.transition.ChangeBounds().setDuration(300));
-            }
+            // Animate layout changes - REMOVED to prevent card "rotation" effect
+            /*
+             * if (android.os.Build.VERSION.SDK_INT >=
+             * android.os.Build.VERSION_CODES.KITKAT) {
+             * android.transition.TransitionManager.beginDelayedTransition(binding.
+             * llMainContent,
+             * new android.transition.ChangeBounds().setDuration(300));
+             * }
+             */
             // Expand: Show all activities
             activityAdapter.updateActivitiesGranular(new java.util.ArrayList<>(allActivities), true);
             showingAllActivities = true;
             updateViewAllActivityButton();
 
             // Re-enable after update
-            rvRecentActivity.postDelayed(() -> {
-                if (tvViewAllActivity != null) {
-                    tvViewAllActivity.setEnabled(true);
+            binding.rvRecentActivity.postDelayed(() -> {
+                if (binding.tvViewAllActivity != null) {
+                    binding.tvViewAllActivity.setEnabled(true);
                 }
             }, 100);
         }
@@ -1202,21 +1161,21 @@ public class MainActivity extends BaseActivity {
      * Update "View All" button text for activities based on current state
      */
     private void updateViewAllActivityButton() {
-        if (tvViewAllActivity == null) {
+        if (binding.tvViewAllActivity == null) {
             return;
         }
 
         if (showingAllActivities) {
-            tvViewAllActivity.setText(getString(R.string.view_less));
-            tvViewAllActivity.setVisibility(View.VISIBLE);
+            binding.tvViewAllActivity.setText(getString(R.string.view_less));
+            binding.tvViewAllActivity.setVisibility(View.VISIBLE);
         } else {
             // Only show "View All" if there are more than 2 activities
             if (allActivities != null && allActivities.size() > 2) {
-                tvViewAllActivity.setText(getString(R.string.view_all_caps));
-                tvViewAllActivity.setVisibility(View.VISIBLE);
+                binding.tvViewAllActivity.setText(getString(R.string.view_all_caps));
+                binding.tvViewAllActivity.setVisibility(View.VISIBLE);
             } else {
                 // Hide button if 2 or fewer activities
-                tvViewAllActivity.setVisibility(View.GONE);
+                binding.tvViewAllActivity.setVisibility(View.GONE);
             }
         }
     }
@@ -1237,35 +1196,29 @@ public class MainActivity extends BaseActivity {
     }
 
     private void setupBottomNavigation() {
-        BottomNavigationView bottomNavigation = findViewById(R.id.bottomNavigation);
-
-        // Remove elevation/shadow to eliminate divider - keep the navigation bar
-        // background
+        // Remove elevation/shadow to eliminate divider
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            bottomNavigation.setElevation(0f);
+            binding.bottomNavigation.setElevation(0f);
         }
 
-        bottomNavigation.setOnItemSelectedListener(item -> {
+        binding.bottomNavigation.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.nav_home) {
                 // Already on home
                 return true;
             } else if (itemId == R.id.nav_bookings) {
-                showScreenLoading(true);
                 Intent intent = new Intent(this, BookingsActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 finish();
                 return true;
             } else if (itemId == R.id.nav_messages) {
-                showScreenLoading(true);
                 Intent intent = new Intent(this, MessagesActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 finish();
                 return true;
             } else if (itemId == R.id.nav_profile) {
-                showScreenLoading(true);
                 Intent intent = new Intent(this, UserProfileActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
@@ -1274,124 +1227,7 @@ public class MainActivity extends BaseActivity {
             }
             return false;
         });
-        bottomNavigation.setSelectedItemId(R.id.nav_home);
-    }
-
-    /**
-     * Show or hide screen transition loading overlay
-     * 
-     * @param show true to show, false to hide
-     */
-    private void showScreenLoading(boolean show) {
-        if (llScreenLoading == null) {
-            return;
-        }
-
-        if (show) {
-            llScreenLoading.setVisibility(View.VISIBLE);
-            llScreenLoading.setAlpha(0f);
-            llScreenLoading.animate()
-                    .alpha(1f)
-                    .setDuration(300)
-                    .setInterpolator(new android.view.animation.DecelerateInterpolator())
-                    .start();
-            // Start Lottie animation with smooth settings
-            if (ivScreenLoading != null) {
-                ivScreenLoading.setAnimation(R.raw.loading);
-                ivScreenLoading.setSpeed(1.0f);
-                ivScreenLoading.setRenderMode(com.airbnb.lottie.RenderMode.HARDWARE);
-                ivScreenLoading.enableMergePathsForKitKatAndAbove(true);
-                ivScreenLoading.playAnimation();
-            }
-        } else {
-            llScreenLoading.animate()
-                    .alpha(0f)
-                    .setDuration(200)
-                    .withEndAction(() -> llScreenLoading.setVisibility(View.GONE))
-                    .start();
-        }
-    }
-
-    /**
-     * Wait for layout to be fully rendered before hiding loading overlay
-     * Ensures loading shows for minimum duration
-     */
-    private void waitForLayoutReady() {
-        if (llScreenLoading == null) {
-            return;
-        }
-
-        // Record start time
-        loadingStartTime = System.currentTimeMillis();
-
-        // Show loading overlay if it's not already visible
-        if (llScreenLoading.getVisibility() != View.VISIBLE) {
-            llScreenLoading.setVisibility(View.VISIBLE);
-            llScreenLoading.setAlpha(0f);
-            llScreenLoading.animate()
-                    .alpha(1f)
-                    .setDuration(300)
-                    .setInterpolator(new android.view.animation.DecelerateInterpolator())
-                    .start();
-            // Start Lottie animation with smooth settings
-            if (ivScreenLoading != null) {
-                ivScreenLoading.setAnimation(R.raw.loading);
-                ivScreenLoading.setSpeed(1.0f);
-                ivScreenLoading.setRenderMode(com.airbnb.lottie.RenderMode.HARDWARE);
-                ivScreenLoading.enableMergePathsForKitKatAndAbove(true);
-                ivScreenLoading.playAnimation();
-            }
-        }
-
-        // Get root view
-        View rootView = findViewById(android.R.id.content);
-        if (rootView == null) {
-            // Fallback: hide after minimum duration
-            new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> hideScreenLoading(),
-                    MIN_LOADING_DURATION);
-            return;
-        }
-
-        // Wait for layout to be measured and laid out
-        rootView.getViewTreeObserver()
-                .addOnGlobalLayoutListener(new android.view.ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        // Check if layout is ready (has dimensions)
-                        if (rootView.getWidth() > 0 && rootView.getHeight() > 0) {
-                            // Remove listener to avoid multiple calls
-                            rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
-                            // Calculate remaining time to meet minimum duration
-                            long elapsedTime = System.currentTimeMillis() - loadingStartTime;
-                            long remainingTime = MIN_LOADING_DURATION - elapsedTime;
-
-                            // Wait for minimum duration or additional 200ms, whichever is longer
-                            long delayTime = Math.max(remainingTime, 200);
-                            rootView.postDelayed(() -> hideScreenLoading(), delayTime);
-                        }
-                    }
-                });
-    }
-
-    /**
-     * Hide screen loading overlay with animation
-     */
-    private void hideScreenLoading() {
-        if (llScreenLoading == null || llScreenLoading.getVisibility() != View.VISIBLE) {
-            return;
-        }
-
-        // Stop Lottie animation
-        if (ivScreenLoading != null) {
-            ivScreenLoading.cancelAnimation();
-        }
-
-        llScreenLoading.animate()
-                .alpha(0f)
-                .setDuration(200)
-                .withEndAction(() -> llScreenLoading.setVisibility(View.GONE))
-                .start();
+        binding.bottomNavigation.setSelectedItemId(R.id.nav_home);
     }
 
     private void requestLocationPermission() {
@@ -1473,7 +1309,8 @@ public class MainActivity extends BaseActivity {
             boolean hasNetwork = NetworkUtils.isNetworkAvailable(this);
             showInternetLoading(!hasNetwork);
             LocationRequest locationRequest = LocationRequest.create();
-            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            // Use balanced power accuracy instead of high accuracy for better battery life
+            locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
             locationRequest.setNumUpdates(1);
             locationRequest.setInterval(10000);
             locationRequest.setMaxWaitTime(15000); // Max wait time for location
@@ -1515,7 +1352,7 @@ public class MainActivity extends BaseActivity {
      * @param show true to show, false to hide
      */
     private void showInternetLoading(boolean show) {
-        if (llInternetLoading == null) {
+        if (binding.llInternetLoading == null) {
             return;
         }
 
@@ -1530,16 +1367,16 @@ public class MainActivity extends BaseActivity {
             offlineDelayRunnable = new Runnable() {
                 @Override
                 public void run() {
-                    if (llInternetLoading == null) {
+                    if (binding.llInternetLoading == null) {
                         return;
                     }
 
                     // Show with smooth fade-in animation after 2 second delay
-                    llInternetLoading.setVisibility(View.VISIBLE);
-                    llInternetLoading.setAlpha(0f);
+                    binding.llInternetLoading.setVisibility(View.VISIBLE);
+                    binding.llInternetLoading.setAlpha(0f);
 
                     // Fade in overlay background
-                    llInternetLoading.animate()
+                    binding.llInternetLoading.animate()
                             .alpha(1f)
                             .setDuration(400)
                             .setStartDelay(100)
@@ -1547,20 +1384,20 @@ public class MainActivity extends BaseActivity {
                             .start();
 
                     // Animate loading content with delay
-                    if (tvInternetMessage != null && ivNoConnection != null) {
-                        tvInternetMessage.setAlpha(0f);
-                        ivNoConnection.setAlpha(0f);
-                        ivNoConnection.setScaleX(0.8f);
-                        ivNoConnection.setScaleY(0.8f);
+                    if (binding.tvInternetMessage != null && binding.ivNoConnection != null) {
+                        binding.tvInternetMessage.setAlpha(0f);
+                        binding.ivNoConnection.setAlpha(0f);
+                        binding.ivNoConnection.setScaleX(0.8f);
+                        binding.ivNoConnection.setScaleY(0.8f);
 
                         // Start Lottie animation
-                        if (ivNoConnection != null) {
-                            ivNoConnection.setAnimation(R.raw.no_connection);
-                            ivNoConnection.playAnimation();
+                        if (binding.ivNoConnection != null) {
+                            binding.ivNoConnection.setAnimation(R.raw.no_connection);
+                            binding.ivNoConnection.playAnimation();
                         }
 
                         // Animate text first
-                        tvInternetMessage.animate()
+                        binding.tvInternetMessage.animate()
                                 .alpha(1f)
                                 .setDuration(400)
                                 .setStartDelay(300)
@@ -1568,7 +1405,7 @@ public class MainActivity extends BaseActivity {
                                 .start();
 
                         // Animate Lottie animation with scale effect
-                        ivNoConnection.animate()
+                        binding.ivNoConnection.animate()
                                 .alpha(1f)
                                 .scaleX(1f)
                                 .scaleY(1f)
@@ -1584,71 +1421,16 @@ public class MainActivity extends BaseActivity {
             offlineDelayHandler.postDelayed(offlineDelayRunnable, 2000);
         } else {
             // Hide immediately when internet is restored
-            llInternetLoading.animate()
+            binding.llInternetLoading.animate()
                     .alpha(0f)
                     .setDuration(300)
                     .setInterpolator(new android.view.animation.AccelerateInterpolator())
                     .withEndAction(() -> {
-                        if (llInternetLoading != null) {
-                            llInternetLoading.setVisibility(View.GONE);
+                        if (binding.llInternetLoading != null) {
+                            binding.llInternetLoading.setVisibility(View.GONE);
                         }
-                        if (ivNoConnection != null) {
-                            ivNoConnection.pauseAnimation();
-                        }
-                    })
-                    .start();
-        }
-    }
-
-    /**
-     * Show or hide search loading overlay with specific animation
-     * 
-     * @param show true to show, false to hide
-     */
-    private void showSearchLoading(boolean show) {
-        if (llScreenLoading == null) {
-            return;
-        }
-
-        if (show) {
-            llScreenLoading.setVisibility(View.VISIBLE);
-            llScreenLoading.setAlpha(0f);
-            llScreenLoading.animate()
-                    .alpha(1f)
-                    .setDuration(300)
-                    .setInterpolator(new android.view.animation.DecelerateInterpolator())
-                    .start();
-            // Start Lottie animation with searching animation
-            if (ivScreenLoading != null) {
-                // Change animation to searching_animation
-                ivScreenLoading.setAnimation(R.raw.searching_animation);
-                ivScreenLoading.setSpeed(1.0f);
-                ivScreenLoading.setRenderMode(com.airbnb.lottie.RenderMode.HARDWARE);
-                ivScreenLoading.enableMergePathsForKitKatAndAbove(true);
-                ivScreenLoading.playAnimation();
-
-                // Update text to "Searching..."
-                TextView tvLoading = llScreenLoading.findViewById(R.id.tvLoading);
-                if (tvLoading == null) {
-                    // Try to find the TextView inside the layout if ID is not available directly
-                    // It seems the TextView doesn't have an ID in the layout XML reference above
-                    // (only text="Loading...")
-                    // I'll need to check the layout to be sure. Based on previous read, it's just a
-                    // TextView.
-                    // Let's assume for now we keep "Loading..." or update the XML to give it an ID.
-                    // For now, let's just update the animation.
-                }
-            }
-        } else {
-            llScreenLoading.animate()
-                    .alpha(0f)
-                    .setDuration(200)
-                    .withEndAction(() -> {
-                        llScreenLoading.setVisibility(View.GONE);
-                        // Reset to default loading animation for other flows
-                        if (ivScreenLoading != null) {
-                            ivScreenLoading.pauseAnimation();
-                            ivScreenLoading.setAnimation(R.raw.loading);
+                        if (binding.ivNoConnection != null) {
+                            binding.ivNoConnection.pauseAnimation();
                         }
                     })
                     .start();
@@ -1749,7 +1531,7 @@ public class MainActivity extends BaseActivity {
      * Check network status in real-time and update loading indicator
      */
     private void checkNetworkStatus() {
-        if (llInternetLoading == null) {
+        if (binding.llInternetLoading == null) {
             return; // Views not initialized yet
         }
 

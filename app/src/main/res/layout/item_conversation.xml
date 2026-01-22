@@ -1,24 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cardConversation"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="20dp"
-    android:layout_marginTop="8dp"
-    android:layout_marginBottom="8dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="2dp"
-    app:cardBackgroundColor="@color/white"
+    android:orientation="vertical"
     android:clickable="true"
     android:focusable="true"
-    android:foreground="?attr/selectableItemBackground">
+    android:background="@color/white">
 
     <LinearLayout
+        android:id="@+id/layoutContent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="14dp"
         android:gravity="center_vertical">
 
         <!-- Selection Checkbox -->
@@ -28,175 +25,139 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="12dp"
             android:visibility="gone"
-            app:buttonTint="@color/bright_periwinkle_blue" />
+            app:buttonTint="@color/primary_blue" />
 
-        <!-- Avatar Container with Badges -->
+        <!-- Avatar Container with Online status -->
         <FrameLayout
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_marginEnd="12dp">
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_marginEnd="14dp">
 
-            <!-- Profile Image -->
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/ivProfileImage"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:src="@drawable/profile"
-                app:civ_border_width="2dp"
-                app:civ_border_color="@color/bright_periwinkle_blue" />
+            <FrameLayout
+                android:layout_width="52dp"
+                android:layout_height="52dp">
+                
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/ivProfileImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/profile"
+                    app:civ_border_width="0dp" />
 
-            <!-- Pinned Badge (Top Right) -->
-            <ImageView
-                android:id="@+id/ivPinnedBadge"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:layout_gravity="top|end"
-                android:src="@drawable/pin"
-                android:background="@drawable/circle_white"
-                android:padding="3dp"
-                android:tint="#FF9800"
-                android:visibility="gone"
-                android:contentDescription="Pinned" />
+                <TextView
+                    android:id="@+id/tvInitials"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/avatar_gradient_background"
+                    android:gravity="center"
+                    android:text="EC"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+            </FrameLayout>
 
-            <!-- Starred Badge (Top Right) -->
-            <ImageView
-                android:id="@+id/ivStarredBadge"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:layout_gravity="top|end"
-                android:src="@drawable/ic_star"
-                android:background="@drawable/circle_white"
-                android:padding="3dp"
-                android:tint="#FFB300"
-                android:visibility="gone"
-                android:contentDescription="Starred" />
-
-            <!-- Online Status Dot (Bottom Right) -->
             <View
                 android:id="@+id/viewOnlineStatus"
-                android:layout_width="12dp"
-                android:layout_height="12dp"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
                 android:layout_gravity="bottom|end"
                 android:background="@drawable/circle_green"
-                android:backgroundTint="@color/available_green"
+                android:backgroundTint="#22C55E"
+                android:elevation="2dp"
                 android:visibility="gone" />
         </FrameLayout>
 
-        <!-- Content Column -->
+        <!-- Text Content -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_marginEnd="8dp">
+            android:orientation="vertical">
 
-            <!-- Name and Timestamp Row -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="4dp">
+                android:gravity="bottom"
+                android:layout_marginBottom="2dp">
 
                 <TextView
                     android:id="@+id/tvProviderName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Provider Name"
-                    android:textSize="16sp"
+                    android:text="Ethan Carter"
+                    android:textSize="14sp"
                     android:textStyle="bold"
-                    android:textColor="@color/text_primary"
+                    android:textColor="@color/gray_900"
                     android:maxLines="1"
                     android:ellipsize="end" />
-
-                <!-- Star Icon (if starred) -->
-                <ImageView
-                    android:id="@+id/ivStarIcon"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:src="@drawable/ic_star"
-                    android:tint="#FFB300"
-                    android:visibility="gone"
-                    android:layout_marginStart="4dp"
-                    android:contentDescription="Starred" />
 
                 <TextView
                     android:id="@+id/tvTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="9h ago"
-                    android:textSize="12sp"
-                    android:textColor="@color/text_secondary"
+                    android:text="Dec 12"
+                    android:textSize="10sp"
+                    android:textColor="@color/gray_600"
                     android:layout_marginStart="8dp" />
             </LinearLayout>
 
-            <!-- Message Preview Row -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical">
-
-                <!-- Read Checkmark (if read) -->
-                <ImageView
-                    android:id="@+id/ivReadCheckmark"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:src="@drawable/ic_check"
-                    android:tint="@color/primary_blue"
-                    android:visibility="gone"
-                    android:layout_marginEnd="4dp"
-                    android:contentDescription="Read" />
-
+                
                 <TextView
                     android:id="@+id/tvLastMessage"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Last message preview..."
-                    android:textSize="14sp"
-                    android:textColor="@color/text_secondary"
+                    android:text="Hi! Thanks for reaching o..."
+                    android:textSize="13sp"
+                    android:textColor="@color/gray_600"
                     android:maxLines="1"
                     android:ellipsize="end" />
 
-                <!-- Unread Indicator Dot -->
-                <View
-                    android:id="@+id/viewUnreadIndicator"
-                    android:layout_width="6dp"
-                    android:layout_height="6dp"
-                    android:layout_marginStart="8dp"
-                    android:background="@drawable/circle_blue"
-                    android:backgroundTint="@color/primary_blue"
-                    android:visibility="gone" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginStart="8dp">
 
-                <!-- Unread Count Badge -->
-                <TextView
-                    android:id="@+id/tvUnreadBadge"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_marginStart="6dp"
-                    android:text="1"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_white"
-                    android:gravity="center"
-                    android:background="@drawable/circle_blue"
-                    android:backgroundTint="@color/bright_periwinkle_blue"
-                    android:visibility="gone" />
+                    <TextView
+                        android:id="@+id/tvUnreadBadge"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:background="@drawable/bg_unread_badge_solid"
+                        android:gravity="center"
+                        android:text="1"
+                        android:textColor="@color/white"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
+
+                    <ImageButton
+                        android:id="@+id/btnOptions"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:padding="4dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/ic_more_vert"
+                        app:tint="@color/text_hint"
+                        android:layout_marginStart="4dp" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
-
-        <!-- Options Menu (Three Dots) -->
-        <ImageButton
-            android:id="@+id/btnOptions"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/ic_more_vert"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="More options"
-            android:tint="@color/text_secondary"
-            android:padding="8dp" />
     </LinearLayout>
 
-</com.google.android.material.card.MaterialCardView>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#F3F4F6"
+        android:layout_marginStart="82dp" />
+
+</LinearLayout>

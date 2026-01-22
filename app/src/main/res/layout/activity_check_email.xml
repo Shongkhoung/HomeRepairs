@@ -20,17 +20,28 @@
             android:paddingBottom="24dp"
             android:gravity="center_horizontal">
 
-            <!-- Back Button -->
-            <ImageButton
+            <!-- Modern Back Button Card -->
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/btnBack"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@drawable/ic_arrow_back"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Back"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_gravity="start"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="32dp" />
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="32dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/white"
+                app:strokeColor="@color/divider_gray"
+                app:strokeWidth="1dp"
+                android:clickable="true"
+                android:focusable="true">
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_back_arrow"
+                    app:tint="@color/text_primary" />
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- Check Icon -->
             <ImageView
@@ -46,46 +57,83 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Check Your Email"
-                android:textSize="32sp"
+                android:textSize="34sp"
                 android:textStyle="bold"
-                android:textColor="@color/text_primary_professional"
+                android:letterSpacing="-0.02"
+                android:textColor="@color/text_primary"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Instructions -->
-            <TextView
-                android:id="@+id/tvInstructions"
+            <!-- Email Info Card -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="We've sent a password reset link to"
-                android:textSize="16sp"
-                android:textColor="@color/text_secondary_professional"
-                android:gravity="center"
-                android:layout_marginBottom="8dp" />
-
-            <!-- Email Address -->
-            <TextView
-                android:id="@+id/tvEmailAddress"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary_professional"
-                android:gravity="center"
-                android:layout_marginBottom="40dp" />
+                android:layout_marginBottom="32dp"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="@color/background_gray">
+                
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="20dp"
+                    android:gravity="center_vertical">
+                    
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="0dp"
+                        app:cardBackgroundColor="@color/primary_light"
+                        app:strokeWidth="0dp">
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_email"
+                            app:tint="@color/primary_blue" />
+                    </com.google.android.material.card.MaterialCardView>
+                    
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="16dp"
+                        android:orientation="vertical">
+                        
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Email sent to"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_secondary" />
+                        
+                        <TextView
+                            android:id="@+id/tvEmailAddress"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginTop="4dp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- Resend Email Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnEnterResetCode"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="60dp"
                 android:text="Resend Email"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_white"
-                android:backgroundTint="@color/button_blue"
-                app:cornerRadius="12dp"
-                app:elevation="4dp"
+                android:backgroundTint="@color/primary_blue"
+                app:cornerRadius="16dp"
+                app:elevation="0dp"
                 android:layout_marginBottom="16dp" />
 
             <!-- Progress Bar -->

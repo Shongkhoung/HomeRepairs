@@ -58,12 +58,15 @@
                     android:textColor="@color/text_primary" />
             </LinearLayout>
 
-            <!-- Addresses List -->
-            <LinearLayout
+            <!-- Addresses Grouped Card -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="24dp">
+                android:layout_marginHorizontal="24dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="@color/white">
 
                 <LinearLayout
                     android:id="@+id/llAddressesList"
@@ -73,23 +76,25 @@
                     android:divider="@null"
                     android:showDividers="none"/>
 
-                 <!-- Add New Button -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnAddAddress"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:text="@string/btn_add_address"
-                    android:textAllCaps="false"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"
-                    app:icon="@drawable/ic_add"
-                    app:iconGravity="textStart"
-                    app:backgroundTint="@color/deep_royal_blue"
-                    app:cornerRadius="16dp"
-                    android:elevation="0dp"/>
+            </com.google.android.material.card.MaterialCardView>
 
-            </LinearLayout>
+            <!-- Add New Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAddAddress"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/btn_add_address"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                app:icon="@drawable/ic_add"
+                app:iconGravity="textStart"
+                app:backgroundTint="@color/primary_blue"
+                app:cornerRadius="16dp"
+                android:elevation="0dp"/>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -5,6 +5,10 @@ public class ServiceCategory {
     private int providerCount;
     private int iconResId;
 
+    public ServiceCategory() {
+        // Required for Firestore
+    }
+
     public ServiceCategory(String name, int providerCount, int iconResId) {
         this.name = name;
         this.providerCount = providerCount;
@@ -35,4 +39,3 @@ public class ServiceCategory {
         this.iconResId = iconResId;
     }
 }
-

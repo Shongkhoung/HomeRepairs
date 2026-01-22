@@ -6,6 +6,11 @@
     <string name="back">Back</string>
     <!-- Google Sign-In Web Client ID -->
     <string name="default_web_client_id">516691618362-349lkerufe5tavgtj66gc8s9lcgu09rb.apps.googleusercontent.com</string>
+
+    <!-- Facebook Configuration (Placeholders - Replace with actual values from Facebook Developer Console) -->
+    <string name="facebook_app_id">1234567890</string>
+    <string name="facebook_client_token">abcdef123456</string>
+    <string name="fb_login_protocol_scheme">fb1234567890</string>
     
     <!-- Profile - Payment Methods -->
     <string name="title_payment_methods">Payment Methods</string>
@@ -279,6 +284,7 @@
     <string name="dialog_delete_message">Are you sure you want to delete %1$d conversation(s)?</string>
     <string name="dialog_delete_confirm">Delete</string>
     <string name="msg_conversations_deleted">Conversations deleted</string>
+    <string name="msg_delete_error">Failed to delete %1$d conversation(s)</string>
     <string name="msg_archive_soon">Archive functionality coming soon</string>
     <string name="msg_firebase_permission_error">Firebase permissions not configured. Please check Security Rules.</string>
     <string name="btn_creating">Creating...</string>
@@ -309,4 +315,61 @@
     <string name="msg_no_internet">No Internet Connection</string>
 
 
+    <string name="title_notification_channels">Notification Channels</string>
+    <string name="title_notification_types">Notification Types</string>
+    <string name="title_security">Security</string>
+    <string name="title_danger_zone">Danger Zone</string>
+
+    <!-- Booking Confirmed Activity -->
+    <string name="booking_confirmed">Booking Confirmed!</string>
+    <string name="booking_reference_label">Booking reference: %1$s</string>
+    <string name="scheduled_for">Scheduled For</string>
+    <string name="booking_details">Booking Details</string>
+    <string name="service_location">Service Location</string>
+    <string name="total_amount">Total Amount</string>
+    <string name="payment_on_delivery">Payment on delivery</string>
+    <string name="whats_next">What\'s Next?</string>
+    <string name="step_1_desc">We\'ll send you a confirmation email with all the details</string>
+    <string name="step_2_desc">The service provider will contact you 30 minutes before arrival</string>
+    <string name="step_3_desc">You can track the provider\'s location on the day of service</string>
+    <string name="btn_return_home">Return to Home</string>
+    <string name="view_booking_details">View Booking Details</string>
+    <string name="scheduled_time_duration_format">Scheduled Time (%1$s)</string>
+    <string name="service_by">Service by %1$s</string>
+
+    <!-- Plumbing Activity  -->
+    <string name="title_filter_providers">Filter Providers</string>
+    <string name="filter_option_all">All</string>
+    <string name="filter_option_available_now">Available Now</string>
+    <string name="filter_option_highest_rated">Highest Rated</string>
+    <string name="filter_option_lowest_price">Lowest Price</string>
+    <string name="category_plumbing">Plumbing</string>
+    <string name="title_search_results">Search Results</string>
+    <string name="default_provider_category">Plumbing</string>
+    
+    <!-- Favorites Activity -->
+    <string name="category_all">ALL</string>
+    <string name="category_handyman">HANDYMAN</string>
+    <string name="category_electrical">ELECTRICAL</string>
+    <string name="category_roofing">ROOFING</string>
+    <string name="category_hvac">HVAC</string>
+    <string name="category_painting">PAINTING</string>
+    <string name="category_cleaning">CLEANING</string>
+    
+    <string name="title_search_favorites">Search Favorites</string>
+    <string name="hint_search_favorites">Enter name or service...</string>
+    <string name="btn_search">Search</string>
+    <string name="btn_clear">Clear</string>
+    <string name="msg_no_providers_matching">No providers found matching \"%1$s\"</string>
+    <string name="msg_no_category_providers">No %1$s providers saved</string>
+    <string name="label_saved_providers">%1$d saved providers</string>
+    <string name="msg_removed_from_favorites">Removed from favorites</string>
+    <string name="default_job_count">0 jobs</string>
+    
+    <!-- Provider Profile Extras -->
+    <string name="share">Share</string>
+    <string name="share_provider_text_2">Check out %1$s on HomeRepairs!</string>
+    <string name="default_service_description">Professional service</string>
+    <string name="msg_data_incomplete">Data incomplete</string>
+    <string name="msg_load_failed">Load failed</string>
 </resources>

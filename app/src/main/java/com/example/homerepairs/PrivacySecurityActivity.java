@@ -1,43 +1,35 @@
 package com.example.homerepairs;
 
-import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
+import com.example.homerepairs.databinding.ActivityPrivacySecurityBinding;
 
-public class PrivacySecurityActivity extends AppCompatActivity {
+public class PrivacySecurityActivity extends BaseActivity {
+
+    private ActivityPrivacySecurityBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_privacy_security);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.white));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                getWindow().getDecorView().setSystemUiVisibility(
-                        getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            }
-        }
+        binding = ActivityPrivacySecurityBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         setupClickListeners();
     }
 
     private void setupClickListeners() {
-        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+        binding.btnBack.setOnClickListener(v -> finish());
 
-        findViewById(R.id.btnChangePassword).setOnClickListener(
+        binding.btnChangePassword.setOnClickListener(
                 v -> Toast.makeText(this, getString(R.string.change_password), Toast.LENGTH_SHORT).show());
 
-        findViewById(R.id.btnTwoFactor).setOnClickListener(
+        binding.btnTwoFactor.setOnClickListener(
                 v -> Toast.makeText(this, getString(R.string.two_factor_auth), Toast.LENGTH_SHORT).show());
 
-        findViewById(R.id.btnPrivacySettings).setOnClickListener(
+        binding.btnPrivacySettings.setOnClickListener(
                 v -> Toast.makeText(this, getString(R.string.privacy_settings), Toast.LENGTH_SHORT).show());
 
-        findViewById(R.id.btnDeleteAccount).setOnClickListener(v -> confirmDeleteAccount());
+        binding.btnDeleteAccount.setOnClickListener(v -> confirmDeleteAccount());
     }
 
     private void confirmDeleteAccount() {

@@ -3,95 +3,65 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/background_gray">
 
-    <androidx.core.widget.NestedScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:paddingBottom="80dp">
+        android:orientation="vertical"
+        android:paddingBottom="56dp"> <!-- Space for BottomNav -->
 
+        <!-- Header Section -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@color/white">
+            android:background="@color/white"
+            android:elevation="1dp">
 
-            <!-- Header Section -->
+            <!-- Title Row -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp"
-                android:paddingTop="20dp"
-                android:paddingBottom="16dp"
-                android:background="@color/white">
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="12dp"
+                android:gravity="center_vertical">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="My Favorites"
-                            android:textSize="22sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary" />
-
-                        <TextView
-                            android:id="@+id/tvProviderCount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0 saved providers"
-                            android:textSize="13sp"
-                            android:textColor="@color/text_secondary"
-                            android:layout_marginTop="3dp" />
-                    </LinearLayout>
-
-                    <LinearLayout
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
+                        android:text="My Favorites"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/gray_900" />
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnSelect"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="SELECT"
-                            android:textSize="12sp"
-                            android:textColor="@color/primary_blue"
-                            android:backgroundTint="#E3F2FD"
-                            android:paddingHorizontal="12dp"
-                            android:paddingVertical="6dp"
-                            android:minHeight="32dp"
-                            android:minWidth="0dp"
-                            android:textStyle="bold"
-                            app:cornerRadius="8dp"
-                            app:strokeWidth="0dp" />
-
-                        <ImageButton
-                            android:id="@+id/btnSearch"
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            android:src="@drawable/ic_search"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:contentDescription="Search"
-                            android:tint="@color/gray_600"
-                            android:layout_marginStart="8dp"
-                            android:padding="8dp" />
-                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/tvProviderCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 saved providers"
+                        android:textSize="14sp"
+                        android:textColor="@color/gray_500"
+                        android:layout_marginTop="2dp" />
                 </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/btnSearch"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_search"
+                    android:background="?attr/selectableItemBackgroundBorderless" 
+                    app:tint="@color/gray_600"
+                    android:padding="8dp" 
+                    android:scaleType="centerInside"/>
             </LinearLayout>
 
             <!-- Category Filter Bar -->
@@ -99,137 +69,83 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scrollbars="none"
-                android:paddingBottom="12dp">
+                android:paddingBottom="12dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:clipToPadding="false">
 
                 <LinearLayout
                     android:id="@+id/llCategoryFilters"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="20dp"
                     android:gravity="center_vertical">
-
                     <!-- Categories will be added dynamically -->
                 </LinearLayout>
             </HorizontalScrollView>
-
-
-            <!-- Content Area -->
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:paddingBottom="20dp">
-
-                <!-- RecyclerView for Providers -->
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvFavorites"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:nestedScrollingEnabled="false" />
-
-                <!-- Empty State -->
-                <LinearLayout
-                    android:id="@+id/llEmptyState"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:paddingTop="80dp"
-                    android:paddingBottom="40dp"
-                    android:visibility="gone">
-
-                    <FrameLayout
-                        android:layout_width="120dp"
-                        android:layout_height="120dp"
-                        android:background="@drawable/circle_white"
-                        android:gravity="center">
-
-                        <ImageView
-                            android:layout_width="60dp"
-                            android:layout_height="60dp"
-                            android:src="@drawable/heart_outline"
-                            android:tint="@color/text_tertiary"
-                            android:contentDescription="Empty Heart" />
-                    </FrameLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="No Favorites Yet"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_primary"
-                        android:layout_marginTop="24dp" />
-
-                    <TextView
-                        android:id="@+id/tvEmptyMessage"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="No providers in your favorites"
-                        android:textSize="14sp"
-                        android:textColor="@color/text_secondary"
-                        android:layout_marginTop="8dp" />
-
-                    <Button
-                        android:id="@+id/btnBrowseServices"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Browse Services"
-                        android:textSize="14sp"
-                        android:textColor="@color/text_white"
-                        android:backgroundTint="@color/primary_blue"
-                        android:paddingHorizontal="24dp"
-                        android:paddingVertical="12dp"
-                        android:layout_marginTop="24dp"
-                        android:minHeight="44dp" />
-                </LinearLayout>
-            </FrameLayout>
         </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
 
-    <!-- Selection Bar (shown when in selection mode) -->
-    <LinearLayout
-        android:id="@+id/llSelectionBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:orientation="horizontal"
-        android:background="@color/white"
-        android:elevation="8dp"
-        android:padding="16dp"
-        android:visibility="gone"
-        android:gravity="center_vertical">
+        <!-- Content Area -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
 
-        <TextView
-            android:id="@+id/tvSelectedCount"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="0 selected"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_primary" />
+            <!-- RecyclerView for Providers -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvFavorites"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:padding="16dp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnDeleteSelected"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="DELETE"
-            android:textSize="12sp"
-            android:textColor="@color/text_white"
-            android:backgroundTint="@color/warning_red"
-            android:paddingHorizontal="20dp"
-            android:paddingVertical="10dp"
-            android:minHeight="44dp"
-            app:cornerRadius="8dp" />
+            <!-- Empty State -->
+            <LinearLayout
+                android:id="@+id/llEmptyState"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:visibility="gone">
+
+                <FrameLayout
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:background="@drawable/circle_white"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/heart_outline"
+                        app:tint="@color/gray_600" />
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No favorites yet"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/gray_900"
+                    android:layout_marginTop="16dp" />
+
+                <TextView
+                    android:id="@+id/tvEmptyMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Start adding your favorite providers\nto quickly book them again"
+                    android:textSize="14sp"
+                    android:textColor="@color/gray_500"
+                    android:textAlignment="center"
+                    android:layout_marginTop="8dp" />
+            </LinearLayout>
+        </FrameLayout>
     </LinearLayout>
 
-    <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
+        style="@style/BottomNavNoIndicator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
@@ -240,4 +156,3 @@
         app:itemTextColor="@drawable/bottom_nav_selector" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
-

@@ -27,21 +27,25 @@ public class FirebaseMessageService {
 
     public interface ConversationCallback {
         void onSuccess(Conversation conversation);
+
         void onError(String error);
     }
 
     public interface ConversationListCallback {
         void onSuccess(List<Conversation> conversations);
+
         void onError(String error);
     }
 
     public interface MessageCallback {
         void onSuccess(Message message);
+
         void onError(String error);
     }
 
     public interface MessageListCallback {
         void onSuccess(List<Message> messages);
+
         void onError(String error);
     }
 
@@ -58,8 +62,8 @@ public class FirebaseMessageService {
     /**
      * Create or get existing conversation between user and provider
      */
-    public void getOrCreateConversation(String userId, String userName, String providerId, 
-                                       String providerName, ConversationCallback callback) {
+    public void getOrCreateConversation(String userId, String userName, String providerId,
+            String providerName, ConversationCallback callback) {
         // Check if conversation already exists
         db.collection(COLLECTION_CONVERSATIONS)
                 .whereEqualTo("userId", userId)
@@ -86,8 +90,8 @@ public class FirebaseMessageService {
                         }
                     } else {
                         Log.e(TAG, "Error checking for existing conversation", task.getException());
-                        callback.onError("Failed to check conversation: " + 
-                            (task.getException() != null ? task.getException().getMessage() : "Unknown error"));
+                        callback.onError("Failed to check conversation: " +
+                                (task.getException() != null ? task.getException().getMessage() : "Unknown error"));
                     }
                 });
     }
@@ -95,10 +99,10 @@ public class FirebaseMessageService {
     /**
      * Create a new conversation
      */
-    public void createConversation(String userId, String userName, String providerId, 
-                                  String providerName, ConversationCallback callback) {
+    public void createConversation(String userId, String userName, String providerId,
+            String providerName, ConversationCallback callback) {
         Conversation conversation = new Conversation(userId, userName, providerId, providerName);
-        
+
         db.collection(COLLECTION_CONVERSATIONS)
                 .add(conversation)
                 .addOnSuccessListener(documentReference -> {
@@ -108,8 +112,8 @@ public class FirebaseMessageService {
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error creating conversation", e);
-                    callback.onError("Failed to create conversation: " + 
-                        (e.getMessage() != null ? e.getMessage() : "Unknown error"));
+                    callback.onError("Failed to create conversation: " +
+                            (e.getMessage() != null ? e.getMessage() : "Unknown error"));
                 });
     }
 
@@ -142,8 +146,8 @@ public class FirebaseMessageService {
                         callback.onSuccess(conversations);
                     } else {
                         Log.e(TAG, "Error getting conversations", task.getException());
-                        callback.onError("Failed to load conversations: " + 
-                            (task.getException() != null ? task.getException().getMessage() : "Unknown error"));
+                        callback.onError("Failed to load conversations: " +
+                                (task.getException() != null ? task.getException().getMessage() : "Unknown error"));
                     }
                 });
     }
@@ -177,8 +181,8 @@ public class FirebaseMessageService {
                         callback.onSuccess(conversations);
                     } else {
                         Log.e(TAG, "Error getting conversations", task.getException());
-                        callback.onError("Failed to load conversations: " + 
-                            (task.getException() != null ? task.getException().getMessage() : "Unknown error"));
+                        callback.onError("Failed to load conversations: " +
+                                (task.getException() != null ? task.getException().getMessage() : "Unknown error"));
                     }
                 });
     }
@@ -187,28 +191,29 @@ public class FirebaseMessageService {
      * Send a message
      */
     public void sendMessage(String conversationId, String senderId, String senderName,
-                           String receiverId, String receiverName, String text, MessageCallback callback) {
+            String receiverId, String receiverName, String text, MessageCallback callback) {
         Message message = new Message(conversationId, senderId, senderName, receiverId, receiverName, text);
-        
+
         // Use batch write to update conversation and add message atomically
         WriteBatch batch = db.batch();
-        
+
         // Add message to messages collection
         DocumentReference messageRef = db.collection(COLLECTION_MESSAGES).document();
         batch.set(messageRef, message);
-        
+
         // Update conversation with last message and timestamp
         DocumentReference conversationRef = db.collection(COLLECTION_CONVERSATIONS).document(conversationId);
         Map<String, Object> updates = new HashMap<>();
         updates.put("lastMessage", text);
         updates.put("lastMessageTime", new Date());
         updates.put("updatedAt", new Date());
-        
+
         // Increment unread count for receiver
-        // Note: In a real app, you'd need to query current unread count or use FieldValue.increment()
+        // Note: In a real app, you'd need to query current unread count or use
+        // FieldValue.increment()
         updates.put("unreadCount", 1); // Simplified - should track per user
         batch.update(conversationRef, updates);
-        
+
         batch.commit()
                 .addOnSuccessListener(aVoid -> {
                     Log.d(TAG, "Message sent successfully");
@@ -217,8 +222,8 @@ public class FirebaseMessageService {
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error sending message", e);
-                    callback.onError("Failed to send message: " + 
-                        (e.getMessage() != null ? e.getMessage() : "Unknown error"));
+                    callback.onError("Failed to send message: " +
+                            (e.getMessage() != null ? e.getMessage() : "Unknown error"));
                 });
     }
 
@@ -251,8 +256,8 @@ public class FirebaseMessageService {
                         callback.onSuccess(messages);
                     } else {
                         Log.e(TAG, "Error getting messages", task.getException());
-                        callback.onError("Failed to load messages: " + 
-                            (task.getException() != null ? task.getException().getMessage() : "Unknown error"));
+                        callback.onError("Failed to load messages: " +
+                                (task.getException() != null ? task.getException().getMessage() : "Unknown error"));
                     }
                 });
     }
@@ -270,7 +275,7 @@ public class FirebaseMessageService {
                         callback.onError("Failed to listen to messages: " + error.getMessage());
                         return;
                     }
-                    
+
                     if (querySnapshot != null) {
                         List<Message> messages = new ArrayList<>();
                         for (QueryDocumentSnapshot document : querySnapshot) {
@@ -303,7 +308,7 @@ public class FirebaseMessageService {
                         callback.onError("Failed to listen to conversations: " + error.getMessage());
                         return;
                     }
-                    
+
                     if (querySnapshot != null) {
                         List<Conversation> conversations = new ArrayList<>();
                         for (QueryDocumentSnapshot document : querySnapshot) {
@@ -347,26 +352,52 @@ public class FirebaseMessageService {
                                         db.collection(COLLECTION_CONVERSATIONS)
                                                 .document(conversationId)
                                                 .update("unreadCount", 0, "isRead", true)
-                                                .addOnSuccessListener(aVoid1 -> 
-                                                    Log.d(TAG, "Conversation marked as read"))
-                                                .addOnFailureListener(e -> 
-                                                    Log.e(TAG, "Error updating conversation read status", e));
+                                                .addOnSuccessListener(
+                                                        aVoid1 -> Log.d(TAG, "Conversation marked as read"))
+                                                .addOnFailureListener(
+                                                        e -> Log.e(TAG, "Error updating conversation read status", e));
                                     })
-                                    .addOnFailureListener(e -> 
-                                        Log.e(TAG, "Error marking messages as read", e));
+                                    .addOnFailureListener(e -> Log.e(TAG, "Error marking messages as read", e));
                         } else {
                             // Even if no unread messages, update conversation to mark as read
                             db.collection(COLLECTION_CONVERSATIONS)
                                     .document(conversationId)
                                     .update("unreadCount", 0, "isRead", true)
-                                    .addOnSuccessListener(aVoid -> 
-                                        Log.d(TAG, "Conversation marked as read (no unread messages)"))
-                                    .addOnFailureListener(e -> 
-                                        Log.e(TAG, "Error updating conversation read status", e));
+                                    .addOnSuccessListener(
+                                            aVoid -> Log.d(TAG, "Conversation marked as read (no unread messages)"))
+                                    .addOnFailureListener(
+                                            e -> Log.e(TAG, "Error updating conversation read status", e));
                         }
                     } else {
                         Log.e(TAG, "Error querying messages", task.getException());
                     }
                 });
+    }
+
+    /**
+     * Delete a conversation
+     */
+    public void deleteConversation(String conversationId,
+            com.google.android.gms.tasks.OnSuccessListener<Void> onSuccess,
+            com.google.android.gms.tasks.OnFailureListener onFailure) {
+        // First delete all messages in the conversation (optional but good for cleanup)
+        db.collection(COLLECTION_MESSAGES)
+                .whereEqualTo("conversationId", conversationId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    WriteBatch batch = db.batch();
+                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        batch.delete(doc.getReference());
+                    }
+
+                    // Also delete the conversation document
+                    DocumentReference convRef = db.collection(COLLECTION_CONVERSATIONS).document(conversationId);
+                    batch.delete(convRef);
+
+                    batch.commit()
+                            .addOnSuccessListener(onSuccess)
+                            .addOnFailureListener(onFailure);
+                })
+                .addOnFailureListener(onFailure);
     }
 }

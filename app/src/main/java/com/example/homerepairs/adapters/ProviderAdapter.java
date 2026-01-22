@@ -30,6 +30,8 @@ public class ProviderAdapter extends RecyclerView.Adapter<ProviderAdapter.Provid
     private OnProviderClickListener listener;
     private int cardWidth = -1; // -1 means use default from XML
     private String searchQuery = ""; // Current search query for highlighting
+    private static final android.view.animation.DecelerateInterpolator INTERPOLATOR = new android.view.animation.DecelerateInterpolator(
+            2.0f);
 
     public interface OnProviderClickListener {
         void onBookProvider(FeaturedProvider provider);
@@ -180,28 +182,9 @@ public class ProviderAdapter extends RecyclerView.Adapter<ProviderAdapter.Provid
             // Store current provider for click handling
             currentProvider = provider;
 
-            // Add smooth slide-down animation for items (only once per position)
-            int pos = getAdapterPosition();
-            if (pos != RecyclerView.NO_POSITION && !animatedPositions.contains(pos)) {
-                animatedPositions.add(pos);
-
-                // CRITICAL: Ensure view is visible but start from below (slide-up like Recent
-                // Activity)
-                itemView.setAlpha(0f);
-                itemView.setTranslationY(100f);
-
-                itemView.animate()
-                        .translationY(0f)
-                        .alpha(1f)
-                        .setDuration(400)
-                        .setStartDelay(pos * 30) // Staggered animation (closer group)
-                        .setInterpolator(new android.view.animation.DecelerateInterpolator(2.0f))
-                        .start();
-            } else {
-                // If already animated or invalid position, ensure it's in final position
-                itemView.setTranslationY(0f);
-                itemView.setAlpha(1f);
-            }
+            // Animation removed as per user request
+            itemView.setTranslationY(0f);
+            itemView.setAlpha(1f);
 
             // Determine if this provider matches the search query
             boolean isMatch = true;
@@ -221,8 +204,12 @@ public class ProviderAdapter extends RecyclerView.Adapter<ProviderAdapter.Provid
             if (provider.getProfileImageUrl() != null && !provider.getProfileImageUrl().isEmpty()) {
                 Glide.with(itemView.getContext())
                         .load(provider.getProfileImageUrl())
+                        .centerCrop() // Crop image to fill the circle perfectly
                         .placeholder(R.drawable.no_profile_image)
                         .error(R.drawable.no_profile_image)
+                        .override(200, 200) // Load at higher resolution for better quality
+                        .transition(
+                                com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade(300))
                         .into(ivProviderPhoto);
             } else {
                 // Use no_profile_image if no URL

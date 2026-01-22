@@ -19,11 +19,19 @@ public class FirebaseProviderService {
 
     public interface ProviderCallback {
         void onSuccess(List<Provider> providers);
+
         void onError(String error);
     }
 
     public interface ProviderDetailCallback {
         void onSuccess(com.example.homerepairs.models.ProviderDetail providerDetail);
+
+        void onError(String error);
+    }
+
+    public interface CategoryCallback {
+        void onSuccess(List<com.example.homerepairs.models.ServiceCategory> categories);
+
         void onError(String error);
     }
 
@@ -48,13 +56,12 @@ public class FirebaseProviderService {
                                     if (provider != null) {
                                         provider.setId(document.getId());
                                         // Ensure profileImageUrl is loaded (check if automatic mapping missed it)
-                                        if (document.contains("profileImageUrl") && (provider.getProfileImageUrl() == null || provider.getProfileImageUrl().isEmpty())) {
+                                        if (document.contains("profileImageUrl")
+                                                && (provider.getProfileImageUrl() == null
+                                                        || provider.getProfileImageUrl().isEmpty())) {
                                             provider.setProfileImageUrl(document.getString("profileImageUrl"));
-                                            Log.d(TAG, "Set profileImageUrl for " + provider.getName() + ": " + document.getString("profileImageUrl"));
                                         }
                                         providers.add(provider);
-                                        Log.d(TAG, "Provider loaded: " + provider.getName() + 
-                                            ", profileImageUrl: " + (provider.getProfileImageUrl() != null ? provider.getProfileImageUrl() : "null"));
                                     } else {
                                         Log.w(TAG, "Provider object is null for document: " + document.getId());
                                         // Try manual mapping as fallback
@@ -98,7 +105,8 @@ public class FirebaseProviderService {
                                                 manualProvider.setAvailableNow(document.getBoolean("isAvailableNow"));
                                             }
                                             if (document.contains("profileImageUrl")) {
-                                                manualProvider.setProfileImageUrl(document.getString("profileImageUrl"));
+                                                manualProvider
+                                                        .setProfileImageUrl(document.getString("profileImageUrl"));
                                             }
                                             providers.add(manualProvider);
                                             Log.d(TAG, "Manually mapped provider: " + manualProvider.getName());
@@ -152,9 +160,11 @@ public class FirebaseProviderService {
                                             manualProvider.setProfileImageUrl(document.getString("profileImageUrl"));
                                         }
                                         providers.add(manualProvider);
-                                        Log.d(TAG, "Manually mapped provider after exception: " + manualProvider.getName());
+                                        Log.d(TAG, "Manually mapped provider after exception: "
+                                                + manualProvider.getName());
                                     } catch (Exception manualEx) {
-                                        Log.e(TAG, "Failed to manually map provider after exception: " + manualEx.getMessage(), manualEx);
+                                        Log.e(TAG, "Failed to manually map provider after exception: "
+                                                + manualEx.getMessage(), manualEx);
                                     }
                                 }
                             }
@@ -163,8 +173,42 @@ public class FirebaseProviderService {
                         callback.onSuccess(providers);
                     } else {
                         Log.e(TAG, "Error getting providers", task.getException());
-                        callback.onError("Failed to load providers: " + 
-                            (task.getException() != null ? task.getException().getMessage() : "Unknown error"));
+                        callback.onError("Failed to load providers: " +
+                                (task.getException() != null ? task.getException().getMessage() : "Unknown error"));
+                    }
+                });
+    }
+
+    /**
+     * Fetch all service categories from Firebase
+     */
+    public void getCategories(CategoryCallback callback) {
+        db.collection("categories")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        QuerySnapshot querySnapshot = task.getResult();
+                        List<com.example.homerepairs.models.ServiceCategory> categories = new ArrayList<>();
+                        if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                            for (QueryDocumentSnapshot document : querySnapshot) {
+                                try {
+                                    com.example.homerepairs.models.ServiceCategory category = document
+                                            .toObject(com.example.homerepairs.models.ServiceCategory.class);
+                                    categories.add(category);
+                                } catch (Exception e) {
+                                    Log.e(TAG, "Error converting category document", e);
+                                }
+                            }
+                            Log.d(TAG, "Loaded " + categories.size() + " categories from Firebase");
+                            callback.onSuccess(categories);
+                        } else {
+                            Log.w(TAG, "No categories found in Firebase");
+                            callback.onSuccess(new ArrayList<>());
+                        }
+                    } else {
+                        Log.e(TAG, "Error getting categories", task.getException());
+                        callback.onError("Failed to load categories: " +
+                                (task.getException() != null ? task.getException().getMessage() : "Unknown error"));
                     }
                 });
     }
@@ -175,21 +219,22 @@ public class FirebaseProviderService {
     public void getProvidersByService(String serviceCategory, ProviderCallback callback) {
         Log.d(TAG, "Querying providers for service: '" + serviceCategory + "'");
         Log.d(TAG, "Collection: " + COLLECTION_PROVIDERS);
-        
+
         db.collection(COLLECTION_PROVIDERS)
                 .whereEqualTo("service", serviceCategory)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         QuerySnapshot querySnapshot = task.getResult();
-                        Log.d(TAG, "Query successful. Total documents found: " + (querySnapshot != null ? querySnapshot.size() : 0));
-                        
+                        Log.d(TAG, "Query successful. Total documents found: "
+                                + (querySnapshot != null ? querySnapshot.size() : 0));
+
                         List<Provider> providers = new ArrayList<>();
                         if (querySnapshot != null && !querySnapshot.isEmpty()) {
                             for (QueryDocumentSnapshot document : querySnapshot) {
                                 Log.d(TAG, "Processing document ID: " + document.getId());
                                 Log.d(TAG, "Document data: " + document.getData());
-                                
+
                                 // Log each field individually to debug mapping issues
                                 if (document.contains("name")) {
                                     Log.d(TAG, "Field 'name' exists: " + document.get("name"));
@@ -201,15 +246,17 @@ public class FirebaseProviderService {
                                 } else {
                                     Log.w(TAG, "Field 'service' does NOT exist in document");
                                 }
-                                
+
                                 try {
                                     Provider provider = document.toObject(Provider.class);
                                     if (provider != null) {
                                         provider.setId(document.getId());
                                         providers.add(provider);
-                                        Log.d(TAG, "Provider loaded: " + provider.getName() + " (service: " + provider.getService() + ")");
+                                        Log.d(TAG, "Provider loaded: " + provider.getName() + " (service: "
+                                                + provider.getService() + ")");
                                     } else {
-                                        Log.e(TAG, "Failed to convert document to Provider object: " + document.getId() + " - result is null");
+                                        Log.e(TAG, "Failed to convert document to Provider object: " + document.getId()
+                                                + " - result is null");
                                         // Try manual mapping as fallback
                                         try {
                                             Provider manualProvider = new Provider();
@@ -251,7 +298,8 @@ public class FirebaseProviderService {
                                                 manualProvider.setAvailableNow(document.getBoolean("isAvailableNow"));
                                             }
                                             if (document.contains("profileImageUrl")) {
-                                                manualProvider.setProfileImageUrl(document.getString("profileImageUrl"));
+                                                manualProvider
+                                                        .setProfileImageUrl(document.getString("profileImageUrl"));
                                             }
                                             providers.add(manualProvider);
                                             Log.d(TAG, "Manually mapped provider: " + manualProvider.getName());
@@ -305,9 +353,11 @@ public class FirebaseProviderService {
                                             manualProvider.setProfileImageUrl(document.getString("profileImageUrl"));
                                         }
                                         providers.add(manualProvider);
-                                        Log.d(TAG, "Manually mapped provider after exception: " + manualProvider.getName());
+                                        Log.d(TAG, "Manually mapped provider after exception: "
+                                                + manualProvider.getName());
                                     } catch (Exception manualEx) {
-                                        Log.e(TAG, "Failed to manually map provider after exception: " + manualEx.getMessage(), manualEx);
+                                        Log.e(TAG, "Failed to manually map provider after exception: "
+                                                + manualEx.getMessage(), manualEx);
                                     }
                                 }
                             }
@@ -320,11 +370,12 @@ public class FirebaseProviderService {
                                 public void onSuccess(List<Provider> allProviders) {
                                     Log.d(TAG, "Total providers in collection: " + allProviders.size());
                                     if (!allProviders.isEmpty()) {
-                                        Log.d(TAG, "Sample provider service field: '" + allProviders.get(0).getService() + "'");
+                                        Log.d(TAG, "Sample provider service field: '" + allProviders.get(0).getService()
+                                                + "'");
                                         Log.d(TAG, "Note: Query was for: '" + serviceCategory + "'");
                                     }
                                 }
-                                
+
                                 @Override
                                 public void onError(String error) {
                                     Log.e(TAG, "Failed to fetch all providers for debugging: " + error);
@@ -340,8 +391,8 @@ public class FirebaseProviderService {
                             Log.e(TAG, "Exception message: " + exception.getMessage());
                             Log.e(TAG, "Exception class: " + exception.getClass().getName());
                         }
-                        callback.onError("Failed to load providers: " + 
-                            (exception != null ? exception.getMessage() : "Unknown error"));
+                        callback.onError("Failed to load providers: " +
+                                (exception != null ? exception.getMessage() : "Unknown error"));
                     }
                 });
     }
@@ -366,8 +417,8 @@ public class FirebaseProviderService {
                         }
                     } else {
                         Log.e(TAG, "Error getting provider by ID", task.getException());
-                        callback.onError("Failed to load provider: " + 
-                            (task.getException() != null ? task.getException().getMessage() : "Unknown error"));
+                        callback.onError("Failed to load provider: " +
+                                (task.getException() != null ? task.getException().getMessage() : "Unknown error"));
                     }
                 });
     }
@@ -378,7 +429,7 @@ public class FirebaseProviderService {
      */
     public ListenerRegistration listenToProviders(String serviceCategory, ProviderCallback callback) {
         Log.d(TAG, "Setting up real-time listener for service: '" + serviceCategory + "'");
-        
+
         return db.collection(COLLECTION_PROVIDERS)
                 .whereEqualTo("service", serviceCategory)
                 .addSnapshotListener((snapshot, error) -> {
@@ -391,18 +442,20 @@ public class FirebaseProviderService {
                     if (snapshot != null && !snapshot.isEmpty()) {
                         Log.d(TAG, "Real-time update received. Total documents: " + snapshot.size());
                         List<Provider> providers = new ArrayList<>();
-                        
+
                         for (QueryDocumentSnapshot document : snapshot) {
                             Log.d(TAG, "Processing document ID: " + document.getId());
-                            
+
                             try {
                                 Provider provider = document.toObject(Provider.class);
                                 if (provider != null) {
                                     provider.setId(document.getId());
                                     providers.add(provider);
-                                    Log.d(TAG, "Provider loaded: " + provider.getName() + " (service: " + provider.getService() + ")");
+                                    Log.d(TAG, "Provider loaded: " + provider.getName() + " (service: "
+                                            + provider.getService() + ")");
                                 } else {
-                                    Log.e(TAG, "Failed to convert document to Provider object: " + document.getId() + " - result is null");
+                                    Log.e(TAG, "Failed to convert document to Provider object: " + document.getId()
+                                            + " - result is null");
                                     // Try manual mapping as fallback
                                     try {
                                         Provider manualProvider = new Provider();
@@ -500,11 +553,14 @@ public class FirebaseProviderService {
                                     providers.add(manualProvider);
                                     Log.d(TAG, "Manually mapped provider after exception: " + manualProvider.getName());
                                 } catch (Exception manualEx) {
-                                    Log.e(TAG, "Failed to manually map provider after exception: " + manualEx.getMessage(), manualEx);
+                                    Log.e(TAG,
+                                            "Failed to manually map provider after exception: " + manualEx.getMessage(),
+                                            manualEx);
                                 }
                             }
                         }
-                        Log.d(TAG, "Real-time update: Loaded " + providers.size() + " providers for service: " + serviceCategory);
+                        Log.d(TAG, "Real-time update: Loaded " + providers.size() + " providers for service: "
+                                + serviceCategory);
                         callback.onSuccess(providers);
                     } else {
                         Log.d(TAG, "Real-time update: No documents found for service: '" + serviceCategory + "'");
@@ -518,7 +574,7 @@ public class FirebaseProviderService {
      */
     public void getProviderByName(String providerName, ProviderDetailCallback callback) {
         Log.d(TAG, "Fetching provider by name: '" + providerName + "'");
-        
+
         db.collection(COLLECTION_PROVIDERS)
                 .whereEqualTo("name", providerName)
                 .limit(1)
@@ -527,10 +583,11 @@ public class FirebaseProviderService {
                     if (task.isSuccessful()) {
                         QuerySnapshot querySnapshot = task.getResult();
                         if (querySnapshot != null && !querySnapshot.isEmpty()) {
-                            QueryDocumentSnapshot document = (QueryDocumentSnapshot) querySnapshot.getDocuments().get(0);
+                            QueryDocumentSnapshot document = (QueryDocumentSnapshot) querySnapshot.getDocuments()
+                                    .get(0);
                             try {
-                                com.example.homerepairs.models.ProviderDetail providerDetail = 
-                                    document.toObject(com.example.homerepairs.models.ProviderDetail.class);
+                                com.example.homerepairs.models.ProviderDetail providerDetail = document
+                                        .toObject(com.example.homerepairs.models.ProviderDetail.class);
                                 if (providerDetail != null) {
                                     providerDetail.setId(document.getId());
                                     // If ProviderDetail doesn't have all fields, try to map manually
@@ -543,8 +600,7 @@ public class FirebaseProviderService {
                             } catch (Exception e) {
                                 Log.e(TAG, "Error converting to ProviderDetail", e);
                                 // Fallback: create ProviderDetail manually
-                                com.example.homerepairs.models.ProviderDetail providerDetail = 
-                                    new com.example.homerepairs.models.ProviderDetail();
+                                com.example.homerepairs.models.ProviderDetail providerDetail = new com.example.homerepairs.models.ProviderDetail();
                                 providerDetail.setId(document.getId());
                                 mapProviderDetailFields(document, providerDetail);
                                 callback.onSuccess(providerDetail);
@@ -555,8 +611,8 @@ public class FirebaseProviderService {
                         }
                     } else {
                         Log.e(TAG, "Error getting provider by name", task.getException());
-                        callback.onError("Failed to load provider: " + 
-                            (task.getException() != null ? task.getException().getMessage() : "Unknown error"));
+                        callback.onError("Failed to load provider: " +
+                                (task.getException() != null ? task.getException().getMessage() : "Unknown error"));
                     }
                 });
     }
@@ -566,7 +622,7 @@ public class FirebaseProviderService {
      */
     public ListenerRegistration listenToProviderByName(String providerName, ProviderDetailCallback callback) {
         Log.d(TAG, "Setting up real-time listener for provider: '" + providerName + "'");
-        
+
         return db.collection(COLLECTION_PROVIDERS)
                 .whereEqualTo("name", providerName)
                 .limit(1)
@@ -580,8 +636,8 @@ public class FirebaseProviderService {
                     if (snapshot != null && !snapshot.isEmpty()) {
                         QueryDocumentSnapshot document = (QueryDocumentSnapshot) snapshot.getDocuments().get(0);
                         try {
-                            com.example.homerepairs.models.ProviderDetail providerDetail = 
-                                document.toObject(com.example.homerepairs.models.ProviderDetail.class);
+                            com.example.homerepairs.models.ProviderDetail providerDetail = document
+                                    .toObject(com.example.homerepairs.models.ProviderDetail.class);
                             if (providerDetail != null) {
                                 providerDetail.setId(document.getId());
                                 mapProviderDetailFields(document, providerDetail);
@@ -590,8 +646,7 @@ public class FirebaseProviderService {
                             }
                         } catch (Exception e) {
                             Log.e(TAG, "Error converting to ProviderDetail in real-time", e);
-                            com.example.homerepairs.models.ProviderDetail providerDetail = 
-                                new com.example.homerepairs.models.ProviderDetail();
+                            com.example.homerepairs.models.ProviderDetail providerDetail = new com.example.homerepairs.models.ProviderDetail();
                             providerDetail.setId(document.getId());
                             mapProviderDetailFields(document, providerDetail);
                             callback.onSuccess(providerDetail);
@@ -603,8 +658,8 @@ public class FirebaseProviderService {
     /**
      * Helper method to map all fields from Firestore document to ProviderDetail
      */
-    private void mapProviderDetailFields(QueryDocumentSnapshot document, 
-                                        com.example.homerepairs.models.ProviderDetail providerDetail) {
+    private void mapProviderDetailFields(QueryDocumentSnapshot document,
+            com.example.homerepairs.models.ProviderDetail providerDetail) {
         try {
             // Basic Provider fields
             if (document.contains("name")) {
@@ -710,8 +765,8 @@ public class FirebaseProviderService {
             }
             if (document.contains("reviews")) {
                 // Try to convert reviews
-                List<com.example.homerepairs.models.Review> reviews = 
-                    (List<com.example.homerepairs.models.Review>) document.get("reviews");
+                List<com.example.homerepairs.models.Review> reviews = (List<com.example.homerepairs.models.Review>) document
+                        .get("reviews");
                 providerDetail.setReviews(reviews);
             }
             if (document.contains("ratingDistribution")) {
@@ -719,8 +774,8 @@ public class FirebaseProviderService {
             }
             if (document.contains("portfolio")) {
                 // Try to convert portfolio items
-                List<com.example.homerepairs.models.PortfolioItem> portfolio = 
-                    (List<com.example.homerepairs.models.PortfolioItem>) document.get("portfolio");
+                List<com.example.homerepairs.models.PortfolioItem> portfolio = (List<com.example.homerepairs.models.PortfolioItem>) document
+                        .get("portfolio");
                 providerDetail.setPortfolio(portfolio);
             }
             if (document.contains("portfolioDescription")) {
@@ -731,4 +786,3 @@ public class FirebaseProviderService {
         }
     }
 }
-

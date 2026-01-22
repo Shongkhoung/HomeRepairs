@@ -1,16 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/background_gray">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
         android:paddingBottom="80dp"
-        android:background="@color/white">
+        android:background="@color/background_gray">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -37,7 +36,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/title_my_bookings"
-                        android:textSize="32sp"
+                        android:textSize="24sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_primary"
                         android:letterSpacing="-0.02" />
@@ -47,7 +46,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="2 total bookings"
-                        android:textSize="16sp"
+                        android:textSize="14sp"
                         android:textColor="@color/text_secondary"
                         android:layout_marginTop="4dp" />
                 </LinearLayout>
@@ -173,6 +172,7 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
+        style="@style/BottomNavNoIndicator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
@@ -180,8 +180,7 @@
         app:elevation="0dp"
         app:menu="@menu/bottom_navigation"
         app:itemIconTint="@drawable/bottom_nav_selector"
-        app:itemTextColor="@drawable/bottom_nav_selector"
-        app:itemRippleColor="@color/ripple_light" />
+        app:itemTextColor="@drawable/bottom_nav_selector" />
 
     <!-- Screen Transition Loading Overlay -->
     <FrameLayout

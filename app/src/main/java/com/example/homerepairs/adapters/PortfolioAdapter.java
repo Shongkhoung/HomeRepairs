@@ -23,6 +23,11 @@ public class PortfolioAdapter extends RecyclerView.Adapter<PortfolioAdapter.Port
         this.portfolioItems = portfolioItems;
     }
 
+    public void updateData(List<PortfolioItem> newItems) {
+        this.portfolioItems = newItems;
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public PortfolioViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -34,14 +39,14 @@ public class PortfolioAdapter extends RecyclerView.Adapter<PortfolioAdapter.Port
     @Override
     public void onBindViewHolder(@NonNull PortfolioViewHolder holder, int position) {
         PortfolioItem item = portfolioItems.get(position);
-        
+
         // Set title
         if (item.getLabel() != null && !item.getLabel().isEmpty()) {
             holder.tvPortfolioTitle.setText(item.getLabel());
         } else {
             holder.tvPortfolioTitle.setText("Portfolio Item");
         }
-        
+
         // Set description
         if (item.getDescription() != null && !item.getDescription().isEmpty()) {
             holder.tvPortfolioDescription.setText(item.getDescription());
@@ -49,24 +54,45 @@ public class PortfolioAdapter extends RecyclerView.Adapter<PortfolioAdapter.Port
         } else {
             holder.tvPortfolioDescription.setVisibility(View.GONE);
         }
-        
-        // Set icon based on title/description
-        String title = item.getLabel() != null ? item.getLabel().toLowerCase() : "";
-        String description = item.getDescription() != null ? item.getDescription().toLowerCase() : "";
-        
-        if (title.contains("kitchen") || title.contains("sink") || description.contains("sink") || description.contains("faucet")) {
-            holder.ivPortfolioIcon.setImageResource(R.drawable.hair_washer_sink);
-            holder.ivPortfolioIcon.setColorFilter(holder.itemView.getContext().getResources().getColor(R.color.deep_royal_blue));
-        } else if (title.contains("bathroom") || title.contains("bathtub") || description.contains("bathroom") || description.contains("bathtub")) {
-            holder.ivPortfolioIcon.setImageResource(R.drawable.bath_bathtub);
-            holder.ivPortfolioIcon.setColorFilter(holder.itemView.getContext().getResources().getColor(R.color.deep_royal_blue));
-        } else if (title.contains("water heater") || title.contains("heater") || description.contains("water heater") || description.contains("heater")) {
-            holder.ivPortfolioIcon.setImageResource(R.drawable.hot_water);
-            holder.ivPortfolioIcon.setColorFilter(holder.itemView.getContext().getResources().getColor(R.color.warning_red));
+
+        // Load image using Glide if available
+        if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
+            com.bumptech.glide.Glide.with(holder.itemView.getContext())
+                    .load(item.getImageUrl())
+                    .placeholder(R.drawable.ic_image) // You might need a placeholder drawable
+                    .error(R.drawable.ic_alert_circle) // And an error drawable
+                    .centerCrop()
+                    .into(holder.ivPortfolioIcon);
+            // Ensure it looks like an image, not an icon (scale type)
+            holder.ivPortfolioIcon.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            holder.ivPortfolioIcon.setColorFilter(null); // Remove tint
         } else {
-            // Default icon
-            holder.ivPortfolioIcon.setImageResource(R.drawable.ic_briefcase);
-            holder.ivPortfolioIcon.setColorFilter(holder.itemView.getContext().getResources().getColor(R.color.deep_royal_blue));
+            // Set icon based on title/description (Fallback)
+            holder.ivPortfolioIcon.setScaleType(ImageView.ScaleType.FIT_CENTER); // Icon scaling
+            String title = item.getLabel() != null ? item.getLabel().toLowerCase() : "";
+            String description = item.getDescription() != null ? item.getDescription().toLowerCase() : "";
+
+            if (title.contains("kitchen") || title.contains("sink") || description.contains("sink")
+                    || description.contains("faucet")) {
+                holder.ivPortfolioIcon.setImageResource(R.drawable.hair_washer_sink);
+                holder.ivPortfolioIcon
+                        .setColorFilter(holder.itemView.getContext().getResources().getColor(R.color.deep_royal_blue));
+            } else if (title.contains("bathroom") || title.contains("bathtub") || description.contains("bathroom")
+                    || description.contains("bathtub")) {
+                holder.ivPortfolioIcon.setImageResource(R.drawable.bath_bathtub);
+                holder.ivPortfolioIcon
+                        .setColorFilter(holder.itemView.getContext().getResources().getColor(R.color.deep_royal_blue));
+            } else if (title.contains("water heater") || title.contains("heater")
+                    || description.contains("water heater") || description.contains("heater")) {
+                holder.ivPortfolioIcon.setImageResource(R.drawable.hot_water);
+                holder.ivPortfolioIcon
+                        .setColorFilter(holder.itemView.getContext().getResources().getColor(R.color.warning_red));
+            } else {
+                // Default icon
+                holder.ivPortfolioIcon.setImageResource(R.drawable.ic_briefcase);
+                holder.ivPortfolioIcon
+                        .setColorFilter(holder.itemView.getContext().getResources().getColor(R.color.deep_royal_blue));
+            }
         }
     }
 

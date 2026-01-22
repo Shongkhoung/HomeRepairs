@@ -50,7 +50,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/title_home_repairs"
-                        android:textSize="32sp"
+                        android:textSize="34sp"
                         android:textStyle="bold"
                         android:textColor="@color/deep_royal_blue"
                         android:letterSpacing="-0.02" />
@@ -189,7 +189,7 @@
                         android:layout_height="wrap_content"
                         tools:text="Good Evening, Alex"
                         android:textColor="@color/text_primary"
-                        android:textSize="20sp"
+                        android:textSize="18sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.01" />
                 </LinearLayout>
@@ -402,9 +402,9 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/section_services"
-                        android:textSize="26sp"
+                        android:textSize="18sp"
                         android:textStyle="bold"
-                        android:textColor="@color/deep_royal_blue"
+                        android:textColor="@color/text_primary"
                         android:letterSpacing="-0.01" />
                     
                     <TextView
@@ -447,7 +447,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/section_featured_pro"
-                        android:textSize="24sp"
+                        android:textSize="18sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_primary"
                         android:letterSpacing="-0.01" />
@@ -493,7 +493,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/section_recent_activity"
-                        android:textSize="24sp"
+                        android:textSize="18sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_primary"
                         android:letterSpacing="-0.01" />
@@ -554,6 +554,7 @@
     <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
+        style="@style/BottomNavNoIndicator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
@@ -561,8 +562,7 @@
         app:elevation="0dp"
         app:menu="@menu/bottom_navigation"
         app:itemIconTint="@drawable/bottom_nav_selector"
-        app:itemTextColor="@drawable/bottom_nav_selector"
-        app:itemRippleColor="@color/ripple_light" />
+        app:itemTextColor="@drawable/bottom_nav_selector" />
 
     <!-- Internet Connection Loading Overlay with Blur Background -->
     <FrameLayout
@@ -616,46 +616,7 @@
         </LinearLayout>
     </FrameLayout>
 
-    <!-- Screen Transition Loading Overlay -->
-    <FrameLayout
-        android:id="@+id/llScreenLoading"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/overlay_background"
-        android:visibility="gone"
-        android:elevation="20dp"
-        android:clickable="true"
-        android:focusable="true">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:padding="24dp">
-
-            <com.airbnb.lottie.LottieAnimationView
-                android:id="@+id/ivScreenLoading"
-                android:layout_width="320dp"
-                android:layout_height="320dp"
-                android:layout_marginBottom="16dp"
-                app:lottie_autoPlay="true"
-                app:lottie_loop="true"
-                app:lottie_speed="1.0"
-                app:lottie_renderMode="hardware"
-                app:lottie_rawRes="@raw/loading" />
-
-            <TextView
-                android:id="@+id/tvLoading"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/loading"
-                android:textSize="16sp"
-                android:textColor="@color/text_white"
-                android:textStyle="bold" />
-        </LinearLayout>
-    </FrameLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

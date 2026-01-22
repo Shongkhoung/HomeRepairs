@@ -122,17 +122,26 @@ public class BookingCardAdapter extends RecyclerView.Adapter<BookingCardAdapter.
             chipStatus.setText(status);
 
             // Set status color based on status
+            // Set status color based on status
             String statusLower = status.toLowerCase();
             if (statusLower.equals("completed")) {
                 chipStatus.setChipBackgroundColorResource(R.color.success);
+                chipStatus.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.white));
             } else if (statusLower.equals("in progress")) {
                 chipStatus.setChipBackgroundColorResource(R.color.warning);
+                chipStatus.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.white));
+            } else if (statusLower.equals("pending")) {
+                chipStatus.setChipBackgroundColorResource(R.color.amber_100);
+                chipStatus.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.amber_700));
             } else if (statusLower.equals("confirmed") || statusLower.equals("scheduled")) {
                 chipStatus.setChipBackgroundColorResource(R.color.primary_blue);
+                chipStatus.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.white));
             } else if (statusLower.equals("cancelled")) {
                 chipStatus.setChipBackgroundColorResource(R.color.error);
+                chipStatus.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.white));
             } else {
                 chipStatus.setChipBackgroundColorResource(R.color.text_secondary);
+                chipStatus.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.white));
             }
 
             // Set time ago
@@ -158,10 +167,9 @@ public class BookingCardAdapter extends RecyclerView.Adapter<BookingCardAdapter.
             // Set rating (default or from booking if available)
             tvRating.setText("4.9"); // Default rating, can be enhanced with actual rating data
 
-            // Set total cost (default, can be enhanced with actual cost data)
-            tvTotalCost.setText(com.example.homerepairs.utils.CurrencyHelper.formatPrice(itemView.getContext(), 50.0)); // Default
-                                                                                                                        // placeholder
-                                                                                                                        // price
+            // Set total cost
+            double price = booking.getPrice() != null ? booking.getPrice() : 135.0; // Default to 135 if not set
+            tvTotalCost.setText(com.example.homerepairs.utils.CurrencyHelper.formatPrice(itemView.getContext(), price));
 
             // Set duration (default, can be enhanced with actual duration data)
             tvDuration.setText(itemView.getContext().getString(R.string.default_duration));
@@ -215,6 +223,9 @@ public class BookingCardAdapter extends RecyclerView.Adapter<BookingCardAdapter.
                 btnSecondaryAction.setText(itemView.getContext().getString(R.string.btn_review));
                 btnSecondaryAction.setIconResource(R.drawable.message);
                 btnSecondaryAction.setVisibility(View.VISIBLE);
+                btnSecondaryAction.setBackgroundTintList(
+                        ContextCompat.getColorStateList(itemView.getContext(), R.color.background_gray));
+                btnSecondaryAction.setStrokeWidth(0);
 
             } else if (status.equalsIgnoreCase("in progress")) {
                 // Primary: Track Job (Deep Blue)
@@ -227,27 +238,34 @@ public class BookingCardAdapter extends RecyclerView.Adapter<BookingCardAdapter.
                 btnSecondaryAction.setText(itemView.getContext().getString(R.string.btn_call_now));
                 btnSecondaryAction.setIconResource(R.drawable.ic_phone);
                 btnSecondaryAction.setVisibility(View.VISIBLE);
+                btnSecondaryAction.setBackgroundTintList(
+                        ContextCompat.getColorStateList(itemView.getContext(), R.color.background_gray));
+                btnSecondaryAction.setStrokeWidth(0);
 
             } else {
                 // Pending, Scheduled, etc.
-                // Primary: View Details (Deep Blue)
+                // Primary: View Details (Blue 600)
                 btnPrimaryAction.setText(itemView.getContext().getString(R.string.btn_view_details));
                 btnPrimaryAction.setIconResource(R.drawable.ic_document);
                 btnPrimaryAction.setBackgroundTintList(
-                        ContextCompat.getColorStateList(itemView.getContext(), R.color.deep_royal_blue));
+                        ContextCompat.getColorStateList(itemView.getContext(), R.color.blue_600));
                 btnPrimaryAction.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.white));
                 btnPrimaryAction.setIconTint(ContextCompat.getColorStateList(itemView.getContext(), R.color.white));
 
-                // Secondary: Cancel (Gray/White)
-                btnSecondaryAction.setText(itemView.getContext().getString(R.string.btn_cancel));
-                btnSecondaryAction.setIconResource(R.drawable.ic_arrow_back); // Using arrow back as a placeholder for
-                                                                              // simple icon or none
-                // Ideally use specific cancel icon or generic 'x' if available, but arrow back
-                // is what was in code
-                // Let's check if we have a close or delete icon
-                btnSecondaryAction.setIconResource(R.drawable.ic_close); // Using close/cancel icon
+                // Secondary: Cancel (Outlined, Icon Only)
+                btnSecondaryAction.setText(""); // Icon only
+                btnSecondaryAction.setIconResource(R.drawable.ic_close);
                 btnSecondaryAction.setBackgroundTintList(
-                        ContextCompat.getColorStateList(itemView.getContext(), R.color.background_gray)); // Light gray
+                        ContextCompat.getColorStateList(itemView.getContext(), android.R.color.transparent));
+                btnSecondaryAction.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.gray_700));
+                btnSecondaryAction
+                        .setIconTint(ContextCompat.getColorStateList(itemView.getContext(), R.color.gray_700));
+
+                // Set stroke for outlined effect
+                btnSecondaryAction
+                        .setStrokeColor(ContextCompat.getColorStateList(itemView.getContext(), R.color.gray_300));
+                btnSecondaryAction.setStrokeWidth(2); // Pixel value, ideally should convert dp to px
+
                 btnSecondaryAction.setVisibility(View.VISIBLE);
             }
         }

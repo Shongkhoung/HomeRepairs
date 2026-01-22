@@ -7,7 +7,7 @@
     android:layout_marginHorizontal="20dp"
     android:layout_marginTop="12dp"
     android:layout_marginBottom="20dp"
-    app:cardCornerRadius="24dp"
+    app:cardCornerRadius="16dp"
     app:cardElevation="6dp"
     app:cardBackgroundColor="@color/white"
     android:foreground="?attr/selectableItemBackground"
@@ -35,7 +35,7 @@
                 android:layout_height="60dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/deep_royal_blue"
+                app:cardBackgroundColor="@color/blue_600"
                 app:strokeWidth="0dp">
 
                 <ImageView
@@ -45,7 +45,7 @@
                     android:src="@drawable/plumbing"
                     android:scaleType="centerInside"
                     android:padding="12dp"
-                    android:tint="@color/text_white"
+                    app:tint="@color/white"
                     android:contentDescription="Service Icon" />
             </com.google.android.material.card.MaterialCardView>
 
@@ -63,9 +63,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Plumbing Service"
-                    android:textSize="18sp"
+                    android:textSize="14sp"
                     android:textStyle="bold"
-                    android:textColor="@color/text_primary"
+                    android:textColor="@color/gray_900"
                     android:maxLines="1"
                     android:ellipsize="end"
                     android:layout_marginBottom="2dp" />
@@ -75,8 +75,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Panha Williams"
-                    android:textSize="15sp"
-                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp"
+                    android:textColor="@color/gray_500"
                     android:maxLines="1"
                     android:ellipsize="end" />
             </LinearLayout>
@@ -86,16 +86,20 @@
                 android:id="@+id/chipStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Completed"
+                android:text="Pending"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:textColor="@color/text_white"
-                app:chipBackgroundColor="@color/success"
+                android:textColor="@color/amber_700"
+                app:chipBackgroundColor="@color/amber_100"
                 app:chipCornerRadius="16dp"
-                app:chipMinHeight="32dp"
-                app:chipStartPadding="14dp"
-                app:chipEndPadding="14dp"
-                android:minWidth="0dp" />
+                app:chipMinHeight="28dp"
+                app:chipStartPadding="10dp"
+                app:chipEndPadding="10dp"
+                app:iconStartPadding="0dp"
+                app:textStartPadding="0dp"
+                app:textEndPadding="0dp"
+                app:ensureMinTouchTargetSize="false"
+                app:chipStrokeWidth="0dp" />
         </LinearLayout>
 
         <!-- Time and Rating Row -->
@@ -107,11 +111,11 @@
             android:layout_marginBottom="16dp">
 
             <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
                 android:src="@drawable/ic_clock"
-                android:tint="@color/text_secondary"
-                android:layout_marginEnd="8dp"
+                app:tint="@color/gray_500"
+                android:layout_marginEnd="6dp"
                 android:contentDescription="Time" />
 
             <TextView
@@ -119,16 +123,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="5 days ago"
-                android:textSize="13sp"
-                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:textColor="@color/gray_500"
                 android:layout_marginEnd="20dp" />
 
             <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
                 android:src="@drawable/ic_star"
-                android:tint="@color/rating_gold"
-                android:layout_marginEnd="8dp"
+                app:tint="@color/amber_500"
+                android:layout_marginEnd="4dp"
                 android:contentDescription="Rating" />
 
             <TextView
@@ -136,9 +140,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="4.9"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:textStyle="bold"
-                android:textColor="@color/text_secondary" />
+                android:textColor="@color/gray_900" />
         </LinearLayout>
 
         <!-- Cost and Duration Row -->
@@ -146,7 +150,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="24dp">
+            android:layout_marginBottom="20dp"
+            android:paddingTop="16dp"
+            android:background="@drawable/border_top_gray">
 
             <!-- Total Cost -->
             <LinearLayout
@@ -160,17 +166,17 @@
                     android:layout_height="wrap_content"
                     android:text="Total Cost"
                     android:textSize="12sp"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginBottom="4dp" />
+                    android:textColor="@color/gray_500"
+                    android:layout_marginBottom="2dp" />
 
                 <TextView
                     android:id="@+id/tvTotalCost"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="$50"
-                    android:textSize="20sp"
+                    android:textSize="14sp"
                     android:textStyle="bold"
-                    android:textColor="@color/text_primary" />
+                    android:textColor="@color/gray_900" />
             </LinearLayout>
 
             <!-- Duration -->
@@ -178,24 +184,25 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:gravity="end">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Duration"
                     android:textSize="12sp"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginBottom="4dp" />
+                    android:textColor="@color/gray_500"
+                    android:layout_marginBottom="2dp" />
 
                 <TextView
                     android:id="@+id/tvDuration"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="2 hours"
-                    android:textSize="20sp"
+                    android:textSize="14sp"
                     android:textStyle="bold"
-                    android:textColor="@color/text_primary" />
+                    android:textColor="@color/gray_900" />
             </LinearLayout>
         </LinearLayout>
 
@@ -209,54 +216,52 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnPrimaryAction"
                 android:layout_width="0dp"
-                android:layout_height="60dp"
+                android:layout_height="50dp"
                 android:layout_weight="1"
                 android:text="View Details"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:textStyle="bold"
                 android:textAllCaps="false"
                 android:gravity="center"
                 android:letterSpacing="0"
-                app:cornerRadius="12dp"
-                app:backgroundTint="@color/deep_royal_blue"
-                android:textColor="@color/text_white"
+                app:cornerRadius="8dp"
+                app:backgroundTint="@color/blue_600"
+                android:textColor="@color/white"
                 app:icon="@drawable/ic_document"
-                app:iconTint="@color/text_white"
+                app:iconTint="@color/white"
                 app:iconGravity="textStart"
-                app:iconPadding="4dp"
-                app:iconSize="18dp"
-                android:layout_marginEnd="12dp"
+                app:iconPadding="6dp"
+                app:iconSize="16dp"
+                android:layout_marginEnd="8dp"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp"/>
+                android:stateListAnimator="@null"/>
 
             <!-- Secondary Action Button (Cancel) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSecondaryAction"
-                android:layout_width="0dp"
-                android:layout_height="60dp"
-                android:layout_weight="1"
-                android:text="Cancel"
-                android:textSize="13sp"
+                android:layout_width="60dp"
+                android:layout_height="50dp"
+                android:layout_weight="0"
+                android:text=""
+                android:textSize="12sp"
                 android:textStyle="bold"
                 android:textAllCaps="false"
                 android:gravity="center"
                 android:letterSpacing="0"
-                app:cornerRadius="12dp"
-                app:backgroundTint="#F5F5F5"
-                android:textColor="@color/text_primary"
-                app:icon="@drawable/ic_arrow_back"
-                app:iconTint="@color/text_primary"
+                app:cornerRadius="8dp"
+                app:backgroundTint="@android:color/transparent"
+                app:strokeColor="@color/gray_300"
+                app:strokeWidth="1dp"
+                android:textColor="@color/gray_700"
+                app:icon="@drawable/ic_close"
+                app:iconTint="@color/gray_700"
                 app:iconGravity="textStart"
-                app:iconPadding="4dp"
-                app:iconSize="18dp"
-                app:strokeColor="#E0E0E0"
-                app:strokeWidth="0dp"
+                app:iconPadding="0dp"
+                app:iconSize="20dp"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp"/>
+                android:stateListAnimator="@null"/>
         </LinearLayout>
     </LinearLayout>
 

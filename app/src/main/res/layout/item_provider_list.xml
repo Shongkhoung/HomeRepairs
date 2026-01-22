@@ -5,188 +5,200 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="16dp"
-    android:layout_marginBottom="16dp"
-    app:cardCornerRadius="20dp"
-    app:cardElevation="4dp"
-    app:cardMaxElevation="6dp"
+    android:layout_marginBottom="12dp"
     app:cardBackgroundColor="@color/white"
-    app:strokeWidth="0dp"
-    android:foreground="@drawable/ripple_card"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:strokeColor="@color/gray_200"
+    app:strokeWidth="1dp"
     android:clickable="true"
     android:focusable="true"
-    android:focusableInTouchMode="false"
-    android:descendantFocusability="blocksDescendants">
+    android:foreground="?attr/selectableItemBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="20dp"
-        android:gravity="center_vertical"
-        android:clickable="false"
-        android:focusable="false">
+        android:padding="16dp"
+        android:gravity="top">
 
-        <!-- Provider Image - Circular -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="88dp"
-            android:layout_height="88dp"
-            app:cardCornerRadius="44dp"
-            app:cardElevation="3dp"
-            app:cardMaxElevation="4dp"
-            app:cardBackgroundColor="@android:color/transparent"
-            android:layout_marginEnd="20dp">
+        <!-- Image Section -->
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/ivProviderPhoto"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:contentDescription="@string/provider_photo"
-                android:src="@drawable/appliance_repair"
-                android:scaleType="centerCrop"
-                android:background="@color/peach_background" />
-        </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                app:cardCornerRadius="36dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="#F3F4F6">
+                
+                <TextView
+                     android:id="@+id/tvInitial"
+                     android:layout_width="match_parent"
+                     android:layout_height="match_parent"
+                     android:gravity="center"
+                     android:textColor="@color/gray_500"
+                     android:textSize="18sp"
+                     android:textStyle="bold"
+                     android:visibility="gone"/>
 
-        <!-- Provider Info -->
+                <ImageView
+                    android:id="@+id/ivProviderPhoto"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop" />
+            </androidx.cardview.widget.CardView>
+
+
+
+        </FrameLayout>
+
+        <!-- Content Section -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_marginStart="12dp">
 
-            <!-- Name and Verified Badge -->
+            <!-- Name and Favorite Row -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="6dp">
+                android:gravity="start">
 
-                <TextView
-                    android:id="@+id/tvProviderName"
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Expert Plumber"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_primary"
-                    android:letterSpacing="0.01"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:layout_marginEnd="8dp" />
-
-                <LinearLayout
-                    android:id="@+id/llVerified"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:visibility="gone">
-
-                    <ImageView
-                        android:id="@+id/ivVerifiedIcon"
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:src="@drawable/ic_verify_new"
-                        android:tint="@color/verified_green"
-                        android:contentDescription="Verified Icon" />
+                    android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/tvVerified"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/tvProviderName"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Verified"
-                        android:textSize="9sp"
-                        android:textColor="@color/verified_green"
+                        android:text="Provider Name"
+                        android:textColor="@color/gray_900"
+                        android:textSize="16sp"
                         android:textStyle="bold"
                         android:maxLines="1"
-                        android:gravity="center" />
+                        android:ellipsize="end"/>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="2dp">
+                        
+                        <ImageView
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:src="@drawable/ic_star"
+                            app:tint="@color/rating_gold"/>
+                        
+                        <TextView
+                            android:id="@+id/tvRating"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="4.8"
+                            android:textColor="@color/gray_700"
+                            android:textSize="14sp"
+                            android:layout_marginStart="4dp"/>
+
+                        <TextView
+                            android:id="@+id/tvReviewCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="(157)"
+                            android:textColor="@color/gray_400"
+                            android:textSize="12sp"
+                            android:layout_marginStart="2dp"/>
+                    </LinearLayout>
                 </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/btnFavorite"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/heart_outline"
+                    android:scaleType="fitCenter"
+                    android:padding="4dp"
+                    app:tint="@color/gray_400"
+                    android:clickable="true"
+                    android:focusable="true"/>
             </LinearLayout>
 
-            <!-- Rating and Reviews -->
+            <!-- Tags Row -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="6dp">
+                android:layout_marginTop="8dp">
 
                 <TextView
-                    android:id="@+id/tvRating"
+                    android:id="@+id/tvServiceTag"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="4.8"
+                    android:text="Appliance"
+                    android:background="@drawable/bg_small_rounded"
+                    android:backgroundTint="@color/gray_100"
+                    android:textColor="@color/gray_600"
+                    android:textSize="11sp"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="2dp"
+                    android:layout_marginEnd="8dp"/>
+                <TextView
+                    android:id="@+id/tvStatusTag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Available"
+                    android:background="@drawable/bg_small_rounded"
+                    android:backgroundTint="@color/green_50"
+                    android:textColor="@color/green_700"
+                    android:textSize="11sp"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="2dp"/>
+            </LinearLayout>
+
+            <!-- Price and Book Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="12dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tvPrice"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="$75/hr"
+                    android:textColor="@color/primary_blue"
+                    android:textSize="18sp"
+                    android:textStyle="bold"/>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnBook"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="Book"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    android:textColor="@color/text_primary"
-                    android:layout_marginEnd="3dp" />
-
-                <TextView
-                    android:id="@+id/tvStar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="★"
-                    android:textSize="13sp"
-                    android:textColor="#FFB800"
-                    android:layout_marginEnd="4dp" />
-
-                <TextView
-                    android:id="@+id/tvReviewCount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="(123 reviews)"
-                    android:textSize="12sp"
-                    android:textColor="@color/gray_text"
-                    android:maxLines="1" />
+                    android:textAllCaps="false"
+                    android:background="@drawable/rounded_button_blue"
+                    android:textColor="@color/white"
+                    android:paddingHorizontal="20dp"
+                    android:stateListAnimator="@null"/>
             </LinearLayout>
 
-            <!-- Service Type and Availability -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="8dp">
-
-                <TextView
-                    android:id="@+id/tvServiceType"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Plumbing"
-                    android:textSize="13sp"
-                    android:textColor="@color/gray_text"
-                    android:layout_marginEnd="10dp" />
-
-                <View
-                    android:layout_width="6dp"
-                    android:layout_height="6dp"
-                    android:background="@drawable/availability_dot"
-                    android:layout_marginEnd="5dp"
-                    android:id="@+id/vAvailabilityDot" />
-
-                <TextView
-                    android:id="@+id/tvAvailability"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Available Now"
-                    android:textSize="12sp"
-                    android:textColor="#10B981"
-                    android:textStyle="bold"
-                    android:maxLines="1" />
-            </LinearLayout>
-
-            <!-- Price -->
-            <TextView
-                android:id="@+id/tvPrice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="$60/hr"
-                android:textSize="15sp"
-                android:textStyle="bold"
-                android:textColor="#3B82F6" />
         </LinearLayout>
+
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>
-

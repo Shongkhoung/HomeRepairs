@@ -21,7 +21,7 @@ import java.util.UUID;
 public class FirebaseSeeder {
     private static final String TAG = "FirebaseSeeder";
     private static final String PREF_NAME = "AppPrefs";
-    private static final String KEY_PROVIDERS_SEEDED = "providers_seeded_v1";
+    private static final String KEY_PROVIDERS_SEEDED = "providers_seeded_v3";
     private static final String COLLECTION_PROVIDERS = "providers";
 
     private static final String[] CATEGORIES = {
@@ -42,7 +42,7 @@ public class FirebaseSeeder {
     public static void seedProviders(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         if (prefs.getBoolean(KEY_PROVIDERS_SEEDED, false)) {
-            Log.d(TAG, "Providers already seeded. Skipping.");
+            Log.d(TAG, "Providers already seeded.");
             return;
         }
 
@@ -66,8 +66,8 @@ public class FirebaseSeeder {
                 batchCount++;
                 totalProviders++;
 
-                // Commit batch every 500 writes (Firestore limit)
-                if (batchCount >= 400) {
+                // Commit batch every 50 writes to avoid large batches failing easily
+                if (batchCount >= 50) {
                     batch.commit()
                             .addOnSuccessListener(aVoid -> Log.d(TAG, "Batch committed successfully"))
                             .addOnFailureListener(e -> Log.e(TAG, "Batch commit failed", e));
@@ -83,9 +83,84 @@ public class FirebaseSeeder {
                     .addOnSuccessListener(aVoid -> {
                         Log.d(TAG, "Final batch committed successfully. Total seeded: " + 100);
                         prefs.edit().putBoolean(KEY_PROVIDERS_SEEDED, true).apply();
+                        // Update counts after seeding
+                        updateCategoryCounts(context);
+
+                        // Notify user of success
+                        new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> android.widget.Toast
+                                .makeText(context, "Data Seeding Complete!", android.widget.Toast.LENGTH_LONG).show());
                     })
-                    .addOnFailureListener(e -> Log.e(TAG, "Final batch commit failed", e));
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Final batch commit failed", e);
+                        // Notify user of failure
+                        new android.os.Handler(android.os.Looper.getMainLooper())
+                                .post(() -> android.widget.Toast.makeText(context, "Seeding Failed: " + e.getMessage(),
+                                        android.widget.Toast.LENGTH_LONG).show());
+                    });
+        } else {
+            // If no remaining batch (unlikely with 100 items and batch 50), still update
+            // counts
+            prefs.edit().putBoolean(KEY_PROVIDERS_SEEDED, true).apply();
+            updateCategoryCounts(context);
         }
+    }
+
+    public static void updateCategoryCounts(Context context) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Log.d(TAG, "Updating category counts...");
+
+        db.collection(COLLECTION_PROVIDERS).get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    Map<String, Integer> counts = new HashMap<>();
+                    // Initialize with 0 for all known categories
+                    for (String cat : CATEGORIES) {
+                        counts.put(cat, 0);
+                    }
+
+                    // Count from actual data
+                    Log.d(TAG, "Counting " + queryDocumentSnapshots.size() + " providers...");
+                    for (com.google.firebase.firestore.DocumentSnapshot doc : queryDocumentSnapshots) {
+                        String service = doc.getString("service");
+                        if (service != null) {
+                            // Normalize string if needed, or assume exact match
+                            // Try to match with known categories
+                            boolean matched = false;
+                            for (String cat : CATEGORIES) {
+                                if (cat.equalsIgnoreCase(service)) {
+                                    counts.put(cat, counts.get(cat) + 1);
+                                    matched = true;
+                                    break;
+                                }
+                            }
+                            if (!matched) {
+                                Log.w(TAG, "Service '" + service + "' did not match any known category.");
+                            }
+                        } else {
+                            Log.w(TAG, "Provider " + doc.getId() + " has null service");
+                        }
+                    }
+                    Log.d(TAG, "Final counts: " + counts.toString());
+
+                    // Write to "categories" collection
+                    WriteBatch batch = db.batch();
+                    for (Map.Entry<String, Integer> entry : counts.entrySet()) {
+                        String categoryName = entry.getKey();
+                        int count = entry.getValue();
+
+                        Map<String, Object> data = new HashMap<>();
+                        data.put("name", categoryName);
+                        data.put("providerCount", count);
+                        // We don't store iconResId in Firestore as it's local
+
+                        batch.set(db.collection("categories").document(categoryName), data);
+                    }
+
+                    batch.commit()
+                            .addOnSuccessListener(aVoid -> Log.d(TAG, "Category counts updated successfully"))
+                            .addOnFailureListener(e -> Log.e(TAG, "Failed to update category counts", e));
+
+                })
+                .addOnFailureListener(e -> Log.e(TAG, "Failed to fetch providers for counting", e));
     }
 
     private static ProviderDetail generateProvider(String category, int index, Random random) {

@@ -4,193 +4,344 @@
     android:id="@+id/cardProvider"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="20dp"
-    android:layout_marginEnd="20dp"
-    android:layout_marginTop="8dp"
-    android:layout_marginBottom="8dp"
+    android:layout_marginBottom="12dp"
+    android:layout_marginHorizontal="4dp"
+    app:cardBackgroundColor="@color/white"
     app:cardCornerRadius="16dp"
     app:cardElevation="2dp"
-    app:cardBackgroundColor="@color/white">
+    app:strokeColor="@color/gray_100"
+    app:strokeWidth="1dp">
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-        <!-- Favorite Heart Icon -->
-        <ImageView
-            android:id="@+id/ivFavorite"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true"
-            android:src="@drawable/ic_heart_new"
-            android:tint="#FF4081"
-            android:contentDescription="Favorite" />
+        <!-- Top Section: Avatar + Info + Favorite -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/flAvatarContainer"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            app:cardCornerRadius="32dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Profile Icon with Gradient Background -->
-        <FrameLayout
-            android:id="@+id/flProfileIcon"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:background="@drawable/profile_picture_gradient"
-            android:gravity="center">
+            <TextView
+                android:id="@+id/tvInitialLetter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="L"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <ImageView
                 android:id="@+id/ivProviderIcon"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:src="@drawable/profile"
-                android:contentDescription="Provider Icon"
-                android:scaleType="fitCenter" />
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop" />
+            
 
-            <!-- Verification Badge -->
-            <ImageView
-                android:id="@+id/ivVerifiedBadge"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="bottom|end"
-                android:src="@drawable/ic_shield"
-                android:background="@drawable/circle_white"
-                android:padding="3dp"
-                android:contentDescription="Verified"
-                android:visibility="gone" />
-        </FrameLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-        <!-- Provider Info -->
         <LinearLayout
+            android:id="@+id/llInfo"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/flProfileIcon"
-            android:layout_toStartOf="@id/ivFavorite"
-            android:layout_alignTop="@id/flProfileIcon"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="12dp"
             android:layout_marginEnd="8dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            app:layout_constraintEnd_toStartOf="@+id/ivFavorite"
+            app:layout_constraintStart_toEndOf="@+id/flAvatarContainer"
+            app:layout_constraintTop_toTopOf="@+id/flAvatarContainer">
 
-            <TextView
-                android:id="@+id/tvProviderName"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Pulu"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                
+                <TextView
+                    android:id="@+id/tvProviderName"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="Leakhena Nov"
+                    android:textColor="@color/gray_900"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                 <View
+                    android:id="@+id/vStatusDot"
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/circle_green"
+                    android:visibility="gone" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/tvProfession"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Handyman"
-                android:textSize="13sp"
-                android:textColor="@color/text_secondary"
-                android:layout_marginTop="4dp" />
+                android:layout_marginTop="2dp"
+                android:text="General"
+                android:textColor="@color/gray_500"
+                android:textSize="14sp" />
 
-            <!-- Rating -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:layout_marginTop="4dp"
                 android:gravity="center_vertical"
-                android:layout_marginTop="6dp">
+                android:orientation="horizontal">
 
                 <ImageView
                     android:layout_width="14dp"
                     android:layout_height="14dp"
                     android:src="@drawable/ic_star"
-                    android:tint="@color/rating_gold"
-                    android:contentDescription="Star" />
+                    app:tint="@color/rating_gold" />
 
                 <TextView
                     android:id="@+id/tvRating"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
                     android:text="4.8"
+                    android:textColor="@color/gray_900"
                     android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_primary"
-                    android:layout_marginStart="4dp" />
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tvReviewCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="(234)"
-                    android:textSize="13sp"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginStart="4dp" />
-            </LinearLayout>
+                    android:layout_marginStart="2dp"
+                    android:text="(271)"
+                    android:textColor="@color/gray_500"
+                    android:textSize="13sp" />
 
-            <!-- Availability Badge -->
-            <TextView
-                android:id="@+id/tvAvailability"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Available Now"
-                android:textSize="11sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_white"
-                android:background="@drawable/availability_badge_background"
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="6dp"
-                android:layout_marginTop="8dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="•"
+                    android:textColor="#D1D5DB"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvJobsCompleted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="102 jobs"
+                    android:textColor="@color/gray_600"
+                    android:textSize="13sp" />
+            </LinearLayout>
         </LinearLayout>
 
-        <!-- Price and Action Buttons -->
+        <ImageButton
+            android:id="@+id/ivFavorite"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@drawable/circle_white"
+            android:backgroundTint="@color/gray_100"
+            android:padding="6dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/heart_filled"
+            app:tint="@color/favorite_pink"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Status & Last Booked -->
+        <LinearLayout
+            android:id="@+id/llStatusRow"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/flAvatarContainer">
+            
+            <LinearLayout
+                android:id="@+id/llStatusBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_status_available"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+                
+                <View
+                    android:id="@+id/vStatusBadgeDot"
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:background="@color/badge_available_dot"
+                     /> 
+                
+                <TextView
+                    android:id="@+id/tvStatusText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="Available Now"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/badge_available_text"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvLastBooked"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:text="Last: 2 weeks ago"
+                android:textSize="12sp"
+                android:textColor="@color/gray_500"/>
+        </LinearLayout>
+        
+        <!-- Specialties Tags -->
+        <HorizontalScrollView
+            android:id="@+id/hsSpecialties"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:scrollbars="none"
+            app:layout_constraintTop_toBottomOf="@+id/llStatusRow">
+            
+            <LinearLayout
+                android:id="@+id/llSpecialties"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                 <TextView
+                    android:id="@+id/tvSpecialty1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_tag_blue"
+                    android:text="Plumbing"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="4dp"
+                    android:textColor="@color/tag_text"
+                    android:textSize="11sp"
+                    android:textStyle="bold"/>
+                 
+                 <TextView
+                    android:id="@+id/tvSpecialty2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/bg_tag_blue"
+                    android:text="Repairs"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="4dp"
+                    android:textColor="@color/tag_text"
+                    android:textSize="11sp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <!-- Action Buttons -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/flProfileIcon"
             android:layout_marginTop="16dp"
             android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:weightSum="3"
+            app:layout_constraintTop_toBottomOf="@+id/hsSpecialties">
 
-            <TextView
-                android:id="@+id/tvPrice"
+            <LinearLayout
+                android:id="@+id/btnCall"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_weight="1"
-                android:text="$55/hr"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary" />
+                android:layout_marginEnd="6dp"
+                android:background="@drawable/bg_button_white_border"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground">
+                
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_phone"
+                    app:tint="@color/gray_700"/>
+                    
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Call"
+                    android:textColor="@color/gray_700"
+                    android:textStyle="bold"
+                    android:textSize="14sp"/>
+            </LinearLayout>
 
-            <com.google.android.material.button.MaterialButton
+            <LinearLayout
                 android:id="@+id/btnMessage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Message"
-                android:textSize="12sp"
-                android:textColor="@color/text_primary"
-                android:backgroundTint="@color/background_gray"
-                app:icon="@drawable/message"
-                app:iconPadding="6dp"
-                app:iconTint="@color/text_primary"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="10dp"
-                android:layout_marginEnd="8dp"
-                android:minHeight="40dp"
-                app:cornerRadius="8dp" />
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:layout_marginHorizontal="3dp"
+                android:background="@drawable/bg_button_white_border"
+                android:gravity="center"
+                 android:clickable="true"
+                 android:focusable="true"
+                 android:foreground="?attr/selectableItemBackground">
+                
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_message"
+                    app:tint="@color/gray_700"/>
+                    
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Message"
+                    android:textColor="@color/gray_700"
+                    android:textStyle="bold"
+                    android:textSize="14sp"/>
+            </LinearLayout>
 
-            <com.google.android.material.button.MaterialButton
+            <LinearLayout
                 android:id="@+id/btnBook"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Book"
-                android:textSize="12sp"
-                android:textColor="@color/text_white"
-                android:backgroundTint="@color/primary_blue"
-                app:icon="@drawable/ic_calendar"
-                app:iconPadding="6dp"
-                app:iconTint="@color/text_white"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="10dp"
-                android:minHeight="40dp"
-                app:cornerRadius="8dp" />
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                android:background="@drawable/rounded_button_blue"
+                android:gravity="center"
+                 android:clickable="true"
+                 android:focusable="true"
+                 android:foreground="?attr/selectableItemBackground">
+                
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_calendar"
+                    app:tint="@color/white"/>
+                    
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Book"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:textSize="14sp"/>
+            </LinearLayout>
         </LinearLayout>
-    </RelativeLayout>
 
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
-

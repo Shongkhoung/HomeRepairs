@@ -1,528 +1,283 @@
 package com.example.homerepairs;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.card.MaterialCardView;
+import com.example.homerepairs.databinding.ActivityServiceDateTimeBinding;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
-public class ServiceDateTimeActivity extends AppCompatActivity {
+public class ServiceDateTimeActivity extends BaseActivity {
 
-    private TextView tvMonthYear;
-    private LinearLayout llCalendarGrid;
-    private LinearLayout llWeekView;
-    private LinearLayout llViewToggle;
-    private Button btnWeek;
-    private Button btnMonth;
-    private LinearLayout llAvailableTimes;
-    private MaterialCardView cardFlexibleTiming;
-    private Button btnContinue;
-
-    private String viewMode = "month"; // "week" or "month"
-    private int selectedDate = -1;
-    private String selectedTime = "";
+    private ActivityServiceDateTimeBinding binding;
+    private String viewMode = "month";
+    private int selectedDay = -1;
+    private String selectedTime = "10:00 AM";
     private boolean isFlexible = false;
-    private Calendar currentCalendar;
-    private SimpleDateFormat monthYearFormat;
-    private SimpleDateFormat dayFormat;
-    private SimpleDateFormat dateFormat;
+    private Calendar calendar;
+    private SimpleDateFormat monthYearFormat = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
+    private SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", Locale.getDefault());
+    private SimpleDateFormat monthFormat = new SimpleDateFormat("MMM", Locale.getDefault());
 
-    private String[] daysOfWeek = { "S", "M", "T", "W", "T", "F", "S" };
-    private String[] availableTimes = {
-            "8:00 AM", "9:00 AM", "10:00 AM",
-            "11:00 AM", "12:00 PM", "1:00 PM",
-            "2:00 PM", "3:00 PM", "4:00 PM"
-    };
+    private final String[] days = { "S", "M", "T", "W", "T", "F", "S" };
+    private final String[] times = { "8:00 AM", "9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "1:00 PM", "2:00 PM",
+            "3:00 PM", "4:00 PM" };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_service_date_time);
+        binding = ActivityServiceDateTimeBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        // Set status bar color to white
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.white));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                getWindow().getDecorView().setSystemUiVisibility(
-                        getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            }
-        }
+        calendar = Calendar.getInstance();
+        setupInitialSelection();
+        setupListeners();
+        updateView();
+        setupFlexible();
+    }
 
-        currentCalendar = Calendar.getInstance();
-        monthYearFormat = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
-        dayFormat = new SimpleDateFormat("EEE", Locale.getDefault());
-        dateFormat = new SimpleDateFormat("MMM", Locale.getDefault());
-
-        initializeViews();
-        setupViewToggle();
-        setupCalendar();
-        setupAvailableTimes();
-        setupFlexibleTiming();
-        setupButtons();
-
-        // Set default selections - select tomorrow or next available date
-        Calendar today = Calendar.getInstance();
-        Calendar tomorrow = (Calendar) today.clone();
+    private void setupInitialSelection() {
+        Calendar tomorrow = Calendar.getInstance();
         tomorrow.add(Calendar.DAY_OF_MONTH, 1);
-
-        // If viewing current month, select tomorrow, otherwise select first day
-        if (currentCalendar.get(Calendar.YEAR) == tomorrow.get(Calendar.YEAR) &&
-                currentCalendar.get(Calendar.MONTH) == tomorrow.get(Calendar.MONTH)) {
-            selectedDate = tomorrow.get(Calendar.DAY_OF_MONTH);
-        } else {
-            selectedDate = 1;
-        }
-
-        selectedTime = "10:00 AM";
-        updateTimeSelection();
+        selectedDay = tomorrow.get(Calendar.DAY_OF_MONTH);
     }
 
-    private void initializeViews() {
-        tvMonthYear = findViewById(R.id.tvMonthYear);
-        llCalendarGrid = findViewById(R.id.llCalendarGrid);
-        llWeekView = findViewById(R.id.llWeekView);
-        llViewToggle = findViewById(R.id.llViewToggle);
-        btnWeek = findViewById(R.id.btnWeek);
-        btnMonth = findViewById(R.id.btnMonth);
-        llAvailableTimes = findViewById(R.id.llAvailableTimes);
-        cardFlexibleTiming = findViewById(R.id.cardFlexibleTiming);
-        btnContinue = findViewById(R.id.btnContinue);
-
-        ImageButton btnBack = findViewById(R.id.btnBack);
-        btnBack.setOnClickListener(v -> finish());
-
-        ImageButton btnPrevMonth = findViewById(R.id.btnPrevMonth);
-        ImageButton btnNextMonth = findViewById(R.id.btnNextMonth);
-        btnPrevMonth.setOnClickListener(v -> {
-            if (viewMode.equals("month")) {
-                currentCalendar.add(Calendar.MONTH, -1);
-                setupCalendar();
-            } else {
-                currentCalendar.add(Calendar.WEEK_OF_YEAR, -1);
-                setupWeekView();
-            }
+    private void setupListeners() {
+        binding.btnBack.setOnClickListener(v -> finish());
+        binding.btnPrevMonth.setOnClickListener(v -> {
+            calendar.add(viewMode.equals("month") ? Calendar.MONTH : Calendar.WEEK_OF_YEAR, -1);
+            updateView();
         });
-        btnNextMonth.setOnClickListener(v -> {
-            if (viewMode.equals("month")) {
-                currentCalendar.add(Calendar.MONTH, 1);
-                setupCalendar();
-            } else {
-                currentCalendar.add(Calendar.WEEK_OF_YEAR, 1);
-                setupWeekView();
-            }
+        binding.btnNextMonth.setOnClickListener(v -> {
+            calendar.add(viewMode.equals("month") ? Calendar.MONTH : Calendar.WEEK_OF_YEAR, 1);
+            updateView();
         });
-    }
-
-    private void setupViewToggle() {
-        btnWeek.setOnClickListener(v -> {
+        binding.btnWeek.setOnClickListener(v -> {
             viewMode = "week";
-            updateViewToggle();
-            setupWeekView();
+            updateView();
         });
-
-        btnMonth.setOnClickListener(v -> {
+        binding.btnMonth.setOnClickListener(v -> {
             viewMode = "month";
-            updateViewToggle();
-            setupCalendar();
+            updateView();
         });
-
-        updateViewToggle();
+        binding.btnContinue.setOnClickListener(v -> proceed());
     }
 
-    private void updateViewToggle() {
-        if (viewMode.equals("week")) {
-            btnWeek.setBackgroundResource(R.drawable.view_toggle_selected);
-            btnWeek.setTextColor(ContextCompat.getColor(this, R.color.white));
-            btnMonth.setBackgroundResource(R.drawable.view_toggle_unselected);
-            btnMonth.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
-            llCalendarGrid.setVisibility(View.GONE);
-            llWeekView.setVisibility(View.VISIBLE);
-        } else {
-            btnMonth.setBackgroundResource(R.drawable.view_toggle_selected);
-            btnMonth.setTextColor(ContextCompat.getColor(this, R.color.white));
-            btnWeek.setBackgroundResource(R.drawable.view_toggle_unselected);
-            btnWeek.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
-            llCalendarGrid.setVisibility(View.VISIBLE);
-            llWeekView.setVisibility(View.GONE);
-        }
+    private void updateView() {
+        updateToggle();
+        if (viewMode.equals("month"))
+            setupMonthView();
+        else
+            setupWeekView();
+        setupTimeSlots();
     }
 
-    private void setupCalendar() {
-        tvMonthYear.setText(monthYearFormat.format(currentCalendar.getTime()));
+    private void updateToggle() {
+        boolean isWeek = viewMode.equals("week");
+        binding.btnWeek
+                .setBackgroundResource(isWeek ? R.drawable.view_toggle_selected : R.drawable.view_toggle_unselected);
+        binding.btnWeek.setTextColor(ContextCompat.getColor(this, isWeek ? R.color.white : R.color.text_secondary));
+        binding.btnMonth
+                .setBackgroundResource(!isWeek ? R.drawable.view_toggle_selected : R.drawable.view_toggle_unselected);
+        binding.btnMonth.setTextColor(ContextCompat.getColor(this, !isWeek ? R.color.white : R.color.text_secondary));
+        binding.llCalendarGrid.setVisibility(isWeek ? View.GONE : View.VISIBLE);
+        binding.llWeekView.setVisibility(isWeek ? View.VISIBLE : View.GONE);
+    }
 
-        // Clear existing views
-        llCalendarGrid.removeAllViews();
+    private void setupMonthView() {
+        binding.tvMonthYear.setText(monthYearFormat.format(calendar.getTime()));
+        binding.llCalendarGrid.removeAllViews();
 
-        // Add day headers
-        LinearLayout headerRow = new LinearLayout(this);
-        headerRow.setOrientation(LinearLayout.HORIZONTAL);
-        headerRow.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT));
-
-        for (String day : daysOfWeek) {
-            TextView dayHeader = new TextView(this);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
-            dayHeader.setLayoutParams(params);
-            dayHeader.setText(day);
-            dayHeader.setTextSize(14);
-            dayHeader.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
-            dayHeader.setGravity(android.view.Gravity.CENTER);
-            dayHeader.setPadding(0, 0, 0, 16);
-            headerRow.addView(dayHeader);
+        LinearLayout header = new LinearLayout(this);
+        header.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
+        for (String d : days) {
+            TextView tv = new TextView(this);
+            tv.setLayoutParams(new LinearLayout.LayoutParams(0, -2, 1f));
+            tv.setText(d);
+            tv.setGravity(Gravity.CENTER);
+            tv.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
+            tv.setPadding(0, 0, 0, 16);
+            header.addView(tv);
         }
-        llCalendarGrid.addView(headerRow);
+        binding.llCalendarGrid.addView(header);
 
-        // Get first day of month and number of days
-        Calendar monthStart = (Calendar) currentCalendar.clone();
-        monthStart.set(Calendar.DAY_OF_MONTH, 1);
-        int firstDayOfWeek = monthStart.get(Calendar.DAY_OF_WEEK);
-        int daysInMonth = monthStart.getActualMaximum(Calendar.DAY_OF_MONTH);
+        Calendar m = (Calendar) calendar.clone();
+        m.set(Calendar.DAY_OF_MONTH, 1);
+        int first = m.get(Calendar.DAY_OF_WEEK) - 1;
+        int count = m.getActualMaximum(Calendar.DAY_OF_MONTH);
+        Calendar now = Calendar.getInstance();
 
-        // Get today's date
-        Calendar today = Calendar.getInstance();
-        boolean isCurrentMonth = today.get(Calendar.YEAR) == currentCalendar.get(Calendar.YEAR) &&
-                today.get(Calendar.MONTH) == currentCalendar.get(Calendar.MONTH);
-        int todayDay = today.get(Calendar.DAY_OF_MONTH);
+        int day = 1;
+        for (int w = 0; w < 6; w++) {
+            LinearLayout row = new LinearLayout(this);
+            row.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
+            for (int d = 0; d < 7; d++) {
+                Button b = new Button(this);
+                LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(0, -2, 1f);
+                p.setMargins(4, 4, 4, 4);
+                b.setLayoutParams(p);
+                b.setMinHeight(0);
+                b.setPadding(8, 16, 8, 16);
 
-        // Create calendar grid
-        int dayNumber = 1;
-        for (int week = 0; week < 6; week++) {
-            LinearLayout weekRow = new LinearLayout(this);
-            weekRow.setOrientation(LinearLayout.HORIZONTAL);
-            weekRow.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT));
-
-            for (int day = 0; day < 7; day++) {
-                Button dayButton = new Button(this);
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
-                params.setMargins(4, 4, 4, 4);
-                dayButton.setLayoutParams(params);
-                dayButton.setMinHeight(0);
-                dayButton.setPadding(8, 16, 8, 16);
-
-                if (week == 0 && day < firstDayOfWeek - 1) {
-                    // Empty cell before first day
-                    dayButton.setVisibility(View.INVISIBLE);
-                } else if (dayNumber <= daysInMonth) {
-                    final int currentDay = dayNumber;
-                    dayButton.setText(String.valueOf(dayNumber));
-
-                    // Check if date is in the past or today
-                    boolean isPast = isCurrentMonth && currentDay < todayDay;
-                    boolean isToday = isCurrentMonth && currentDay == todayDay;
-
+                if ((w == 0 && d < first) || day > count)
+                    b.setVisibility(View.INVISIBLE);
+                else {
+                    final int dId = day;
+                    b.setText(String.valueOf(day));
+                    boolean isPast = now.get(Calendar.YEAR) == calendar.get(Calendar.YEAR)
+                            && now.get(Calendar.MONTH) == calendar.get(Calendar.MONTH)
+                            && day < now.get(Calendar.DAY_OF_MONTH);
                     if (isPast) {
-                        dayButton.setEnabled(false);
-                        dayButton.setTextColor(ContextCompat.getColor(this, R.color.text_hint));
-                        dayButton.setBackgroundResource(R.drawable.calendar_day_disabled);
+                        b.setEnabled(false);
+                        b.setTextColor(ContextCompat.getColor(this, R.color.text_hint));
+                        b.setBackgroundResource(R.drawable.calendar_day_disabled);
+                    } else if (selectedDay == day) {
+                        b.setBackgroundResource(R.drawable.calendar_day_selected);
+                        b.setTextColor(ContextCompat.getColor(this, R.color.white));
                     } else {
-                        dayButton.setEnabled(true);
-                        if (selectedDate == currentDay) {
-                            dayButton.setBackgroundResource(R.drawable.calendar_day_selected);
-                            dayButton.setTextColor(ContextCompat.getColor(this, R.color.white));
-                        } else {
-                            dayButton.setBackgroundResource(R.drawable.calendar_day_unselected);
-                            dayButton.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
-                        }
-
-                        dayButton.setOnClickListener(v -> {
-                            selectedDate = currentDay;
-                            setupCalendar();
-                        });
+                        b.setBackgroundResource(R.drawable.calendar_day_unselected);
+                        b.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
                     }
-
-                    dayNumber++;
-                } else {
-                    dayButton.setVisibility(View.INVISIBLE);
+                    b.setOnClickListener(v -> {
+                        selectedDay = dId;
+                        setupMonthView();
+                    });
+                    day++;
                 }
-
-                weekRow.addView(dayButton);
+                row.addView(b);
             }
-
-            llCalendarGrid.addView(weekRow);
-            if (dayNumber > daysInMonth)
+            binding.llCalendarGrid.addView(row);
+            if (day > count)
                 break;
         }
     }
 
     private void setupWeekView() {
-        tvMonthYear.setText("This Week");
+        binding.tvMonthYear.setText("This Week");
+        binding.llWeekView.removeAllViews();
+        LinearLayout row = new LinearLayout(this);
+        row.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
 
-        // Clear existing views
-        llWeekView.removeAllViews();
-
-        // Create week view
-        LinearLayout weekRow = new LinearLayout(this);
-        weekRow.setOrientation(LinearLayout.HORIZONTAL);
-        weekRow.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT));
-
-        Calendar weekStart = (Calendar) currentCalendar.clone();
-        // Set to Monday of current week
-        int dayOfWeek = weekStart.get(Calendar.DAY_OF_WEEK);
-        int daysFromMonday = (dayOfWeek == Calendar.SUNDAY) ? 6 : dayOfWeek - Calendar.MONDAY;
-        weekStart.add(Calendar.DAY_OF_MONTH, -daysFromMonday);
+        Calendar w = (Calendar) calendar.clone();
+        w.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
 
         for (int i = 0; i < 7; i++) {
-            Calendar day = (Calendar) weekStart.clone();
-            day.add(Calendar.DAY_OF_MONTH, i);
+            Calendar d = (Calendar) w.clone();
+            d.add(Calendar.DAY_OF_MONTH, i);
+            LinearLayout box = new LinearLayout(this);
+            box.setOrientation(LinearLayout.VERTICAL);
+            box.setLayoutParams(new LinearLayout.LayoutParams(0, -2, 1f));
+            box.setGravity(Gravity.CENTER);
+            box.setPadding(8, 16, 8, 16);
 
-            LinearLayout dayContainer = new LinearLayout(this);
-            dayContainer.setOrientation(LinearLayout.VERTICAL);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
-            params.setMargins(4, 4, 4, 4);
-            dayContainer.setLayoutParams(params);
-            dayContainer.setGravity(android.view.Gravity.CENTER);
-            dayContainer.setPadding(8, 16, 8, 16);
+            boolean sel = selectedDay == d.get(Calendar.DAY_OF_MONTH)
+                    && calendar.get(Calendar.MONTH) == d.get(Calendar.MONTH);
+            box.setBackgroundResource(sel ? R.drawable.calendar_day_selected : R.drawable.calendar_day_unselected);
 
-            int dayOfMonth = day.get(Calendar.DAY_OF_MONTH);
-            int dayMonth = day.get(Calendar.MONTH);
-            int dayYear = day.get(Calendar.YEAR);
+            TextView dn = new TextView(this);
+            dn.setText(dayFormat.format(d.getTime()));
+            dn.setTextColor(ContextCompat.getColor(this, sel ? R.color.white : R.color.text_secondary));
+            dn.setGravity(Gravity.CENTER);
+            TextView num = new TextView(this);
+            num.setText(String.valueOf(d.get(Calendar.DAY_OF_MONTH)));
+            num.setTextSize(18);
+            num.setTextColor(ContextCompat.getColor(this, sel ? R.color.white : R.color.text_primary));
+            num.setGravity(Gravity.CENTER);
+            TextView mon = new TextView(this);
+            mon.setText(monthFormat.format(d.getTime()));
+            mon.setTextColor(ContextCompat.getColor(this, sel ? R.color.white : R.color.text_secondary));
+            mon.setGravity(Gravity.CENTER);
 
-            // Check if this day matches selected date (considering month/year)
-            Calendar selectedCal = (Calendar) currentCalendar.clone();
-            selectedCal.set(Calendar.DAY_OF_MONTH, selectedDate);
-            boolean isSelected = selectedDate == dayOfMonth &&
-                    selectedCal.get(Calendar.MONTH) == dayMonth &&
-                    selectedCal.get(Calendar.YEAR) == dayYear;
-
-            dayContainer.setBackgroundResource(
-                    isSelected ? R.drawable.calendar_day_selected : R.drawable.calendar_day_unselected);
-
-            TextView dayName = new TextView(this);
-            dayName.setText(dayFormat.format(day.getTime()).substring(0, 3));
-            dayName.setTextSize(12);
-            dayName.setTextColor(isSelected ? ContextCompat.getColor(this, R.color.white)
-                    : ContextCompat.getColor(this, R.color.text_secondary));
-            dayName.setGravity(android.view.Gravity.CENTER);
-
-            TextView dayNumber = new TextView(this);
-            dayNumber.setText(String.valueOf(dayOfMonth));
-            dayNumber.setTextSize(18);
-            dayNumber.setTypeface(null, android.graphics.Typeface.BOLD);
-            dayNumber.setTextColor(isSelected ? ContextCompat.getColor(this, R.color.white)
-                    : ContextCompat.getColor(this, R.color.text_primary));
-            dayNumber.setGravity(android.view.Gravity.CENTER);
-
-            TextView monthName = new TextView(this);
-            monthName.setText(dateFormat.format(day.getTime()));
-            monthName.setTextSize(12);
-            monthName.setTextColor(isSelected ? ContextCompat.getColor(this, R.color.white)
-                    : ContextCompat.getColor(this, R.color.text_secondary));
-            monthName.setGravity(android.view.Gravity.CENTER);
-
-            dayContainer.addView(dayName);
-            dayContainer.addView(dayNumber);
-            dayContainer.addView(monthName);
-
-            final int currentDay = dayOfMonth;
-            final int currentMonth = dayMonth;
-            final int currentYear = dayYear;
-            dayContainer.setOnClickListener(v -> {
-                selectedDate = currentDay;
-                // Update current calendar to match selected week
-                currentCalendar.set(Calendar.YEAR, currentYear);
-                currentCalendar.set(Calendar.MONTH, currentMonth);
-                currentCalendar.set(Calendar.DAY_OF_MONTH, currentDay);
+            box.addView(dn);
+            box.addView(num);
+            box.addView(mon);
+            final int dayVal = d.get(Calendar.DAY_OF_MONTH);
+            final int monVal = d.get(Calendar.MONTH);
+            box.setOnClickListener(v -> {
+                selectedDay = dayVal;
+                calendar.set(Calendar.MONTH, monVal);
                 setupWeekView();
             });
-
-            weekRow.addView(dayContainer);
+            row.addView(box);
         }
-
-        llWeekView.addView(weekRow);
+        binding.llWeekView.addView(row);
     }
 
-    private void setupAvailableTimes() {
-        llAvailableTimes.removeAllViews();
-
-        for (int i = 0; i < availableTimes.length; i++) {
+    private void setupTimeSlots() {
+        binding.llAvailableTimes.removeAllViews();
+        for (int i = 0; i < times.length; i++) {
             if (i % 3 == 0) {
                 LinearLayout row = new LinearLayout(this);
-                row.setOrientation(LinearLayout.HORIZONTAL);
-                LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT);
-                rowParams.setMargins(0, 0, 0, 12);
-                row.setLayoutParams(rowParams);
-                llAvailableTimes.addView(row);
+                row.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
+                ((LinearLayout.LayoutParams) row.getLayoutParams()).setMargins(0, 0, 0, 12);
+                binding.llAvailableTimes.addView(row);
             }
-
-            LinearLayout parentRow = (LinearLayout) llAvailableTimes.getChildAt(i / 3);
-            Button timeButton = new Button(this);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
-            params.setMargins(6, 0, 6, 0);
-            timeButton.setLayoutParams(params);
-            timeButton.setText(availableTimes[i]);
-            timeButton.setTextSize(14);
-            timeButton.setMinHeight(0);
-            timeButton.setPadding(12, 12, 12, 12);
-
-            final String time = availableTimes[i];
-            if (selectedTime.equals(time)) {
-                timeButton.setBackgroundResource(R.drawable.time_slot_selected);
-                timeButton.setTextColor(ContextCompat.getColor(this, R.color.white));
-            } else {
-                timeButton.setBackgroundResource(R.drawable.time_slot_unselected);
-                timeButton.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
-            }
-
-            timeButton.setOnClickListener(v -> {
-                selectedTime = time;
-                updateTimeSelection();
+            LinearLayout row = (LinearLayout) binding.llAvailableTimes.getChildAt(i / 3);
+            Button b = new Button(this);
+            b.setLayoutParams(new LinearLayout.LayoutParams(0, -2, 1f));
+            ((LinearLayout.LayoutParams) b.getLayoutParams()).setMargins(6, 0, 6, 0);
+            b.setText(times[i]);
+            b.setPadding(12, 12, 12, 12);
+            b.setMinHeight(0);
+            boolean sel = selectedTime.equals(times[i]);
+            b.setBackgroundResource(sel ? R.drawable.time_slot_selected : R.drawable.time_slot_unselected);
+            b.setTextColor(ContextCompat.getColor(this, sel ? R.color.white : R.color.text_secondary));
+            final String t = times[i];
+            b.setOnClickListener(v -> {
+                selectedTime = t;
+                setupTimeSlots();
             });
-
-            parentRow.addView(timeButton);
+            row.addView(b);
         }
     }
 
-    private void updateTimeSelection() {
-        for (int i = 0; i < llAvailableTimes.getChildCount(); i++) {
-            LinearLayout row = (LinearLayout) llAvailableTimes.getChildAt(i);
-            for (int j = 0; j < row.getChildCount(); j++) {
-                Button button = (Button) row.getChildAt(j);
-                String time = button.getText().toString();
-                if (selectedTime.equals(time)) {
-                    button.setBackgroundResource(R.drawable.time_slot_selected);
-                    button.setTextColor(ContextCompat.getColor(this, R.color.white));
-                } else {
-                    button.setBackgroundResource(R.drawable.time_slot_unselected);
-                    button.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
-                }
-            }
-        }
-    }
-
-    private void setupFlexibleTiming() {
-        cardFlexibleTiming.setOnClickListener(v -> {
+    private void setupFlexible() {
+        binding.cardFlexibleTiming.setOnClickListener(v -> {
             isFlexible = !isFlexible;
-            updateFlexibleToggle();
+            binding.toggleSwitch
+                    .setBackgroundResource(isFlexible ? R.drawable.toggle_switch_on : R.drawable.toggle_switch_off);
+            binding.toggleCircle.animate()
+                    .translationX(isFlexible ? 28 * getResources().getDisplayMetrics().density : 0).setDuration(200)
+                    .start();
         });
-        updateFlexibleToggle();
     }
 
-    private void updateFlexibleToggle() {
-        View toggleSwitch = findViewById(R.id.toggleSwitch);
-        View toggleCircle = findViewById(R.id.toggleCircle);
-
-        if (isFlexible) {
-            toggleSwitch.setBackgroundResource(R.drawable.toggle_switch_on);
-            toggleCircle.animate()
-                    .translationX(convertDpToPx(28))
-                    .setDuration(200)
-                    .start();
-        } else {
-            toggleSwitch.setBackgroundResource(R.drawable.toggle_switch_off);
-            toggleCircle.animate()
-                    .translationX(0)
-                    .setDuration(200)
-                    .start();
+    private void proceed() {
+        if (selectedDay == -1) {
+            Toast.makeText(this, "Select date", Toast.LENGTH_SHORT).show();
+            return;
         }
+        Calendar sel = (Calendar) calendar.clone();
+        sel.set(Calendar.DAY_OF_MONTH, selectedDay);
+        String dateStr = new SimpleDateFormat("EEEE, MMMM d", Locale.getDefault()).format(sel.getTime());
+
+        if (getIntent().getBooleanExtra("return_result", false)) {
+            Intent res = new Intent();
+            res.putExtra("serviceDate", dateStr);
+            res.putExtra("serviceTime", selectedTime);
+            res.putExtra("isFlexible", isFlexible);
+            setResult(RESULT_OK, res);
+            finish();
+            return;
+        }
+
+        Intent next = new Intent(this, ReviewConfirmActivity.class);
+        next.putExtras(getIntent());
+        next.putExtra("serviceDate", dateStr);
+        next.putExtra("serviceTime", selectedTime);
+        next.putExtra("isFlexible", isFlexible);
+        next.putExtra("location", getIntent().getStringExtra("propertyLocation"));
+        startActivity(next);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
-
-    private int convertDpToPx(float dp) {
-        return (int) (dp * getResources().getDisplayMetrics().density);
-    }
-
-    private void setupButtons() {
-        btnContinue.setOnClickListener(v -> {
-            if (selectedDate == -1) {
-                Toast.makeText(this, "Please select a date", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (selectedTime.isEmpty()) {
-                Toast.makeText(this, "Please select a time", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            // Pass selected date and time
-            Calendar selectedCalendar = (Calendar) currentCalendar.clone();
-            selectedCalendar.set(Calendar.DAY_OF_MONTH, selectedDate);
-
-            SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, MMMM d", Locale.getDefault());
-            String serviceDate = dateFormat.format(selectedCalendar.getTime());
-
-            // Check if we should return result
-            if (getIntent().getBooleanExtra("return_result", false)) {
-                Intent resultIntent = new Intent();
-                resultIntent.putExtra("serviceDate", serviceDate);
-                resultIntent.putExtra("serviceTime", selectedTime);
-                resultIntent.putExtra("isFlexible", isFlexible);
-                setResult(RESULT_OK, resultIntent);
-                finish();
-                return;
-            }
-
-            // Navigate to ReviewConfirmActivity passing all accumulated data
-            Intent intent = new Intent(this, ReviewConfirmActivity.class);
-
-            // 1. Pass newly selected date/time
-            intent.putExtra("serviceDate", serviceDate);
-            intent.putExtra("serviceTime", selectedTime);
-            intent.putExtra("isFlexible", isFlexible);
-
-            // 2. Pass through data from NewBookingActivity
-            Intent currentIntent = getIntent();
-
-            // User & Provider Info
-            if (currentIntent.hasExtra("userId"))
-                intent.putExtra("userId", currentIntent.getStringExtra("userId"));
-            if (currentIntent.hasExtra("providerId"))
-                intent.putExtra("providerId", currentIntent.getStringExtra("providerId"));
-            if (currentIntent.hasExtra("providerName"))
-                intent.putExtra("providerName", currentIntent.getStringExtra("providerName"));
-
-            // Service Details
-            if (currentIntent.hasExtra("serviceCategory"))
-                intent.putExtra("serviceCategory", currentIntent.getStringExtra("serviceCategory"));
-            if (currentIntent.hasExtra("serviceName"))
-                intent.putExtra("serviceName", currentIntent.getStringExtra("serviceName"));
-            if (currentIntent.hasExtra("issueDescription"))
-                intent.putExtra("issueDescription", currentIntent.getStringExtra("issueDescription"));
-            if (currentIntent.hasExtra("urgency"))
-                intent.putExtra("urgency", currentIntent.getStringExtra("urgency"));
-
-            // Location
-            if (currentIntent.hasExtra("propertyLocation"))
-                intent.putExtra("location", currentIntent.getStringExtra("propertyLocation")); // Note key change to
-                                                                                               // "location" for
-                                                                                               // ReviewActivity
-            if (currentIntent.hasExtra("propertyName"))
-                intent.putExtra("propertyName", currentIntent.getStringExtra("propertyName"));
-
-            // Photos
-            if (currentIntent.hasExtra("photoUris")) {
-                intent.putStringArrayListExtra("photoUris", currentIntent.getStringArrayListExtra("photoUris"));
-            }
-
-            startActivity(intent);
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-        });
-    }
-
 }

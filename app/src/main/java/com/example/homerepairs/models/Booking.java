@@ -23,6 +23,7 @@ public class Booking {
     private String propertyName; // e.g., "Home"
     private List<String> photoUrls; // URLs of uploaded photos
     private String paymentMethod; // Payment method selected (e.g., "wallet", "card", "cash")
+    private Double price; // Total cost of the service
     private Date createdAt; // Timestamp when booking was created
     private Date updatedAt; // Timestamp when booking was last updated
     private String additionalNotes; // Any additional notes or instructions
@@ -200,5 +201,13 @@ public class Booking {
 
     public void setPaymentMethod(String paymentMethod) {
         this.paymentMethod = paymentMethod;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
     }
 }

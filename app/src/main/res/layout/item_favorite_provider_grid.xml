@@ -18,33 +18,9 @@
         android:padding="12dp"
         android:paddingBottom="12dp">
 
-        <!-- Selection Checkbox (Top Left, shown in selection mode) -->
-        <ImageView
-            android:id="@+id/ivSelectionCheck"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:src="@drawable/ic_check_circle"
-            android:background="@drawable/circle_white"
-            android:padding="4dp"
-            android:contentDescription="Select"
-            android:visibility="gone"
-            android:layout_margin="8dp" />
 
-        <!-- Verification Badge (Top Right of Card) -->
-        <ImageView
-            android:id="@+id/ivVerifiedBadge"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true"
-            android:src="@drawable/ic_shield"
-            android:background="@drawable/circle_white"
-            android:padding="3dp"
-            android:contentDescription="Verified"
-            android:visibility="gone"
-            android:layout_margin="4dp" />
+
+
 
         <!-- Profile Icon Container with Gradient Background -->
         <androidx.cardview.widget.CardView
@@ -107,7 +83,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/flProfileIcon"
             android:text="Pulu"
-            android:textSize="15sp"
+            android:textSize="14sp"
             android:textStyle="bold"
             android:textColor="@color/text_primary"
             android:layout_marginTop="8dp"
@@ -201,7 +177,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/llAvailability"
             android:text="$55/hr"
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@color/text_primary"
             android:layout_marginTop="10dp" />

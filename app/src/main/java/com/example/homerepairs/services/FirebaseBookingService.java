@@ -82,13 +82,25 @@ public class FirebaseBookingService {
                     .addOnFailureListener(e -> {
                         Log.e(TAG, "Error creating booking", e);
                         String errorMessage = "Failed to create booking";
+                        String tip = "";
+
                         if (e.getMessage() != null) {
-                            errorMessage += ": " + e.getMessage();
+                            String msg = e.getMessage();
+                            errorMessage += ": " + msg;
+
+                            if (msg.contains("PERMISSION_DENIED")
+                                    || msg.contains("Missing or insufficient permissions")) {
+                                tip = " (Check Firebase Rules or Authentication)";
+                            } else if (msg.contains("UNAVAILABLE") || msg.contains("SecurityException")) {
+                                tip = " (This is likely a SHA-1 Fingerprint mismatch. See the 'Debug SHA-1' workflow)";
+                            }
                         }
+
                         if (e.getCause() != null) {
                             errorMessage += " (Cause: " + e.getCause().getMessage() + ")";
                         }
-                        callback.onError(errorMessage);
+
+                        callback.onError(errorMessage + tip);
                     });
         } catch (Exception e) {
             Log.e(TAG, "Exception while creating booking", e);

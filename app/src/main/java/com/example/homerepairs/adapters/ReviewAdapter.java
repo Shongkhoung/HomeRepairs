@@ -9,16 +9,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.homerepairs.ProviderProfileActivity;
+import com.example.homerepairs.models.Review;
 import com.example.homerepairs.R;
 
 import java.util.List;
 
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewViewHolder> {
 
-    private List<ProviderProfileActivity.Review> reviews;
+    private List<Review> reviews;
 
-    public ReviewAdapter(List<ProviderProfileActivity.Review> reviews) {
+    public ReviewAdapter(List<Review> reviews) {
         this.reviews = reviews;
     }
 
@@ -32,14 +32,14 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
 
     @Override
     public void onBindViewHolder(@NonNull ReviewViewHolder holder, int position) {
-        ProviderProfileActivity.Review review = reviews.get(position);
-        
+        Review review = reviews.get(position);
+
         holder.tvReviewerName.setText(review.getReviewerName());
         holder.tvTimeAgo.setText(review.getTimeAgo());
         holder.tvComment.setText(review.getComment());
         holder.tvThumbsUp.setText(String.valueOf(review.getThumbsUp()));
         holder.tvThumbsDown.setText(String.valueOf(review.getThumbsDown()));
-        
+
         // Set stars
         int rating = review.getRating();
         for (int i = 0; i < 5; i++) {
@@ -84,4 +84,3 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         }
     }
 }
-

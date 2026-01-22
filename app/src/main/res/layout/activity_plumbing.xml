@@ -48,7 +48,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Plumbing"
-                    android:textSize="20sp"
+                    android:textSize="24sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
                     android:gravity="center" />
@@ -72,7 +72,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
                 app:cardCornerRadius="20dp"
-                app:cardElevation="4dp"
+                app:cardElevation="3dp"
                 app:cardBackgroundColor="@color/white"
                 app:strokeWidth="0dp">
 
@@ -142,11 +142,12 @@
     <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
+        style="@style/BottomNavNoIndicator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@color/white"
-        app:elevation="8dp"
+        android:background="@drawable/bottom_nav_background"
+        app:elevation="0dp"
         app:menu="@menu/bottom_navigation"
         app:itemIconTint="@drawable/bottom_nav_selector"
         app:itemTextColor="@drawable/bottom_nav_selector" />

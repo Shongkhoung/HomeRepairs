@@ -1,75 +1,56 @@
 package com.example.homerepairs;
 
-import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Toast;
-import android.widget.EditText;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
-public class AddPaymentMethodActivity extends AppCompatActivity {
+import com.example.homerepairs.databinding.ActivityAddPaymentMethodBinding;
+import com.example.homerepairs.models.PaymentMethod;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+public class AddPaymentMethodActivity extends BaseActivity {
+
+    private ActivityAddPaymentMethodBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_payment_method);
+        binding = ActivityAddPaymentMethodBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        // Status bar configuration
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.white));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                getWindow().getDecorView().setSystemUiVisibility(
-                        getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            }
-        }
-
-        setupClickListeners();
-    }
-
-    private void setupClickListeners() {
-        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
-
-        findViewById(R.id.btnSavePayment).setOnClickListener(v -> savePaymentMethod());
+        binding.btnBack.setOnClickListener(v -> finish());
+        binding.btnSavePayment.setOnClickListener(v -> savePaymentMethod());
     }
 
     private void savePaymentMethod() {
-        EditText edtCardNumber = findViewById(R.id.edtCardNumber);
-        EditText edtCardHolder = findViewById(R.id.edtCardHolder);
-        EditText edtExpiry = findViewById(R.id.edtExpiry);
-        EditText edtCvv = findViewById(R.id.edtCvv);
-
-        String cardNumber = edtCardNumber.getText().toString().trim();
-        String cardHolder = edtCardHolder.getText().toString().trim();
-        String expiry = edtExpiry.getText().toString().trim();
-        String cvv = edtCvv.getText().toString().trim();
+        String cardNumber = binding.edtCardNumber.getText().toString().trim();
+        String cardHolder = binding.edtCardHolder.getText().toString().trim();
+        String expiry = binding.edtExpiry.getText().toString().trim();
+        String cvv = binding.edtCvv.getText().toString().trim();
 
         if (cardNumber.isEmpty() || cardHolder.isEmpty() || expiry.isEmpty() || cvv.isEmpty()) {
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        com.google.firebase.auth.FirebaseUser user = com.google.firebase.auth.FirebaseAuth.getInstance()
-                .getCurrentUser();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
-            Toast.makeText(this, "You must be logged in to save payment methods", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please login first", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
 
-        com.example.homerepairs.models.PaymentMethod paymentMethod = new com.example.homerepairs.models.PaymentMethod(
-                cardNumber, cardHolder, expiry, cvv);
-
-        com.google.firebase.firestore.FirebaseFirestore.getInstance()
+        PaymentMethod method = new PaymentMethod(cardNumber, cardHolder, expiry, cvv);
+        FirebaseFirestore.getInstance()
                 .collection("users")
                 .document(user.getUid())
                 .collection("payment_methods")
-                .add(paymentMethod)
-                .addOnSuccessListener(documentReference -> {
+                .add(method)
+                .addOnSuccessListener(ref -> {
                     Toast.makeText(this, getString(R.string.msg_payment_saved), Toast.LENGTH_SHORT).show();
                     finish();
                 })
-                .addOnFailureListener(e -> Toast
-                        .makeText(this, "Error saving payment method: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 }

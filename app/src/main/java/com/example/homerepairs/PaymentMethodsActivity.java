@@ -1,115 +1,109 @@
 package com.example.homerepairs;
 
-import android.os.Build;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
-import android.widget.ImageView;
-import androidx.appcompat.app.AppCompatActivity;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 
-public class PaymentMethodsActivity extends AppCompatActivity {
+import com.example.homerepairs.databinding.ActivityPaymentMethodsBinding;
+import com.example.homerepairs.databinding.ItemPaymentMethodBinding;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-    private android.widget.LinearLayout llPaymentList;
-    private com.google.firebase.firestore.FirebaseFirestore db;
-    private com.google.firebase.auth.FirebaseAuth auth;
+public class PaymentMethodsActivity extends BaseActivity {
+
+    private ActivityPaymentMethodsBinding binding;
+    private FirebaseFirestore db;
+    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_payment_methods);
+        binding = ActivityPaymentMethodsBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        db = com.google.firebase.firestore.FirebaseFirestore.getInstance();
-        auth = com.google.firebase.auth.FirebaseAuth.getInstance();
-        llPaymentList = findViewById(R.id.llPaymentList);
+        db = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
 
-        // Status bar configuration
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.white));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                getWindow().getDecorView().setSystemUiVisibility(
-                        getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            }
-        }
-
-        setupClickListeners();
+        setupListeners();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        loadPaymentMethods();
+        loadPayments();
     }
 
-    private void setupClickListeners() {
-        // Back Button
-        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
-
-        // Add Payment Method
-        findViewById(R.id.btnAddPayment).setOnClickListener(
-                v -> startActivity(new android.content.Intent(this, AddPaymentMethodActivity.class)));
+    private void setupListeners() {
+        binding.btnBack.setOnClickListener(v -> finish());
+        binding.btnAddPayment.setOnClickListener(v -> startActivity(new Intent(this, AddPaymentMethodActivity.class)));
     }
 
-    private void loadPaymentMethods() {
+    private void loadPayments() {
         if (auth.getCurrentUser() == null)
             return;
-
-        db.collection("users")
-                .document(auth.getCurrentUser().getUid())
-                .collection("payment_methods")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    llPaymentList.removeAllViews();
-                    for (com.google.firebase.firestore.QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        addPaymentMethodView(document);
+        db.collection("users").document(auth.getCurrentUser().getUid())
+                .collection("payment_methods").get()
+                .addOnSuccessListener(snaps -> {
+                    binding.llPaymentList.removeAllViews();
+                    for (int i = 0; i < snaps.size(); i++) {
+                        addPaymentView(snaps.getDocuments().get(i));
+                        if (i < snaps.size() - 1)
+                            addDivider();
                     }
                 })
-                .addOnFailureListener(e -> Toast
-                        .makeText(this, "Error loading payments: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
-    private void addPaymentMethodView(com.google.firebase.firestore.QueryDocumentSnapshot document) {
-        View view = android.view.LayoutInflater.from(this).inflate(R.layout.item_payment_method, llPaymentList, false);
-
-        String cardNumber = document.getString("cardNumber");
-        String expiry = document.getString("expiryDate");
-
-        // Mask card number
-        String maskedCard = "Card ending in " + (cardNumber != null && cardNumber.length() >= 4
-                ? cardNumber.substring(cardNumber.length() - 4)
-                : "****");
-
-        ((android.widget.TextView) view.findViewById(R.id.tvCardName)).setText(maskedCard);
-        ((android.widget.TextView) view.findViewById(R.id.tvCardExpiry)).setText("Expires: " + expiry);
-
-        view.findViewById(R.id.btnDelete).setOnClickListener(v -> confirmDelete(document.getId(), maskedCard));
-
-        llPaymentList.addView(view);
+    private void addDivider() {
+        View d = new View(this);
+        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                (int) (1 * getResources().getDisplayMetrics().density));
+        p.setMargins((int) (72 * getResources().getDisplayMetrics().density), 0, 0, 0);
+        d.setLayoutParams(p);
+        d.setBackgroundColor(ContextCompat.getColor(this, R.color.divider_gray));
+        d.setAlpha(0.3f);
+        binding.llPaymentList.addView(d);
     }
 
-    private void confirmDelete(String docId, String cardName) {
-        new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle(getString(R.string.delete))
-                .setMessage(getString(R.string.msg_delete_payment, cardName))
-                .setPositiveButton(getString(R.string.delete), (dialog, which) -> deletePaymentMethod(docId))
-                .setNegativeButton(getString(R.string.cancel), null)
+    private void addPaymentView(DocumentSnapshot doc) {
+        ItemPaymentMethodBinding item = ItemPaymentMethodBinding.inflate(LayoutInflater.from(this),
+                binding.llPaymentList, false);
+        String card = doc.getString("cardNumber");
+        String masked = "Card ending in "
+                + (card != null && card.length() >= 4 ? card.substring(card.length() - 4) : "****");
+
+        item.tvCardName.setText(masked);
+        item.tvCardExpiry.setText("Expires: " + doc.getString("expiryDate"));
+        item.btnDelete.setOnClickListener(v -> confirmDelete(doc.getId(), masked));
+
+        binding.llPaymentList.addView(item.getRoot());
+    }
+
+    private void confirmDelete(String id, String name) {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.delete)
+                .setMessage(getString(R.string.msg_delete_payment, name))
+                .setPositiveButton(R.string.delete, (d, w) -> delete(id))
+                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 
-    private void deletePaymentMethod(String docId) {
+    private void delete(String id) {
         if (auth.getCurrentUser() == null)
             return;
-
-        db.collection("users")
-                .document(auth.getCurrentUser().getUid())
-                .collection("payment_methods")
-                .document(docId)
-                .delete()
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "Payment method deleted", Toast.LENGTH_SHORT).show();
-                    loadPaymentMethods();
+        db.collection("users").document(auth.getCurrentUser().getUid())
+                .collection("payment_methods").document(id).delete()
+                .addOnSuccessListener(v -> {
+                    Toast.makeText(this, "Deleted!", Toast.LENGTH_SHORT).show();
+                    loadPayments();
                 })
-                .addOnFailureListener(
-                        e -> Toast.makeText(this, "Error deleting: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 }

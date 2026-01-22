@@ -13,24 +13,26 @@ import java.util.HashMap;
 public class FirebaseUserService {
     private static final String TAG = "FirebaseUserService";
     private static final String COLLECTION_USERS = "users";
-    
+
     private FirebaseFirestore db;
-    
+
     public FirebaseUserService() {
         db = FirebaseFirestore.getInstance();
     }
-    
+
     /**
      * Callback interface for user profile operations
      */
     public interface UserProfileCallback {
         void onSuccess(Map<String, Object> userProfile);
+
         void onError(String error);
     }
-    
+
     /**
      * Get user profile from Firestore by user ID
-     * @param userId Firebase user ID
+     * 
+     * @param userId   Firebase user ID
      * @param callback Callback for result
      */
     public void getUserProfile(String userId, UserProfileCallback callback) {
@@ -40,9 +42,9 @@ public class FirebaseUserService {
             }
             return;
         }
-        
+
         Log.d(TAG, "Fetching user profile for userId: " + userId);
-        
+
         db.collection(COLLECTION_USERS).document(userId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -67,10 +69,11 @@ public class FirebaseUserService {
                     }
                 });
     }
-    
+
     /**
      * Set up real-time listener for user profile changes
-     * @param userId Firebase user ID
+     * 
+     * @param userId   Firebase user ID
      * @param callback Callback for result
      * @return ListenerRegistration to remove listener when done
      */
@@ -81,9 +84,9 @@ public class FirebaseUserService {
             }
             return null;
         }
-        
+
         Log.d(TAG, "Setting up real-time listener for userId: " + userId);
-        
+
         return db.collection(COLLECTION_USERS).document(userId)
                 .addSnapshotListener((documentSnapshot, e) -> {
                     if (e != null) {
@@ -93,7 +96,7 @@ public class FirebaseUserService {
                         }
                         return;
                     }
-                    
+
                     if (documentSnapshot != null && documentSnapshot.exists()) {
                         Map<String, Object> userProfile = documentSnapshot.getData();
                         Log.d(TAG, "User profile updated");
@@ -108,12 +111,13 @@ public class FirebaseUserService {
                     }
                 });
     }
-    
+
     /**
      * Update user profile in Firestore
      * If document doesn't exist, creates it instead of updating
-     * @param userId Firebase user ID
-     * @param updates Map of fields to update
+     * 
+     * @param userId   Firebase user ID
+     * @param updates  Map of fields to update
      * @param callback Callback for result
      */
     public void updateUserProfile(String userId, Map<String, Object> updates, UserProfileCallback callback) {
@@ -123,12 +127,12 @@ public class FirebaseUserService {
             }
             return;
         }
-        
+
         // Add updated timestamp
         updates.put("updatedAt", com.google.firebase.Timestamp.now());
-        
+
         Log.d(TAG, "Updating user profile for userId: " + userId);
-        
+
         // First check if document exists
         db.collection(COLLECTION_USERS).document(userId)
                 .get()
@@ -154,14 +158,14 @@ public class FirebaseUserService {
                         // Add userId and createdAt to the updates
                         updates.put("userId", userId);
                         updates.put("createdAt", com.google.firebase.Timestamp.now());
-                        
+
                         // Get email from Firebase Auth if available
-                        com.google.firebase.auth.FirebaseUser user = 
-                            com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser();
+                        com.google.firebase.auth.FirebaseUser user = com.google.firebase.auth.FirebaseAuth.getInstance()
+                                .getCurrentUser();
                         if (user != null && user.getEmail() != null) {
                             updates.put("email", user.getEmail());
                         }
-                        
+
                         db.collection(COLLECTION_USERS).document(userId)
                                 .set(updates)
                                 .addOnSuccessListener(aVoid -> {
@@ -183,13 +187,13 @@ public class FirebaseUserService {
                     Log.d(TAG, "Attempting to create user profile document");
                     updates.put("userId", userId);
                     updates.put("createdAt", com.google.firebase.Timestamp.now());
-                    
-                    com.google.firebase.auth.FirebaseUser user = 
-                        com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser();
+
+                    com.google.firebase.auth.FirebaseUser user = com.google.firebase.auth.FirebaseAuth.getInstance()
+                            .getCurrentUser();
                     if (user != null && user.getEmail() != null) {
                         updates.put("email", user.getEmail());
                     }
-                    
+
                     db.collection(COLLECTION_USERS).document(userId)
                             .set(updates)
                             .addOnSuccessListener(aVoid -> {
@@ -204,20 +208,46 @@ public class FirebaseUserService {
                             });
                 });
     }
-    
+
     /**
-     * Get user's booking count
-     * This would typically query the bookings collection
-     * For now, returns 0 as placeholder
+     * Get user's booking count from Firestore
+     * Queries the bookings collection and counts documents where userId matches
+     * 
+     * @param userId   Firebase user ID
+     * @param callback Callback with booking count result
      */
     public void getBookingCount(String userId, UserProfileCallback callback) {
-        // TODO: Query bookings collection where userId matches
-        // For now, return 0
-        if (callback != null) {
-            Map<String, Object> result = new HashMap<>();
-            result.put("bookingCount", 0);
-            callback.onSuccess(result);
+        if (userId == null || userId.isEmpty()) {
+            if (callback != null) {
+                callback.onError("User ID is required");
+            }
+            return;
         }
+
+        Log.d(TAG, "Fetching booking count for userId: " + userId);
+
+        // Query bookings collection where userId matches
+        db.collection("bookings")
+                .whereEqualTo("userId", userId)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    int bookingCount = querySnapshot.size();
+                    Log.d(TAG, "Found " + bookingCount + " bookings for user");
+
+                    if (callback != null) {
+                        Map<String, Object> result = new HashMap<>();
+                        result.put("bookingCount", bookingCount);
+                        callback.onSuccess(result);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error fetching booking count", e);
+                    if (callback != null) {
+                        // Return 0 on error instead of failing completely
+                        Map<String, Object> result = new HashMap<>();
+                        result.put("bookingCount", 0);
+                        callback.onSuccess(result);
+                    }
+                });
     }
 }
-

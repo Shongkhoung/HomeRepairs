@@ -25,35 +25,10 @@ service cloud.firestore {
     }
     
     // ========================================
-    // DEVELOPMENT MODE RULES (For Testing)
-    // Use these rules if you haven't implemented Firebase Auth yet
+    // PRODUCTION MODE RULES (ACTIVE)
+    // Firebase Authentication is implemented and active
     // ========================================
-    // Uncomment the section below and comment out the "PRODUCTION MODE RULES" section
     
-    // Bookings collection - allow all access for development/testing
-    match /bookings/{bookingId} {
-      allow read, write: if true;
-    }
-    
-    match /conversations/{conversationId} {
-      allow read, write: if true;
-    }
-    
-    match /messages/{messageId} {
-      allow read, write: if true;
-    }
-    
-    // Users collection - allow all access for development/testing
-    // TODO: Deploy production rules to Firebase Console for proper security
-    match /users/{userId} {
-      allow read, write: if true;
-    }
-    
-    // ========================================
-    // PRODUCTION RULES FOR USERS (Deploy these after testing)
-    // Replace the above users rule with this when ready:
-    // ========================================
-    /*
     // Users collection - allow users to read/write their own profile
     match /users/{userId} {
       // Allow read if user is authenticated and reading their own profile
@@ -68,13 +43,7 @@ service cloud.firestore {
       // Allow delete if user is authenticated and deleting their own profile
       allow delete: if isAuthenticated() && request.auth.uid == userId;
     }
-    */
     
-    // ========================================
-    // PRODUCTION MODE RULES (Requires Firebase Auth)
-    // Uncomment this section when you implement Firebase Authentication
-    // ========================================
-    /*
     // Bookings collection - users can read/write their own bookings
     match /bookings/{bookingId} {
       // Allow read if user is authenticated and booking belongs to them
@@ -93,14 +62,8 @@ service cloud.firestore {
       allow delete: if isAuthenticated() && 
         resource.data.userId == request.auth.uid;
     }
-    */
     
-    // ========================================
-    // PRODUCTION MODE RULES (Requires Firebase Auth)
-    // Uncomment this section when you implement Firebase Authentication
-    // ========================================
-    /*
-    // Conversations collection
+    // Conversations collection - users can access their own conversations
     match /conversations/{conversationId} {
       // Allow read if user is a participant (userId or providerId)
       allow read: if isAuthenticated() && 
@@ -122,7 +85,7 @@ service cloud.firestore {
          resource.data.providerId == request.auth.uid);
     }
     
-    // Messages collection
+    // Messages collection - users can access their own messages
     match /messages/{messageId} {
       // Allow read if user is sender or receiver
       allow read: if isAuthenticated() && 
@@ -141,6 +104,30 @@ service cloud.firestore {
       // Allow delete if user is the sender
       allow delete: if isAuthenticated() && 
         resource.data.senderId == request.auth.uid;
+    }
+    
+    // ========================================
+    // DEVELOPMENT MODE RULES (DISABLED FOR PRODUCTION)
+    // Uncomment these rules ONLY for local testing without authentication
+    // WARNING: These rules allow unrestricted access - NEVER use in production!
+    // ========================================
+    /*
+    // Bookings collection - allow all access for development/testing
+    match /bookings/{bookingId} {
+      allow read, write: if true;
+    }
+    
+    match /conversations/{conversationId} {
+      allow read, write: if true;
+    }
+    
+    match /messages/{messageId} {
+      allow read, write: if true;
+    }
+    
+    // Users collection - allow all access for development/testing
+    match /users/{userId} {
+      allow read, write: if true;
     }
     */
   }

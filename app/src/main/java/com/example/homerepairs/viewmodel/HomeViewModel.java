@@ -115,207 +115,203 @@ public class HomeViewModel extends ViewModel {
     /**
      * Load service categories with real provider counts from Firebase
      */
-    public void loadCategories() {
+    // Cache for all providers to avoid multiple network calls
+    private List<Provider> allCachedProviders = null;
+
+    /**
+     * Load all dashboard data efficiently
+     * Fetches providers once and populates all dependent lists
+     */
+    public void loadDashboardData(String userId) {
         isLoading.setValue(true);
 
-        // First, fetch all providers from Firebase to calculate counts
-        firebaseProviderService.getAllProviders(new FirebaseProviderService.ProviderCallback() {
+        // Fetch pre-calculated categories from Firestore first
+        firebaseProviderService.getCategories(new FirebaseProviderService.CategoryCallback() {
             @Override
-            public void onSuccess(List<Provider> providers) {
-                android.util.Log.d("HomeViewModel", "Loaded " + providers.size() + " providers for category counts");
+            public void onSuccess(List<ServiceCategory> firestoreCategories) {
+                if (!firestoreCategories.isEmpty()) {
+                    android.util.Log.d("HomeViewModel",
+                            "Loaded " + firestoreCategories.size() + " categories from Firestore");
+                    // Map icons locally
+                    for (ServiceCategory cat : firestoreCategories) {
+                        cat.setIconResId(getServiceIcon(cat.getName()));
+                    }
+                    categories.setValue(firestoreCategories);
+                }
 
-                // Calculate provider counts for each category
-                List<ServiceCategory> categoryList = createCategoriesWithCounts(providers);
-                categories.setValue(categoryList);
-                isLoading.setValue(false);
-                isEmpty.setValue(categoryList.isEmpty());
+                // Now load providers for other sections (and fallback for categories if needed)
+                loadAllProvidersCombined(userId, firestoreCategories.isEmpty());
             }
 
             @Override
             public void onError(String error) {
-                android.util.Log.e("HomeViewModel", "Error loading providers for category counts: " + error);
-                // Fall back to mock data with default counts
-                List<ServiceCategory> categoryList = createMockCategories();
-                categories.setValue(categoryList);
+                android.util.Log.e("HomeViewModel", "Error loading categories from Firestore: " + error);
+                // Fallback: fetch all providers
+                loadAllProvidersCombined(userId, true);
+            }
+        });
+    }
+
+    private void loadAllProvidersCombined(String userId, boolean calculateCategories) {
+        firebaseProviderService.getAllProviders(new FirebaseProviderService.ProviderCallback() {
+            @Override
+            public void onSuccess(List<Provider> providers) {
+                android.util.Log.d("HomeViewModel", "Loaded " + providers.size() + " providers (Combined Load)");
+                allCachedProviders = providers;
+
+                // 1. Calculate Categories (if needed)
+                if (calculateCategories) {
+                    List<ServiceCategory> categoryList = createCategoriesWithCounts(providers);
+                    categories.setValue(categoryList);
+                    isEmpty.setValue(categoryList.isEmpty());
+                }
+
+                // 2. Process Featured Providers
+                processFeaturedProviders(providers);
+
+                // 3. Process Recent Activity
+                processRecentActivity(providers);
+
                 isLoading.setValue(false);
-                isEmpty.setValue(categoryList.isEmpty());
+            }
+
+            @Override
+            public void onError(String error) {
+                android.util.Log.e("HomeViewModel", "Error loading providers: " + error);
+
+                // Fallback to mock data on error
+                if (calculateCategories) {
+                    categories.setValue(createMockCategories());
+                }
+                featuredProviders.setValue(createMockProviders());
+                recentActivities.setValue(createMockRecentActivities());
+
+                isLoading.setValue(false);
             }
         });
     }
 
     /**
-     * Create categories with real provider counts from Firebase data
+     * Deprecated: Use loadDashboardData instead
      */
-    private List<ServiceCategory> createCategoriesWithCounts(List<Provider> providers) {
-        List<ServiceCategory> list = new ArrayList<>();
-
-        // Define all service categories
-        String[] categoryNames = {
-                "Plumbing", "Electrical", "HVAC", "Carpentry", "Painting",
-                "Appliance", "Roofing", "Landscaping", "Cleaning", "Handyman"
-        };
-
-        int[] iconResIds = {
-                R.drawable.plumbing, R.drawable.electrical, R.drawable.hvac, R.drawable.carpentry, R.drawable.painting,
-                R.drawable.appliance_repair, R.drawable.roofing, R.drawable.landscaping, R.drawable.cleaning,
-                R.drawable.handyman
-        };
-
-        // Count providers for each category
-        for (int i = 0; i < categoryNames.length; i++) {
-            String categoryName = categoryNames[i];
-            int count = 0;
-
-            // Count providers matching this category
-            for (Provider provider : providers) {
-                if (provider.getService() != null &&
-                        provider.getService().equalsIgnoreCase(categoryName)) {
-                    count++;
-                }
-            }
-
-            // If no providers found, use 0 (or could use a minimum like 1)
-            list.add(new ServiceCategory(categoryName, count, iconResIds[i]));
-            android.util.Log.d("HomeViewModel", "Category: " + categoryName + " - Count: " + count);
+    public void loadCategories() {
+        // Kept for compatibility, redirects to dashboard load
+        // Note: This might be called individually, so we handle it gracefully
+        if (allCachedProviders != null) {
+            // If we already have data, just recalculate (rarely needed)
+            List<ServiceCategory> categoryList = createCategoriesWithCounts(allCachedProviders);
+            categories.setValue(categoryList);
         }
-
-        return list;
     }
 
     /**
-     * Load featured providers from Firebase
-     * Featured providers are selected based on highest rating and review count
+     * Deprecated: Use loadDashboardData instead
      */
     public void loadFeaturedProviders() {
-        isLoading.setValue(true);
-
-        // Fetch all providers from Firebase
-        firebaseProviderService.getAllProviders(new FirebaseProviderService.ProviderCallback() {
-            @Override
-            public void onSuccess(List<Provider> providers) {
-                android.util.Log.d("HomeViewModel", "Loaded " + providers.size() + " providers from Firebase");
-
-                // Convert Provider to FeaturedProvider and select top providers
-                List<FeaturedProvider> featuredList = convertToFeaturedProviders(providers);
-
-                // Sort by rating (descending), then by review count (descending)
-                Collections.sort(featuredList, new Comparator<FeaturedProvider>() {
-                    @Override
-                    public int compare(FeaturedProvider p1, FeaturedProvider p2) {
-                        // First compare by rating
-                        int ratingCompare = Double.compare(p2.getRating(), p1.getRating());
-                        if (ratingCompare != 0) {
-                            return ratingCompare;
-                        }
-                        // If ratings are equal, compare by review count
-                        return Integer.compare(p2.getReviewCount(), p1.getReviewCount());
-                    }
-                });
-
-                // Limit to top 5 featured providers
-                if (featuredList.size() > 5) {
-                    featuredList = featuredList.subList(0, 5);
-                }
-
-                // If no providers from Firebase, fall back to mock data
-                if (featuredList.isEmpty()) {
-                    android.util.Log.w("HomeViewModel", "No providers found in Firebase, using mock data");
-                    featuredList = createMockProviders();
-                }
-
-                featuredProviders.setValue(featuredList);
-                isLoading.setValue(false);
-            }
-
-            @Override
-            public void onError(String error) {
-                android.util.Log.e("HomeViewModel", "Error loading providers from Firebase: " + error);
-                // Fall back to mock data on error
-                List<FeaturedProvider> providerList = createMockProviders();
-                featuredProviders.setValue(providerList);
-                isLoading.setValue(false);
-            }
-        });
+        // Kept for compatibility
     }
 
     /**
-     * Convert Provider objects to FeaturedProvider objects
+     * Deprecated: Use loadDashboardData instead
      */
-    private List<FeaturedProvider> convertToFeaturedProviders(List<Provider> providers) {
-        List<FeaturedProvider> featuredList = new ArrayList<>();
+    public void loadRecentActivity(String userId) {
+        // Kept for compatibility
+    }
+
+    private List<ServiceCategory> createCategoriesWithCounts(List<Provider> providers) {
+        java.util.Map<String, Integer> counts = new java.util.HashMap<>();
 
         for (Provider provider : providers) {
-            // Use default profile image resource if no URL is available
-            int profileImageResId = R.drawable.no_profile_image;
-            String profileImageUrl = provider.getProfileImageUrl();
-
-            // Default values for new fields (can be updated from Firebase if available)
-            boolean isVerified = provider.isVerified();
-            String responseTime = "~10 min"; // Default response time
-            String jobsCompleted = String.valueOf(provider.getReviewCount() * 2); // Estimate: 2x review count
-
-            // Create FeaturedProvider with all fields
-            FeaturedProvider featuredProvider = new FeaturedProvider(
-                    provider.getName() != null ? provider.getName() : "Unknown",
-                    provider.getService() != null ? provider.getService() : "General",
-                    provider.getRating(),
-                    provider.getReviewCount(),
-                    provider.getAvailability() != null ? provider.getAvailability() : "Not Available",
-                    provider.getPrice() != null ? provider.getPrice() : "$0/hr",
-                    profileImageResId,
-                    profileImageUrl, // Pass image URL
-                    provider.isAvailableNow(),
-                    isVerified,
-                    responseTime,
-                    jobsCompleted);
-
-            featuredList.add(featuredProvider);
+            String service = provider.getService();
+            if (service != null && !service.isEmpty()) {
+                counts.put(service, counts.getOrDefault(service, 0) + 1);
+            }
         }
 
+        List<ServiceCategory> categoryList = new ArrayList<>();
+        for (java.util.Map.Entry<String, Integer> entry : counts.entrySet()) {
+            categoryList.add(new ServiceCategory(
+                    entry.getKey(),
+                    entry.getValue(),
+                    getServiceIcon(entry.getKey())));
+        }
+
+        // Sort categories by provider count (descending)
+        Collections.sort(categoryList, (c1, c2) -> Integer.compare(c2.getProviderCount(), c1.getProviderCount()));
+
+        return categoryList;
+    }
+
+    private List<FeaturedProvider> convertToFeaturedProviders(List<Provider> providers) {
+        List<FeaturedProvider> featuredList = new ArrayList<>();
+        for (Provider provider : providers) {
+            String service = provider.getService() != null ? provider.getService() : "Service";
+
+            // Use the constructor that accepts profileImageUrl
+            FeaturedProvider featured = new FeaturedProvider(
+                    provider.getName(),
+                    service,
+                    provider.getRating(),
+                    provider.getReviewCount(),
+                    provider.getAvailability(),
+                    provider.getPrice(),
+                    getServiceIcon(service), // Fallback icon ID
+                    provider.getProfileImageUrl(), // Image URL
+                    provider.isAvailableNow(),
+                    provider.isVerified(),
+                    provider.getResponseTime(),
+                    provider.getJobsCompleted());
+
+            featured.setId(provider.getId());
+            featuredList.add(featured);
+        }
         return featuredList;
     }
 
-    /**
-     * Load recent activity from Firebase providers
-     * Shows providers from Firestore in Recent Activity section
-     */
-    public void loadRecentActivity(String userId) {
-        isLoading.setValue(true);
+    private void processFeaturedProviders(List<Provider> providers) {
+        // Convert Provider to FeaturedProvider and select top providers
+        List<FeaturedProvider> featuredList = convertToFeaturedProviders(providers);
 
-        // Fetch providers from Firebase
-        firebaseProviderService.getAllProviders(new FirebaseProviderService.ProviderCallback() {
+        // Sort by rating (descending), then by review count (descending)
+        Collections.sort(featuredList, new Comparator<FeaturedProvider>() {
             @Override
-            public void onSuccess(List<Provider> providers) {
-                android.util.Log.d("HomeViewModel",
-                        "Loaded " + providers.size() + " providers from Firebase for Recent Activity");
-
-                // Convert Provider to RecentActivity
-                List<RecentActivity> activityList = convertProvidersToRecentActivities(providers);
-
-                // Limit to top 5 providers (sorted by rating)
-                if (activityList.size() > 5) {
-                    activityList = activityList.subList(0, 5);
+            public int compare(FeaturedProvider p1, FeaturedProvider p2) {
+                int ratingCompare = Double.compare(p2.getRating(), p1.getRating());
+                if (ratingCompare != 0) {
+                    return ratingCompare;
                 }
-
-                // If no providers from Firebase, fall back to mock data
-                if (activityList.isEmpty()) {
-                    android.util.Log.w("HomeViewModel", "No providers found in Firebase, using mock data");
-                    activityList = createMockRecentActivities();
-                }
-
-                recentActivities.setValue(activityList);
-                isLoading.setValue(false);
-            }
-
-            @Override
-            public void onError(String error) {
-                android.util.Log.e("HomeViewModel", "Error loading providers from Firebase: " + error);
-                // Fall back to mock data on error
-                List<RecentActivity> activityList = createMockRecentActivities();
-                recentActivities.setValue(activityList);
-                isLoading.setValue(false);
+                return Integer.compare(p2.getReviewCount(), p1.getReviewCount());
             }
         });
+
+        // Limit to top 5 featured providers
+        if (featuredList.size() > 5) {
+            featuredList = featuredList.subList(0, 5);
+        }
+
+        // If no providers from Firebase, fall back to mock data
+        if (featuredList.isEmpty()) {
+            featuredList = createMockProviders();
+        }
+
+        featuredProviders.setValue(featuredList);
+    }
+
+    private void processRecentActivity(List<Provider> providers) {
+        // Convert Provider to RecentActivity
+        List<RecentActivity> activityList = convertProvidersToRecentActivities(providers);
+
+        // Limit to top 5 providers (sorted by rating)
+        if (activityList.size() > 5) {
+            activityList = activityList.subList(0, 5);
+        }
+
+        // If no providers from Firebase, fall back to mock data
+        if (activityList.isEmpty()) {
+            activityList = createMockRecentActivities();
+        }
+
+        recentActivities.setValue(activityList);
     }
 
     /**
@@ -362,8 +358,6 @@ public class HomeViewModel extends ViewModel {
 
             // Get provider profile image URL
             String profileImageUrl = provider.getProfileImageUrl();
-            android.util.Log.d("HomeViewModel", "Provider: " + provider.getName() +
-                    ", ProfileImageUrl: " + (profileImageUrl != null ? profileImageUrl : "null"));
 
             RecentActivity activity = new RecentActivity(
                     title, // Service name
@@ -526,15 +520,15 @@ public class HomeViewModel extends ViewModel {
         List<ServiceCategory> list = new ArrayList<>();
         // Using actual PNG icons from Sevice Icons folder
         list.add(new ServiceCategory("Plumbing", 12, R.drawable.plumbing));
-        list.add(new ServiceCategory("Electrical", 15, R.drawable.electrical));
-        list.add(new ServiceCategory("HVAC", 8, R.drawable.hvac));
+        list.add(new ServiceCategory("Electrical", 10, R.drawable.electrical));
+        list.add(new ServiceCategory("HVAC", 11, R.drawable.hvac));
         list.add(new ServiceCategory("Carpentry", 10, R.drawable.carpentry));
-        list.add(new ServiceCategory("Painting", 7, R.drawable.painting));
-        list.add(new ServiceCategory("Appliance", 9, R.drawable.appliance_repair));
-        list.add(new ServiceCategory("Roofing", 5, R.drawable.roofing));
-        list.add(new ServiceCategory("Landscaping", 11, R.drawable.landscaping));
-        list.add(new ServiceCategory("Cleaning", 14, R.drawable.cleaning));
-        list.add(new ServiceCategory("Handyman", 13, R.drawable.handyman));
+        list.add(new ServiceCategory("Painting", 10, R.drawable.painting));
+        list.add(new ServiceCategory("Appliance", 10, R.drawable.appliance_repair));
+        list.add(new ServiceCategory("Roofing", 10, R.drawable.roofing));
+        list.add(new ServiceCategory("Landscaping", 10, R.drawable.landscaping));
+        list.add(new ServiceCategory("Cleaning", 10, R.drawable.cleaning));
+        list.add(new ServiceCategory("Handyman", 2, R.drawable.handyman));
         return list;
     }
 
